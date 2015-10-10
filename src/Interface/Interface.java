@@ -5,17 +5,10 @@
  */
 package Interface;
 
-import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Real;
 import faultlocalization.FaultLocalization;
-import faultlocalization.MapValueComparator;
 import java.io.*;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -25,11 +18,8 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 /**
  *
@@ -241,7 +231,7 @@ public class Interface extends javax.swing.JFrame {
     private void abrJunitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrJunitActionPerformed
         // TODO add your handling code here:
         JFileChooser file = new JFileChooser();
-        file.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        file.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int i = file.showSaveDialog(null);
         if (i == 1) {
             arqJunit.setText("");
@@ -254,7 +244,7 @@ public class Interface extends javax.swing.JFrame {
     private void abrEcoberturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrEcoberturaActionPerformed
         // TODO add your handling code here:
         JFileChooser file = new JFileChooser();
-        file.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        file.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int i = file.showSaveDialog(null);
         if (i == 1) {
             arqEcobertura.setText("");
@@ -267,15 +257,14 @@ public class Interface extends javax.swing.JFrame {
 
     private void abrJxrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrJxrActionPerformed
         // TODO add your handling code here:
-        JFileChooser file = new JFileChooser();
-        file.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        int i = file.showSaveDialog(null);
+        JFileChooser caminho = new JFileChooser();
+        caminho.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int i = caminho.showSaveDialog(null);
         if (i == 1) {
             arqJxr.setText("");
         } else {
-            jxr = file.getSelectedFile();   // seleciona um arquivo na caixa de dialogo
+            jxr = caminho.getSelectedFile();   // seleciona um arquivo na caixa de dialogo
             arqJxr.setText(jxr.getPath()); // escreve o endereço do arquivo na caixa de texto
-
         }
     }//GEN-LAST:event_abrJxrActionPerformed
 
@@ -288,29 +277,47 @@ public class Interface extends javax.swing.JFrame {
         JTextArea sbi = new JTextArea();
         try {
             //Lendo arquivo Junit
-            File fileJunit = new File("C:\\Users\\Karini\\workspace\\Teste\\target\\site\\surefire-report.html");
-            Document documentoJunit = Jsoup.parse(fileJunit, null);
-            Interface parserHtmlJunit = new Interface(documentoJunit);
-            lerJunit = new Junit(parserHtmlJunit.document);
-            lerJunit.totais();
-            lerJunit.testesFalhos();
+            File diretorioJunit = new File(junit.getPath());
+            for(File fileJunit : diretorioJunit.listFiles()){
+                if(fileJunit.isFile()){
+                    fileJunit = new File(fileJunit.getName());
+                    Document documentoJunit = Jsoup.parse(fileJunit, null);
+                    Interface parserHtmlJunit = new Interface(documentoJunit);
+                    lerJunit = new Junit(parserHtmlJunit.document);
+                    lerJunit.totais();
+                    lerJunit.testesFalhos();
+                }
+            }
 
             //Lendo Ecobertura
-            File fileEcob = new File("C:/Users/Karini/workspace/Teste/target/site/cobertura/TesteUnitario.Teste.Calculadora.html");
-            Document documentoEcob = Jsoup.parse(fileEcob, null);
-            Interface parserHtmlEcob = new Interface(documentoEcob);
-            lerEcob = new Ecobertura(parserHtmlEcob.document);
-            linhas = lerEcob.qtdeLinhasCod();
-            lerEcob.escreveTxt();
+            // lista os arquivos do diretório
+            File diretorioEcob = new File(ecobertura.getPath());
+            for(File fileEcob : diretorioEcob.listFiles()){
+                if(fileEcob.isFile()){
+                    fileEcob = new File(fileEcob.getName());
+                    Document documentoEcob = Jsoup.parse(fileEcob, null);
+                    Interface parserHtmlEcob = new Interface(documentoEcob);
+                    lerEcob = new Ecobertura(parserHtmlEcob.document);
+                    linhas = lerEcob.qtdeLinhasCod();
+                    lerEcob.escreveTxt();
+                }
+            }
 
             //Lendo Teste Jxr
-            File fileJxr = new File("C:/Users/Karini/workspace/Teste/target/site/xref-test/TesteUnitario/Teste/CalculadoraTest.html");
-            Document documentoJxr = Jsoup.parse(fileJxr, null);
-            Interface parserHtmlJxr = new Interface(documentoJxr);
-            lerJxr = new Jxr(parserHtmlJxr.document);
-            parserHtmlJxr.elementos = lerJxr.leituraJxr();
-            lerJxr.escreveTxt(parserHtmlJxr.elementos);
-            lerJxr.leTxt(lerEcob.getClasse());
+            // lista os arquivos do diretório
+            File diretorioJxr = new File(jxr.getPath());
+            for(File fileJxr : diretorioJxr.listFiles()){
+                if(fileJxr.isFile()){
+                    fileJxr = new File(fileJxr.getName());
+                    Document documentoJxr = Jsoup.parse(fileJxr, null);
+                    Interface parserHtmlJxr = new Interface(documentoJxr);
+                    lerJxr = new Jxr(parserHtmlJxr.document);
+                    parserHtmlJxr.elementos = lerJxr.leituraJxr();
+                    lerJxr.escreveTxt(parserHtmlJxr.elementos);
+                    lerJxr.leTxt(lerEcob.getClasse());
+                }
+            }
+            
 
             /* verificar caixas de seleção
              getPassaram é o total de testes que passaram na linha x
@@ -318,10 +325,10 @@ public class Interface extends javax.swing.JFrame {
              getQtdeSucesso é a quantidade de testes executados que tiveram sucesso
              getQtdeFalhas é a quantidade de testes executados que falharam
              */
-            ArrayList<Double> sucesso = new ArrayList<Double>();
-            ArrayList<Double> falha = new ArrayList<Double>();
-            ArrayList<Double> totSucesso = new ArrayList<Double>();
-            ArrayList<Double> totFalha = new ArrayList<Double>();
+            ArrayList<Double> sucesso = new ArrayList<>();
+            ArrayList<Double> falha = new ArrayList<>();
+            ArrayList<Double> totSucesso = new ArrayList<>();
+            ArrayList<Double> totFalha = new ArrayList<>();
 
             for (int i = 0; i < linhas.size(); i++) {
                 lerEcob.falharam(linhas.get(i), lerJxr, lerJunit);
@@ -385,14 +392,15 @@ public class Interface extends javax.swing.JFrame {
     
     static <K,V extends Comparable<? super V>>
 SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
-    SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
-        new Comparator<Map.Entry<K,V>>() {
-            @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
-                int res = e1.getValue().compareTo(e2.getValue());
-                return res != 0 ? res : 1;
-            }
-        }
-    );
+    SortedSet<Map.Entry<K,V>> sortedEntries;
+        sortedEntries = new TreeSet<Map.Entry<K,V>>(
+                new Comparator<Map.Entry<K,V>>() {
+                    @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
+                        int res = e1.getValue().compareTo(e2.getValue());
+                        return res != 0 ? res : 1;
+                    }
+                }
+        );
     sortedEntries.addAll(map.entrySet());
     return sortedEntries;
 }
