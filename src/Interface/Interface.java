@@ -30,7 +30,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.jscience.mathematics.number.Real;
 
 /**
  *
@@ -74,7 +73,7 @@ public class Interface extends javax.swing.JFrame {
         setTitle("Localizador de Defeitos");
         setName("principal"); // NOI18N
 
-        lEcobertura.setText("Selecione o arquivo Ecobertura:");
+        lEcobertura.setText("Cobertura:");
 
         abrEcobertura.setBackground(new java.awt.Color(204, 204, 255));
         abrEcobertura.setText("Abrir");
@@ -84,7 +83,7 @@ public class Interface extends javax.swing.JFrame {
             }
         });
 
-        lJunit.setText("Selecione o arquivo Junit:");
+        lJunit.setText("Junit:");
 
         abrJunit.setBackground(new java.awt.Color(204, 204, 255));
         abrJunit.setText("Abrir");
@@ -95,7 +94,7 @@ public class Interface extends javax.swing.JFrame {
         });
 
         lheuristica.setBackground(new java.awt.Color(255, 255, 255));
-        lheuristica.setText("Selecione a heurística a ser utilizada:");
+        lheuristica.setText("Heurística:");
 
         btnExecutar.setBackground(new java.awt.Color(153, 204, 255));
         btnExecutar.setText("Executar");
@@ -105,7 +104,7 @@ public class Interface extends javax.swing.JFrame {
             }
         });
 
-        lJxr.setText("Selecione o arquivo Jxr:");
+        lJxr.setText("Jxr:");
 
         abrJxr.setBackground(new java.awt.Color(204, 204, 255));
         abrJxr.setText("Abrir");
@@ -145,7 +144,7 @@ public class Interface extends javax.swing.JFrame {
                                     .addComponent(lheuristica)
                                     .addComponent(csTarantula)
                                     .addComponent(csSBI))
-                                .addGap(0, 265, Short.MAX_VALUE)))
+                                .addGap(0, 370, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(abrJunit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
