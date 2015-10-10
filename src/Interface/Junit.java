@@ -45,8 +45,6 @@ public class Junit {
         return falhas;
     }
     
-    
-
     public void totais(){   //método para pegas as informações referentes a quantidade de testes
         Elements children = null;
         Elements elements = document.getElementsByClass("b");
