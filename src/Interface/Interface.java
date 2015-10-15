@@ -8,16 +8,18 @@ package Interface;
 import faultlocalization.FaultLocalization;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -203,10 +205,10 @@ public class Interface extends javax.swing.JFrame {
     private Interface parserHtmlEcobertura;
     private Interface parserHtmlJxr;
     //private Hashtable prob = new Hashtable();
-    private TreeMap<Integer, Double> probTar = new TreeMap<Integer, Double>();
-    private TreeMap<Integer, Double> probOch = new TreeMap<Integer, Double>();
-    private TreeMap<Integer, Double> probJac = new TreeMap<Integer, Double>();
-    private TreeMap<Integer, Double> probSbi = new TreeMap<Integer, Double>();
+    private TreeMap<Integer, Double> probTar = new TreeMap<>();
+    private TreeMap<Integer, Double> probOch = new TreeMap<>();
+    private TreeMap<Integer, Double> probJac = new TreeMap<>();
+    private TreeMap<Integer, Double> probSbi = new TreeMap<>();
     private ArrayList<Integer> linhas = new ArrayList<Integer>();
     private Junit lerJunit;
     private Ecobertura lerEcob;
@@ -275,120 +277,129 @@ public class Interface extends javax.swing.JFrame {
         JTextArea och = new JTextArea();
         JTextArea jac = new JTextArea();
         JTextArea sbi = new JTextArea();
-        try {
-            //Lendo arquivo Junit
-            File diretorioJunit = new File(junit.getPath());
-            for(File fileJunit : diretorioJunit.listFiles()){
-                if(fileJunit.isFile()){
-                    fileJunit = new File(fileJunit.getName());
-                    Document documentoJunit = Jsoup.parse(fileJunit, null);
-                    Interface parserHtmlJunit = new Interface(documentoJunit);
-                    lerJunit = new Junit(parserHtmlJunit.document);
-                    lerJunit.totais();
-                    lerJunit.testesFalhos();
-                }
+        File diretorioJunit = new File("C:\\Users\\Karini\\workspace\\commons-math3-3.5-src\\target\\site");
+       //File diretorioJunit = new File(junit.getPath());
+        for(File fileJunit : diretorioJunit.listFiles()){
+            if((fileJunit.isFile())){
+                System.out.println("entrei junit");
+                /*fileJunit = new File(fileJunit.getName());
+                Document documentoJunit = Jsoup.parse(fileJunit, null);
+                Interface parserHtmlJunit = new Interface(documentoJunit);
+                lerJunit = new Junit(parserHtmlJunit.document);
+                lerJunit.totais();
+                lerJunit.testesFalhos();*/
             }
-
-            //Lendo Ecobertura
-            // lista os arquivos do diretório
-            File diretorioEcob = new File(ecobertura.getPath());
-            for(File fileEcob : diretorioEcob.listFiles()){
-                if(fileEcob.isFile()){
-                    fileEcob = new File(fileEcob.getName());
-                    Document documentoEcob = Jsoup.parse(fileEcob, null);
-                    Interface parserHtmlEcob = new Interface(documentoEcob);
-                    lerEcob = new Ecobertura(parserHtmlEcob.document);
-                    linhas = lerEcob.qtdeLinhasCod();
-                    lerEcob.escreveTxt();
-                }
-            }
-
-            //Lendo Teste Jxr
-            // lista os arquivos do diretório
-            File diretorioJxr = new File(jxr.getPath());
-            for(File fileJxr : diretorioJxr.listFiles()){
-                if(fileJxr.isFile()){
-                    fileJxr = new File(fileJxr.getName());
-                    Document documentoJxr = Jsoup.parse(fileJxr, null);
-                    Interface parserHtmlJxr = new Interface(documentoJxr);
-                    lerJxr = new Jxr(parserHtmlJxr.document);
-                    parserHtmlJxr.elementos = lerJxr.leituraJxr();
-                    lerJxr.escreveTxt(parserHtmlJxr.elementos);
-                    lerJxr.leTxt(lerEcob.getClasse());
-                }
-            }
-            
-
-            /* verificar caixas de seleção
-             getPassaram é o total de testes que passaram na linha x
-             getFalharam é o total de testes que falharam e passaram pela linha x
-             getQtdeSucesso é a quantidade de testes executados que tiveram sucesso
-             getQtdeFalhas é a quantidade de testes executados que falharam
-             */
-            ArrayList<Double> sucesso = new ArrayList<>();
-            ArrayList<Double> falha = new ArrayList<>();
-            ArrayList<Double> totSucesso = new ArrayList<>();
-            ArrayList<Double> totFalha = new ArrayList<>();
-
-            for (int i = 0; i < linhas.size(); i++) {
-                lerEcob.falharam(linhas.get(i), lerJxr, lerJunit);
-
-                sucesso.add((double) lerEcob.getPassaram());
-                falha.add((double) lerEcob.getFalharam());
-                totSucesso.add((double) lerJunit.getQtdeSucesso());
-                totFalha.add((double) lerJunit.getQtdeFalhas());
-            }
-
-            if(!csTarantula.isSelected() && !csJaccard.isSelected() && !csOchiai.isSelected() && !csSBI.isSelected()){
-                JOptionPane.showMessageDialog(null,"Selecione uma heurística");
-            }
-            
-            if(csTarantula.isSelected()){
-                for (int i = 0; i < linhas.size(); i++) {
-                    heuristicas = new FaultLocalization(sucesso.get(i), falha.get(i), totSucesso.get(i), totFalha.get(i));
-                    probabilidade = heuristicas.tarantula();
-                    probTar.put(linhas.get(i), probabilidade);
-                }
-                entriesSortedByValues(probTar);
-                System.out.println(entriesSortedByValues(probTar));
-            }
-            if (csOchiai.isSelected()) {
-
-                for (int i = 0; i < linhas.size(); i++) {
-                    heuristicas = new FaultLocalization(sucesso.get(i), falha.get(i), totSucesso.get(i), totFalha.get(i));
-                    probabilidade = heuristicas.ochiai();
-                    probOch.put(linhas.get(i), probabilidade);
-                }
-                System.out.println(entriesSortedByValues(probOch));
-            }
-
-            if (csJaccard.isSelected()) {
-                for (int i = 0; i < linhas.size(); i++) {
-                    heuristicas = new FaultLocalization(sucesso.get(i), falha.get(i), totSucesso.get(i), totFalha.get(i));
-                    probabilidade = heuristicas.jaccard();
-                    probJac.put(linhas.get(i), probabilidade);
-                }
-                System.out.println(entriesSortedByValues(probJac));
-            }
-
-            if (csSBI.isSelected()) {
-                for (int i = 0; i < linhas.size(); i++) {
-                    heuristicas = new FaultLocalization(sucesso.get(i), falha.get(i), totSucesso.get(i), totFalha.get(i));
-                    probabilidade = heuristicas.sbi();
-                    probSbi.put(linhas.get(i), probabilidade);
-                    //System.out.println("linha: " + linhas.get(i)+ " falha: " + falhasLinha.get(i) + " sucesso: " + sucessoLinha.get(i) );
-                }
-                System.out.println(entriesSortedByValues(probSbi));
-            }
-            
-            JanelaResult panel = new JanelaResult();
-            panel.setVisible(true);
-            
-
-        } catch (IOException ex) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
         }
+        ArrayList<String> filesEcob = new ArrayList<>();
+        //filesEcob = navegar(ecobertura.getPath());
+        filesEcob = navegar("C:\\Users\\Karini\\workspace\\commons-math3-3.5-src\\target\\site\\cobertura");
+        for(int i=0; i<filesEcob.size(); i++){
+            
+        }
+        
+            /*StringBuffer sb = new StringBuffer();
+            char [] aux = filesEcob.get(i).toCharArray();
+                for(int j=0; j<aux.length; j++){
+                    sb.append(aux[j]);
+                    if(sb.toString().equals("frame-summary") || sb.toString().equals("index") || sb.toString().equals("help")){
+                        break;
+                    }
+                }*/
+                
+                /* File fileEcob = new File(filesEcob.get(i));
+                Document documentoEcob = Jsoup.parse(fileEcob, null);
+                Interface parserHtmlEcob = new Interface(documentoEcob);
+                lerEcob = new Ecobertura(parserHtmlEcob.document);
+                linhas = lerEcob.qtdeLinhasCod();
+                lerEcob.escreveTxt();*/
+               // }
+                /*else{
+                    continue;
+                }*/
+            
+        ArrayList <String> filesJxr = new ArrayList<>();
+        //filesJxr = navegar(jxr.getPath());
+         filesJxr = navegar("C:\\Users\\Karini\\workspace\\commons-math3-3.5-src\\target\\site\\xref-test\\org\\apache\\commons\\math3");
+        for(int i=0; i<filesJxr.size(); i++){
+            String[] aux = filesJxr.get(i).split("-");
+            if(aux[1].equals("package")){
+                File fileJxr = new File(filesJxr.get(i));
+                System.out.println("entrou jxr");
+                /* Document documentoJxr = Jsoup.parse(fileJxr, null);
+                Interface parserHtmlJxr = new Interface(documentoJxr);
+                lerJxr = new Jxr(parserHtmlJxr.document);
+                parserHtmlJxr.elementos = lerJxr.leituraJxr();
+                lerJxr.escreveTxt(parserHtmlJxr.elementos);
+                lerJxr.leTxt(lerEcob.getClasse());*/
+            }
+        }
+        ArrayList<Double> sucesso = new ArrayList<>();
+        ArrayList<Double> falha = new ArrayList<>();
+        ArrayList<Double> totSucesso = new ArrayList<>();
+        ArrayList<Double> totFalha = new ArrayList<>();
+        for (int i = 0; i < linhas.size(); i++) {
+            lerEcob.falharam(linhas.get(i), lerJxr, lerJunit);
+            
+            sucesso.add((double) lerEcob.getPassaram());
+            falha.add((double) lerEcob.getFalharam());
+            totSucesso.add((double) lerJunit.getQtdeSucesso());
+            totFalha.add((double) lerJunit.getQtdeFalhas());
+        }
+        if(!csTarantula.isSelected() && !csJaccard.isSelected() && !csOchiai.isSelected() && !csSBI.isSelected()){
+            JOptionPane.showMessageDialog(null,"Selecione uma heurística");
+        }
+        if(csTarantula.isSelected()){
+            for (int i = 0; i < linhas.size(); i++) {
+                heuristicas = new FaultLocalization(sucesso.get(i), falha.get(i), totSucesso.get(i), totFalha.get(i));
+                probabilidade = heuristicas.tarantula();
+                probTar.put(linhas.get(i), probabilidade);
+            }
+            entriesSortedByValues(probTar);
+            System.out.println(entriesSortedByValues(probTar));
+        }
+        if (csOchiai.isSelected()) {
+            
+            for (int i = 0; i < linhas.size(); i++) {
+                heuristicas = new FaultLocalization(sucesso.get(i), falha.get(i), totSucesso.get(i), totFalha.get(i));
+                probabilidade = heuristicas.ochiai();
+                probOch.put(linhas.get(i), probabilidade);
+            }
+            System.out.println(entriesSortedByValues(probOch));
+        }
+        if (csJaccard.isSelected()) {
+            for (int i = 0; i < linhas.size(); i++) {
+                heuristicas = new FaultLocalization(sucesso.get(i), falha.get(i), totSucesso.get(i), totFalha.get(i));
+                probabilidade = heuristicas.jaccard();
+                probJac.put(linhas.get(i), probabilidade);
+            }
+            System.out.println(entriesSortedByValues(probJac));
+        }
+        if (csSBI.isSelected()) {
+            for (int i = 0; i < linhas.size(); i++) {
+                heuristicas = new FaultLocalization(sucesso.get(i), falha.get(i), totSucesso.get(i), totFalha.get(i));
+                probabilidade = heuristicas.sbi();
+                probSbi.put(linhas.get(i), probabilidade);
+                //System.out.println("linha: " + linhas.get(i)+ " falha: " + falhasLinha.get(i) + " sucesso: " + sucessoLinha.get(i) );
+            }
+            System.out.println(entriesSortedByValues(probSbi));
+        }
+        JanelaResult panel = new JanelaResult();
+        panel.setVisible(true);
     }//GEN-LAST:event_btnExecutarActionPerformed
+    
+    private ArrayList<String> navegar(String caminho){
+        ArrayList<String> files = new ArrayList<>();
+        File diretorio = new File(caminho);
+        for (File file : diretorio.listFiles()) {
+            if (file.isFile()) {
+                files.add(file.getName());
+            }
+            else{
+                 navegar(caminho+"\\"+file.getName());
+            }
+        }
+        return files;
+    }
     
     static <K,V extends Comparable<? super V>>
 SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
