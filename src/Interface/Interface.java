@@ -8,18 +8,16 @@ package Interface;
 import faultlocalization.FaultLocalization;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
-import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -209,7 +207,8 @@ public class Interface extends javax.swing.JFrame {
     private TreeMap<Integer, Double> probOch = new TreeMap<>();
     private TreeMap<Integer, Double> probJac = new TreeMap<>();
     private TreeMap<Integer, Double> probSbi = new TreeMap<>();
-    private ArrayList<Integer> linhas = new ArrayList<Integer>();
+    private Map<String, ArrayList<Integer>> linhas = new TreeMap();
+    private ArrayList<String> files = new ArrayList<>();
     private Junit lerJunit;
     private Ecobertura lerEcob;
     private Jxr lerJxr;
@@ -277,78 +276,86 @@ public class Interface extends javax.swing.JFrame {
         JTextArea och = new JTextArea();
         JTextArea jac = new JTextArea();
         JTextArea sbi = new JTextArea();
-        File diretorioJunit = new File("C:\\Users\\Karini\\workspace\\commons-math3-3.5-src\\target\\site");
-       //File diretorioJunit = new File(junit.getPath());
-        for(File fileJunit : diretorioJunit.listFiles()){
-            if((fileJunit.isFile())){
-                System.out.println("entrei junit");
-                /*fileJunit = new File(fileJunit.getName());
-                Document documentoJunit = Jsoup.parse(fileJunit, null);
-                Interface parserHtmlJunit = new Interface(documentoJunit);
-                lerJunit = new Junit(parserHtmlJunit.document);
-                lerJunit.totais();
-                lerJunit.testesFalhos();*/
-            }
-        }
-        ArrayList<String> filesEcob = new ArrayList<>();
-        //filesEcob = navegar(ecobertura.getPath());
-        filesEcob = navegar("C:\\Users\\Karini\\workspace\\commons-math3-3.5-src\\target\\site\\cobertura");
-        for(int i=0; i<filesEcob.size(); i++){
-            
+
+        // Lê Junit
+        File fileJunit = new File("C:\\Users\\Karini\\workspace\\cakupan-maven-code-9de516f4e431a686f91ab095e2f89d756503ef2b\\target\\site\\surefire-report.html");
+        //File diretorioJunit = new File(junit.getPath());
+        Document documentoJunit;
+        try {
+            documentoJunit = Jsoup.parse(fileJunit, null);
+            Interface parserHtmlJunit = new Interface(documentoJunit);
+            lerJunit = new Junit(parserHtmlJunit.document);
+            lerJunit.totais();
+            lerJunit.testesFalhos();
+        } catch (IOException ex) {
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-            /*StringBuffer sb = new StringBuffer();
-            char [] aux = filesEcob.get(i).toCharArray();
-                for(int j=0; j<aux.length; j++){
-                    sb.append(aux[j]);
-                    if(sb.toString().equals("frame-summary") || sb.toString().equals("index") || sb.toString().equals("help")){
-                        break;
-                    }
-                }*/
-                
-                /* File fileEcob = new File(filesEcob.get(i));
-                Document documentoEcob = Jsoup.parse(fileEcob, null);
+        
+        // Lê Ecobertura
+        ArrayList<String> filesEcob = new ArrayList<>();
+        //filesEcob = navegar(ecobertura.getPath());
+        String path = "C:\\Users\\Karini\\workspace\\cakupan-maven-code-9de516f4e431a686f91ab095e2f89d756503ef2b\\target\\site\\cobertura";
+        navegar(path);
+        for (int i = 0; i < files.size(); i++) {
+            File fileEcob = new File(files.get(2));
+            Document documentoEcob;
+            try {
+                documentoEcob = Jsoup.parse(fileEcob, null);
                 Interface parserHtmlEcob = new Interface(documentoEcob);
                 lerEcob = new Ecobertura(parserHtmlEcob.document);
-                linhas = lerEcob.qtdeLinhasCod();
-                lerEcob.escreveTxt();*/
-               // }
-                /*else{
-                    continue;
-                }*/
-            
-        ArrayList <String> filesJxr = new ArrayList<>();
+                boolean cobertura = lerEcob.cobertura();
+                if(cobertura == true){
+                    System.out.println(fileEcob.getName());
+                    lerEcob.escreveTxt();
+                    linhas.put(lerEcob.getClasse(), lerEcob.qtdeLinhasCod());
+                    System.out.println("passei");
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+        //files.clear();
+        
+
+        // Lê Jxr
+       /* ArrayList<String> filesJxr = new ArrayList<>();
         //filesJxr = navegar(jxr.getPath());
-         filesJxr = navegar("C:\\Users\\Karini\\workspace\\commons-math3-3.5-src\\target\\site\\xref-test\\org\\apache\\commons\\math3");
-        for(int i=0; i<filesJxr.size(); i++){
-            String[] aux = filesJxr.get(i).split("-");
-            if(aux[1].equals("package")){
-                File fileJxr = new File(filesJxr.get(i));
-                System.out.println("entrou jxr");
-                /* Document documentoJxr = Jsoup.parse(fileJxr, null);
+        String arq = "C:\\Users\\Karini\\workspace\\cakupan-maven-code-9de516f4e431a686f91ab095e2f89d756503ef2b\\target\\site\\xref-test";
+        navegar(arq);
+        for (int i = 0; i < files.size(); i++) {
+            File fileJxr = new File(files.get(i));
+            Document documentoJxr;
+            try {
+                documentoJxr = Jsoup.parse(fileJxr, null);
                 Interface parserHtmlJxr = new Interface(documentoJxr);
                 lerJxr = new Jxr(parserHtmlJxr.document);
                 parserHtmlJxr.elementos = lerJxr.leituraJxr();
                 lerJxr.escreveTxt(parserHtmlJxr.elementos);
-                lerJxr.leTxt(lerEcob.getClasse());*/
+                lerJxr.leTxt(lerEcob.getClasse());
+            } catch (IOException ex) {
+                Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
+
         }
+        files.clear();
         ArrayList<Double> sucesso = new ArrayList<>();
         ArrayList<Double> falha = new ArrayList<>();
         ArrayList<Double> totSucesso = new ArrayList<>();
         ArrayList<Double> totFalha = new ArrayList<>();
         for (int i = 0; i < linhas.size(); i++) {
             lerEcob.falharam(linhas.get(i), lerJxr, lerJunit);
-            
+
             sucesso.add((double) lerEcob.getPassaram());
             falha.add((double) lerEcob.getFalharam());
             totSucesso.add((double) lerJunit.getQtdeSucesso());
             totFalha.add((double) lerJunit.getQtdeFalhas());
         }
-        if(!csTarantula.isSelected() && !csJaccard.isSelected() && !csOchiai.isSelected() && !csSBI.isSelected()){
-            JOptionPane.showMessageDialog(null,"Selecione uma heurística");
+        if (!csTarantula.isSelected() && !csJaccard.isSelected() && !csOchiai.isSelected() && !csSBI.isSelected()) {
+            JOptionPane.showMessageDialog(null, "Selecione uma heurística");
         }
-        if(csTarantula.isSelected()){
+        if (csTarantula.isSelected()) {
             for (int i = 0; i < linhas.size(); i++) {
                 heuristicas = new FaultLocalization(sucesso.get(i), falha.get(i), totSucesso.get(i), totFalha.get(i));
                 probabilidade = heuristicas.tarantula();
@@ -358,7 +365,7 @@ public class Interface extends javax.swing.JFrame {
             System.out.println(entriesSortedByValues(probTar));
         }
         if (csOchiai.isSelected()) {
-            
+
             for (int i = 0; i < linhas.size(); i++) {
                 heuristicas = new FaultLocalization(sucesso.get(i), falha.get(i), totSucesso.get(i), totFalha.get(i));
                 probabilidade = heuristicas.ochiai();
@@ -384,39 +391,43 @@ public class Interface extends javax.swing.JFrame {
             System.out.println(entriesSortedByValues(probSbi));
         }
         JanelaResult panel = new JanelaResult();
-        panel.setVisible(true);
+        panel.setVisible(true);*/
     }//GEN-LAST:event_btnExecutarActionPerformed
-    
-    private ArrayList<String> navegar(String caminho){
-        ArrayList<String> files = new ArrayList<>();
+
+    public void navegar(String caminho) {
         File diretorio = new File(caminho);
         for (File file : diretorio.listFiles()) {
             if (file.isFile()) {
-                files.add(file.getName());
-            }
-            else{
-                 navegar(caminho+"\\"+file.getName());
+                if (!file.getName().startsWith("frame") && !file.getName().startsWith("index")
+                        && !file.getName().startsWith("help") && !file.getName().startsWith("package")
+                        && !file.getName().startsWith("allclasses") && !file.getName().startsWith("overview")
+                        && !file.getName().startsWith("stylesheet")) {
+                    files.add(caminho + "\\" + file.getName());
+                }
+            } else if ((!file.getName().equals("css") && !file.getName().equals("images") && !file.getName().equals("js"))) {
+                //System.out.println("DIRETORIO: " + file.getName());
+                navegar(caminho + "\\" + file.getName());
             }
         }
-        return files;
     }
-    
-    static <K,V extends Comparable<? super V>>
-SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
-    SortedSet<Map.Entry<K,V>> sortedEntries;
-        sortedEntries = new TreeSet<Map.Entry<K,V>>(
-                new Comparator<Map.Entry<K,V>>() {
-                    @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
+
+    static <K, V extends Comparable<? super V>>
+            SortedSet<Map.Entry<K, V>> entriesSortedByValues(Map<K, V> map) {
+        SortedSet<Map.Entry<K, V>> sortedEntries;
+        sortedEntries = new TreeSet<Map.Entry<K, V>>(
+                new Comparator<Map.Entry<K, V>>() {
+                    @Override
+                    public int compare(Map.Entry<K, V> e1, Map.Entry<K, V> e2) {
                         int res = e1.getValue().compareTo(e2.getValue());
                         return res != 0 ? res : 1;
                     }
                 }
         );
-    sortedEntries.addAll(map.entrySet());
-    return sortedEntries;
-}
-    
-    
+        sortedEntries.addAll(map.entrySet());
+        return sortedEntries;
+    }
+
+
     private void csTarantulaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csTarantulaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_csTarantulaActionPerformed

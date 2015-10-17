@@ -53,8 +53,4 @@ public class DadosTeste {
     public ArrayList<String> getmChamados() {
         return mChamados;
     }
-
-    
-    
-    
 }

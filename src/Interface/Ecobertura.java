@@ -5,6 +5,7 @@
  */
 package Interface;
 
+import com.sun.org.apache.bcel.internal.generic.GotoInstruction;
 import java.io.*;
 import static java.lang.Math.abs;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -57,87 +59,114 @@ public class Ecobertura {
     public String getClasse() {
         return classe;
     }
+    
+    public boolean cobertura(){
+        Elements elements = document.getElementsByAttribute("align");
+        for(Element perc : elements){
+            if(!perc.text().equals("0%") && !perc.text().equals("N/A"))
+                return true;
+        }
+        return false;
+    }
+    
 
     public void escreveTxt() throws IOException {   //método para pegar os nomes dos métodos declarados
         String auxLinha;
         int linhaInicial;
         char aux[] = null;
         StringBuffer sbClasse = new StringBuffer();
-        StringBuffer sbMetodo = new StringBuffer();
         StringBuffer sbLinha = new StringBuffer();
-        boolean controle = false;
-        int temp = 0;
+        boolean comentario = false;
+
+        // Pega somente os elementos com tag "tr"
         Elements elements = document.getElementsByTag("tr");
         for (Element children : elements) {
-            if (children.text().equals("")) {
+            if (StringUtils.isBlank(children.text())) {
                 continue;
             }
-            aux = children.getElementsByClass("numLine").text().toCharArray();
+            
+            //----------------- Dispensa Comentários -----------------
+            auxLinha = children.getElementsByTag("span").eq(0).text();
+            if (auxLinha.contains("/*")) {
+                comentario = true;
+            }
+            if (auxLinha.contains("*/")) {
+                comentario = false;
+            }
+          
+            //------------------ Fim dispensa comentários --------------
+            
+            if (comentario == false) {
+                
+                //--------------------- verifica as linhas do código -------------------
+                if (StringUtils.isNotBlank(children.getElementsByClass("numLine").text())) {
+                    aux = children.getElementsByClass("numLine").text().toCharArray();
 
-            for (int i = 0; i < aux.length; i++) {
-                //System.out.println("["+aux[i]+"]");
-                if (aux[i] > 48 && aux[i] < 57) {
-                    sbLinha.append(aux[i]);
+                    for (int i = 0; i < aux.length; i++) {
+                        //System.out.println("["+aux[i]+"]");
+                        if (aux[i] > 48 && aux[i] < 57) { // pega o número da linha
+                            sbLinha.append(aux[i]);
+                        }
+                    }
+                    auxLinha = sbLinha.toString();
+                    if (StringUtils.isNotBlank(auxLinha)) {     // transforma a linha para inteiro
+                        qtdeLinhas = Integer.parseInt(auxLinha);
+                    }
+                    sbLinha.delete(0, sbLinha.length());
                 }
-            }
-            auxLinha = sbLinha.toString();
-            if (!auxLinha.equals("")) {
-                qtdeLinhas = Integer.parseInt(auxLinha);
-            }
-            //System.out.println("["+auxLinha+"]");
-            sbLinha.delete(0, sbLinha.length());
-            Elements pre = children.getElementsByTag("pre");
-            for (Element element : pre) {
+                
+                // ------------------- Fim linhas  ---------------------------------
+                
+               
+                Elements pre = children.getElementsByTag("pre");
+                for (Element element : pre) {
+                    String tagClasse = element.getElementsByTag("span").eq(2).text();
+                    String tagMetodo = element.getElementsByTag("span").eq(0).text();
 
-                String tagClasse = element.getElementsByTag("span").eq(1).text();
-                String tagMetodo = element.getElementsByTag("span").eq(0).text();
-                //System.out.println(teste2);
-                if (tagClasse.equals("class")) {        // verifica se é uma classe
-                    element.select("span.keyword").remove();
-                    classe = element.text().trim();
-                    //System.out.println(classe.replaceAll(" ", ""));
-                    aux = classe.toCharArray();
-                    //for (int i = 0; i < classe.length(); i++) {
-                    for (int j = 0; j < aux.length; j++) {
-                        if ((65 <= aux[j]) && (aux[j] <= 90) || (aux[j] >= 97) && (aux[j] <= 122) || (aux[j] == 95)) {
-                            sbClasse.append(aux[j]);
-                            //System.out.println(j + ", " + sbClasse);
-                            if ((aux[j + 1] == ' ') || (aux[j + 1] == '{')) {
-                                // System.out.println("entrei");
-                                for (int k = j++; k < aux.length; k++) {
-                                    aux[k] = ' ';
+                    //------------------------- Verifica classe -------------------------
+                    if (tagClasse.equals("class")) {
+                        element.select("span.keyword").remove();
+                        classe = element.text().trim();
+                        aux = classe.toCharArray();
+                        //for (int i = 0; i < classe.length(); i++) {
+                        for (int j = 0; j < aux.length; j++) {
+                            if ((65 <= aux[j]) && (aux[j] <= 90) || (aux[j] >= 97) && (aux[j] <= 122) || (aux[j] == 95)) {
+                                sbClasse.append(aux[j]);
+                                //System.out.println(j + ", " + sbClasse);
+                                if ((aux[j + 1] == ' ') || (aux[j + 1] == '{')) {
+                                    // System.out.println("entrei");
+                                    for (int k = j++; k < aux.length; k++) {
+                                        aux[k] = ' ';
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    excluiLinhas.add(qtdeLinhas);
-                    classe = sbClasse.toString().replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "");
-                    //System.out.println(classe);
-                } // verifica se é um método
-                else if (tagMetodo.equals("privtate") || tagMetodo.equals("public") || tagMetodo.equals("protected")) {
+                        excluiLinhas.add(qtdeLinhas);
+                        classe = sbClasse.toString().replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "");
+                         System.out.println("Classe: " + classe);
+                    } 
+                    
+                    //------------------------------- Fim verifica classe------------------------------
 
-                    element.select("span.keyword").remove();
-                    aux = element.text().toCharArray();
-                    for (int j = 0; j < aux.length; j++) {
-                        if ((65 <= aux[j]) && (aux[j] <= 90) || (aux[j] >= 97) && (aux[j] <= 122) || (aux[j] == 95)) {
-                            sbMetodo.append(aux[j]);
-                            if ((aux[j + 1] == ' ') || (aux[j + 1] == '(')) {
-                                // System.out.println("entrei");
-                                for (int k = j++; k < aux.length; k++) {
-                                    aux[k] = ' ';
-                                }
+                    //------------------------------ Verifica método ----------------------------------
+                    else if (tagMetodo.equals("privtate") || tagMetodo.equals("public") || tagMetodo.equals("protected")) {
+
+                        element.select("span.keyword").remove();
+                        String[] s = element.text().split(" ");
+                        for (int i = 0; i < s.length; i++) {
+                            if (s[i].contains("(")) {
+                                metodo = s[i];
+                                linhaInicial = Integer.parseInt(auxLinha);
+                                inf.put(linhaInicial, metodo.replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", ""));
                             }
                         }
-
                     }
-                    linhaInicial = Integer.parseInt(auxLinha);
-                    inf.put(linhaInicial, sbMetodo.toString().replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", ""));
-                    sbMetodo.delete(0, sbMetodo.length());
-
+                    
+                    // --------------------------- Fim Verifica Método ------------------------------------
                 }
-            }
 
+            }
         }
 
     }
@@ -167,6 +196,7 @@ public class Ecobertura {
                     metodo = inf.get(arrayLinhas.get(i));
                 }
             }
+
             // System.out.println("metodo: " + metodo);
         }
 
@@ -181,11 +211,11 @@ public class Ecobertura {
                 //System.out.println(metodo);
                 if (dadosTeste.getmChamados().contains(metodo)) {
                     metodoTeste.add(dadosTeste.getMetodoTeste());  // armazena metodo de teste que chama o metodo do codigo
-                    
+
                 }
             }
         }
-        
+
         /*
          verifica se o teste passou ou falhou
          */
@@ -196,10 +226,10 @@ public class Ecobertura {
                 falharam++;
             }
         }
-        
+
         passaram = abs(metodoTeste.size() - falharam);
         metodoTeste.clear();
-        
+
         //System.out.println("[" +qtdeLinhas +"]" + "[" + metodo + "]" + "[" + metodoTeste + "]" + "[" + falharam + "]" + "[" + passaram + "]");
     }
 
@@ -226,7 +256,7 @@ public class Ecobertura {
             }
 
         }
-       // System.out.println(linhasCod);
+        // System.out.println(linhasCod);
 
         return linhasCod;
     }
