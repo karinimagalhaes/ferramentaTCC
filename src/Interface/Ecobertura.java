@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -38,7 +39,7 @@ public class Ecobertura {
     private int passaram = 0;
     private Hashtable infJxr = new Hashtable();
     private Document document;
-    private TreeMap<Integer, String> inf = new TreeMap();
+    private TreeMap<String, String> inf = new TreeMap();       // armazena a linha e o método chamado
 
     public int getQtdeLinhas() {
         return qtdeLinhas;
@@ -71,7 +72,7 @@ public class Ecobertura {
     }
 
     public void escreveTxt() throws IOException {   //método para pegar os nomes dos métodos declarados
-        String auxLinha;
+        String auxLinha = null;
         int linhaInicial;
         char aux[] = null;
         StringBuffer sbClasse = new StringBuffer();
@@ -85,25 +86,28 @@ public class Ecobertura {
             if (StringUtils.isBlank(children.text())) {
                 continue;
             }
-
+            children.getElementsByClass("comment").remove();
+               //  System.out.println(children.text());
             //----------------- Dispensa Comentários -----------------
-            auxLinha = children.getElementsByTag("span").eq(0).text();
-            if (auxLinha.contains("/*")) {
+            //auxLinha = children.getElementsByTag("span").eq(0).text();
+            /*if (auxLinha.contains("/*")) {
                 comentario = true;
             } else if(auxLinha.contains("//")){
                 comentario = true;
                 controle = true;            // controla comentário com //
             }
                 
-            if (auxLinha.contains("*/")) {
+            if (auxLinha.contains("*//*")) {
                 comentario = false;
             }else if(auxLinha.contains("\n") && controle == true){
                 comentario = false;
                 controle = false;
-            }
+            }*/
 
             //------------------ Fim dispensa comentários --------------
-            if (comentario == false) {
+            
+               
+           // if (comentario == false) {
 
                 //--------------------- verifica as linhas do código -------------------
                 if (StringUtils.isNotBlank(children.getElementsByClass("numLine").text())) {
@@ -111,7 +115,7 @@ public class Ecobertura {
 
                     for (int i = 0; i < aux.length; i++) {
                         //System.out.println("["+aux[i]+"]");
-                        if (aux[i] > 48 && aux[i] < 57) { // pega o número da linha
+                        if (aux[i] >= 48 && aux[i] <= 57) { // pega o número da linha
                             sbLinha.append(aux[i]);
                         }
                     }
@@ -148,7 +152,7 @@ public class Ecobertura {
 
                         excluiLinhas.add(qtdeLinhas);
                         classe = sbClasse.toString().replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "");
-                        
+                        System.out.println("Classe: " + classe);
                     } //------------------------------- Fim verifica classe------------------------------
                     //------------------------------ Verifica método ----------------------------------
                     //else if (tagMetodo.equals("privtate") || tagMetodo.equals("public") || tagMetodo.equals("protected")) {
@@ -159,9 +163,9 @@ public class Ecobertura {
                         String[] s = element.text().split(" ");
                         for (int i = 0; i < s.length; i++) {
                             if (s[i].contains("(")) {
-                                metodo = s[i];
-                                linhaInicial = Integer.parseInt(auxLinha);
-                                inf.put(linhaInicial, metodo.replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", ""));
+                                metodo = s[i].replace("(", "").replace(")", "");
+                                System.out.println(auxLinha);
+                                inf.put(auxLinha+"_"+classe, metodo.replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", ""));
                             }
                         }
                     }
@@ -169,18 +173,24 @@ public class Ecobertura {
                     // --------------------------- Fim Verifica Método ------------------------------------
                 }
 
-            }
+           // }
         }
+        for(Map.Entry<String,String> entry : inf.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+
+            System.out.println(key + " => " + value);
+}
 
     }
 
-    public void falharam(int linha, Jxr jxr, Junit junit) {
+    public void falharam(ArrayList linha, Jxr jxr, Junit junit) {
         passaram = 0;
         falharam = 0;
         ArrayList<Integer> arrayLinhas = new ArrayList<Integer>();
         DadosTeste dadosTeste;
         // verifica em qual método do codigo a linha é chamada
-        if (inf.containsKey(linha)) {
+        /*if (inf.containsKey(linha)) {
             metodo = inf.get(linha);       // retorna o metodo da linha
         } else {
             Set<Integer> linhas = inf.keySet();
@@ -234,7 +244,7 @@ public class Ecobertura {
         metodoTeste.clear();
 
         System.out.println("classe: ["+ "]"+"qtdeLinhas: [" +qtdeLinhas +"]" + "metodo: [" + metodo + "]" +
-                "metodoTEste: [" + metodoTeste + "]" + "falharam: [" + falharam + "]" + "passaram: [" + passaram + "]");
+                "metodoTEste: [" + metodoTeste + "]" + "falharam: [" + falharam + "]" + "passaram:[" + passaram + "]");
     }
 
     //----------------------------- Retorna as linhas cobertas pelos testes ----------------------------------------

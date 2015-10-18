@@ -31,6 +31,9 @@ public class Jxr {
     private Document document;
     private FileInputStream reader;
     private Hashtable inf = new Hashtable();
+    private File file;
+    private FileWriter fw;
+    private BufferedWriter bw;
 
     public Jxr(Document document) {
         this.document = document;
@@ -51,17 +54,18 @@ public class Jxr {
     }
 
     public void escreveTxt(String elementos) throws IOException {       //escreve código do teste no arquivo txt
-        File file = new File(path);
+        file = new File(path);
         if (!file.exists()) {
             file.createNewFile();
-        } else {
-            file.delete();
+        }else{
+            file.deleteOnExit();
             file.createNewFile();
         }
-        FileWriter fw = new FileWriter(file, true);
-        BufferedWriter bw = new BufferedWriter(fw);
+        fw = new FileWriter(file, true);
+        bw = new BufferedWriter(fw);
         bw.write(elementos);
         bw.flush();
+       
     }
 
     public void leTxt(String classe) throws IOException {
@@ -142,9 +146,12 @@ public class Jxr {
             
             if(metodoTeste != null && classeObj != null && objeto != null && mChamado != null){
                 dadosTeste = new DadosTeste(classeObj, objeto, mChamado, metodoTeste);
-                inf.put(metodoTeste+"_"+classe, dadosTeste);       // adiciona na hashtable
-                System.out.println("Chave: "+metodoTeste+"_"+classe+ "Metodo Teste: "+metodoTeste + " Classe: " + dadosTeste.getClasse() + 
-                        "Objetos: " + dadosTeste.getObjetos() +"metodosChamados" + dadosTeste.getmChamados());
+                if(!inf.containsKey(metodoTeste+"_"+classe)){
+                    inf.put(metodoTeste+"_"+classe, dadosTeste);       // adiciona na hashtable
+                    //System.out.println("Chave: "+metodoTeste+"_"+classe+ "Metodo Teste: "+metodoTeste + " Classe: " + dadosTeste.getClasse() + 
+                      // "Objetos: " + dadosTeste.getObjetos() +"metodosChamados" + dadosTeste.getmChamados());
+                }
+                
                 classeObj = null;
                 objeto = null;
                 mChamado = null;

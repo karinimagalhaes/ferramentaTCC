@@ -9,7 +9,11 @@ import faultlocalization.FaultLocalization;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -208,6 +212,7 @@ public class Interface extends javax.swing.JFrame {
     private TreeMap<Integer, Double> probJac = new TreeMap<>();
     private TreeMap<Integer, Double> probSbi = new TreeMap<>();
     private Map<String, ArrayList<Integer>> linhas = new TreeMap();  // armazena e classe e as linhas cobertas da classe
+    private ArrayList<String> classes = new ArrayList<>();
     private ArrayList<String> files = new ArrayList<>();    // armazena a lista de arquivos do diretório
     private Junit lerJunit;
     private Ecobertura lerEcob;
@@ -307,17 +312,16 @@ public class Interface extends javax.swing.JFrame {
                 if (cobertura == true) {            // se o arquivo não cobrir o código fonte -> dispensa arquivo
                     lerEcob.escreveTxt();
                     linhas.put(lerEcob.getClasse(), lerEcob.qtdeLinhasCod());   // armazena e classe e as linhas cobertas da classe
-                    //System.out.println(linhas.toString()+linhas.get(linhas.toString()));
+                    classes.add(lerEcob.getClasse());
                 }
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
-        files.clear();
-        
-        //----------------------------------- Fim processamento Ecobertura--------------------------------------
 
+        files.clear();
+
+        //----------------------------------- Fim processamento Ecobertura--------------------------------------
         // ----------------------------------Processamento arquivos JXR (código de teste) -----------------------------
         ArrayList<String> filesJxr = new ArrayList<>();
         //filesJxr = navegar(jxr.getPath());
@@ -325,7 +329,6 @@ public class Interface extends javax.swing.JFrame {
         navegar(arq);
         for (int i = 0; i < files.size(); i++) {
             File fileJxr = new File(files.get(i));
-            System.out.println(fileJxr.getName());
             Document documentoJxr;
             try {
                 documentoJxr = Jsoup.parse(fileJxr, null);
@@ -333,27 +336,49 @@ public class Interface extends javax.swing.JFrame {
                 lerJxr = new Jxr(parserHtmlJxr.document);
                 parserHtmlJxr.elementos = lerJxr.leituraJxr();  // retorna o código do relatório sem lixo
                 lerJxr.escreveTxt(parserHtmlJxr.elementos);     // escreve ocódigo em um arquivo TXT para nova leitura
-                lerJxr.leTxt(lerEcob.getClasse());
+                
+                for (String classe : classes) {
+                    lerJxr.leTxt(classe);
+                }
+
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
-
         }
-        files.clear();
-        //----------------------------------- Fim processamento Jxr --------------------------------------
 
-        /*ArrayList<Double> sucesso = new ArrayList<>();
+        //------------------------------------------ imprime valores do hashtable -----------------------------
+        /*Hashtable teste = lerJxr.getInf();
+        Set values = teste.entrySet();
+        Iterator myIterator = values.iterator();
+        System.out.println("Listando arquivos contidos no HashMap myHashMap:");
+        while (myIterator.hasNext()) {
+            DadosTeste dados = (DadosTeste) ((Entry) myIterator.next()).getValue();
+            System.out.println("Classe: " + dados.getClasse() + " MetodoTeste: " + dados.getMetodoTeste()
+                    + " Objetos: " + dados.getObjetos() + " MChamados: " + dados.getmChamados() + " Objetos: " + dados.getObjetos());
+        }*/
+        //---------------------------------- fim impressão hashtable---------------------------------------------
+        files.clear();
+        //----------------------------------- Fim processamento Jxr -----------------------------------------------
+
+        ArrayList<Double> sucesso = new ArrayList<>();
         ArrayList<Double> falha = new ArrayList<>();
         ArrayList<Double> totSucesso = new ArrayList<>();
         ArrayList<Double> totFalha = new ArrayList<>();
-        for (int i = 0; i < linhas.size(); i++) {
-            lerEcob.falharam(, lerJxr, lerJunit);
-
+        /*
+         Para cada array de linha dentro da treeMap temos que passá-lo para o método falharam
+         */
+        for (Entry<String, ArrayList<Integer>> entry : linhas.entrySet()) {
+            lerEcob.falharam(entry.getValue(), lerJxr, lerJunit);   // pega todos os arraylist contidos em linhas
+        }/*falharam*/
             sucesso.add((double) lerEcob.getPassaram());
             falha.add((double) lerEcob.getFalharam());
             totSucesso.add((double) lerJunit.getQtdeSucesso());
             totFalha.add((double) lerJunit.getQtdeFalhas());
-        }
+            
+            for(int i=0; i<sucesso.size(); i++){
+                //System.out.println(sucesso.get(i));
+            }
+        /*}
         if (!csTarantula.isSelected() && !csJaccard.isSelected() && !csOchiai.isSelected() && !csSBI.isSelected()) {
             JOptionPane.showMessageDialog(null, "Selecione uma heurística");
         }
