@@ -21,7 +21,7 @@ import org.jsoup.select.Elements;
  */
 public class Jxr {
 
-    private String path = "C:\\Users\\Karini\\workspace\\Teste\\target\\site\\teste.txt";
+    private String path = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\teste.txt";
     private ArrayList <String> object = new ArrayList<String>();
     private String metodoTeste;
     private String classeObj;
@@ -47,7 +47,7 @@ public class Jxr {
         // elements.select("span.jxr_string").remove();
         elements.select("em.jxr_comment").remove();
         //System.out.println(elements.text());
-        return elements.text();
+        return elements.text();     // retorna o código sem lixo
     }
 
     public void escreveTxt(String elementos) throws IOException {       //escreve código do teste no arquivo txt
@@ -142,8 +142,9 @@ public class Jxr {
             
             if(metodoTeste != null && classeObj != null && objeto != null && mChamado != null){
                 dadosTeste = new DadosTeste(classeObj, objeto, mChamado, metodoTeste);
-                inf.put(metodoTeste, dadosTeste);       // adiciona na hashtable
-                System.out.println(metodoTeste + "->" + dadosTeste.getClasse() + "->" + dadosTeste.getObjetos() +"->" + dadosTeste.getmChamados());
+                inf.put(metodoTeste+"_"+classe, dadosTeste);       // adiciona na hashtable
+                System.out.println("Chave: "+metodoTeste+"_"+classe+ "Metodo Teste: "+metodoTeste + " Classe: " + dadosTeste.getClasse() + 
+                        "Objetos: " + dadosTeste.getObjetos() +"metodosChamados" + dadosTeste.getmChamados());
                 classeObj = null;
                 objeto = null;
                 mChamado = null;

@@ -198,7 +198,7 @@ public class Interface extends javax.swing.JFrame {
     public File junit;
     public File jxr;
     private Document document;
-    private String elementos;
+    private String elementos;           // elementos para escrever no arquivo txt
     private Interface parserHtmlJunit;
     private Interface parserHtmlEcobertura;
     private Interface parserHtmlJxr;
@@ -207,8 +207,8 @@ public class Interface extends javax.swing.JFrame {
     private TreeMap<Integer, Double> probOch = new TreeMap<>();
     private TreeMap<Integer, Double> probJac = new TreeMap<>();
     private TreeMap<Integer, Double> probSbi = new TreeMap<>();
-    private Map<String, ArrayList<Integer>> linhas = new TreeMap();
-    private ArrayList<String> files = new ArrayList<>();
+    private Map<String, ArrayList<Integer>> linhas = new TreeMap();  // armazena e classe e as linhas cobertas da classe
+    private ArrayList<String> files = new ArrayList<>();    // armazena a lista de arquivos do diretório
     private Junit lerJunit;
     private Ecobertura lerEcob;
     private Jxr lerJxr;
@@ -319,19 +319,20 @@ public class Interface extends javax.swing.JFrame {
         //----------------------------------- Fim processamento Ecobertura--------------------------------------
 
         // ----------------------------------Processamento arquivos JXR (código de teste) -----------------------------
-        /*ArrayList<String> filesJxr = new ArrayList<>();
+        ArrayList<String> filesJxr = new ArrayList<>();
         //filesJxr = navegar(jxr.getPath());
         String arq = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\xref-test";
         navegar(arq);
         for (int i = 0; i < files.size(); i++) {
             File fileJxr = new File(files.get(i));
+            System.out.println(fileJxr.getName());
             Document documentoJxr;
             try {
                 documentoJxr = Jsoup.parse(fileJxr, null);
                 Interface parserHtmlJxr = new Interface(documentoJxr);
                 lerJxr = new Jxr(parserHtmlJxr.document);
-                parserHtmlJxr.elementos = lerJxr.leituraJxr();
-                lerJxr.escreveTxt(parserHtmlJxr.elementos);
+                parserHtmlJxr.elementos = lerJxr.leituraJxr();  // retorna o código do relatório sem lixo
+                lerJxr.escreveTxt(parserHtmlJxr.elementos);     // escreve ocódigo em um arquivo TXT para nova leitura
                 lerJxr.leTxt(lerEcob.getClasse());
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
@@ -339,7 +340,9 @@ public class Interface extends javax.swing.JFrame {
 
         }
         files.clear();
-        ArrayList<Double> sucesso = new ArrayList<>();
+        //----------------------------------- Fim processamento Jxr --------------------------------------
+
+        /*ArrayList<Double> sucesso = new ArrayList<>();
         ArrayList<Double> falha = new ArrayList<>();
         ArrayList<Double> totSucesso = new ArrayList<>();
         ArrayList<Double> totFalha = new ArrayList<>();

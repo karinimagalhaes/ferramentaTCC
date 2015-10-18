@@ -148,7 +148,7 @@ public class Ecobertura {
 
                         excluiLinhas.add(qtdeLinhas);
                         classe = sbClasse.toString().replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "");
-                        System.out.println("Classe: " + classe);
+                        
                     } //------------------------------- Fim verifica classe------------------------------
                     //------------------------------ Verifica método ----------------------------------
                     //else if (tagMetodo.equals("privtate") || tagMetodo.equals("public") || tagMetodo.equals("protected")) {
@@ -233,7 +233,8 @@ public class Ecobertura {
         passaram = abs(metodoTeste.size() - falharam);
         metodoTeste.clear();
 
-        //System.out.println("[" +qtdeLinhas +"]" + "[" + metodo + "]" + "[" + metodoTeste + "]" + "[" + falharam + "]" + "[" + passaram + "]");
+        System.out.println("classe: ["+ "]"+"qtdeLinhas: [" +qtdeLinhas +"]" + "metodo: [" + metodo + "]" +
+                "metodoTEste: [" + metodoTeste + "]" + "falharam: [" + falharam + "]" + "passaram: [" + passaram + "]");
     }
 
     //----------------------------- Retorna as linhas cobertas pelos testes ----------------------------------------
@@ -247,7 +248,7 @@ public class Ecobertura {
                 for (int i = 0; i < aux.length; i++) {
                     //System.out.println("["+aux[i]+"]");
                     if (aux[i] >= 48 && aux[i] <= 57) {
-                        sbLinha.append(aux[i]);
+                        sbLinha.append(aux[i]);         // exclui espaços na string
                     }
                 }
                 if (StringUtils.isNotBlank(sbLinha.toString())) {
