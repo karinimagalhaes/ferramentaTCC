@@ -59,16 +59,16 @@ public class Ecobertura {
     public String getClasse() {
         return classe;
     }
-    
-    public boolean cobertura(){
+
+    public boolean cobertura() {
         Elements elements = document.getElementsByAttribute("align");
-        for(Element perc : elements){
-            if(!perc.text().equals("0%") && !perc.text().equals("N/A"))
+        for (Element perc : elements) {
+            if (!perc.text().equals("0%") && !perc.text().equals("N/A")) {
                 return true;
+            }
         }
         return false;
     }
-    
 
     public void escreveTxt() throws IOException {   //método para pegar os nomes dos métodos declarados
         String auxLinha;
@@ -77,6 +77,7 @@ public class Ecobertura {
         StringBuffer sbClasse = new StringBuffer();
         StringBuffer sbLinha = new StringBuffer();
         boolean comentario = false;
+        boolean controle = false;
 
         // Pega somente os elementos com tag "tr"
         Elements elements = document.getElementsByTag("tr");
@@ -84,20 +85,26 @@ public class Ecobertura {
             if (StringUtils.isBlank(children.text())) {
                 continue;
             }
-            
+
             //----------------- Dispensa Comentários -----------------
             auxLinha = children.getElementsByTag("span").eq(0).text();
             if (auxLinha.contains("/*")) {
                 comentario = true;
+            } else if(auxLinha.contains("//")){
+                comentario = true;
+                controle = true;            // controla comentário com //
             }
+                
             if (auxLinha.contains("*/")) {
                 comentario = false;
+            }else if(auxLinha.contains("\n") && controle == true){
+                comentario = false;
+                controle = false;
             }
-          
+
             //------------------ Fim dispensa comentários --------------
-            
             if (comentario == false) {
-                
+
                 //--------------------- verifica as linhas do código -------------------
                 if (StringUtils.isNotBlank(children.getElementsByClass("numLine").text())) {
                     aux = children.getElementsByClass("numLine").text().toCharArray();
@@ -114,17 +121,14 @@ public class Ecobertura {
                     }
                     sbLinha.delete(0, sbLinha.length());
                 }
-                
+
                 // ------------------- Fim linhas  ---------------------------------
-                
-               
                 Elements pre = children.getElementsByTag("pre");
                 for (Element element : pre) {
-                    String tagClasse = element.getElementsByTag("span").eq(2).text();
                     String tagMetodo = element.getElementsByTag("span").eq(0).text();
 
                     //------------------------- Verifica classe -------------------------
-                    if (tagClasse.equals("class")) {
+                    if (element.getElementsByTag("span").text().contains("class")) {
                         element.select("span.keyword").remove();
                         classe = element.text().trim();
                         aux = classe.toCharArray();
@@ -144,14 +148,13 @@ public class Ecobertura {
 
                         excluiLinhas.add(qtdeLinhas);
                         classe = sbClasse.toString().replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "");
-                         System.out.println("Classe: " + classe);
-                    } 
-                    
-                    //------------------------------- Fim verifica classe------------------------------
-
+                        System.out.println("Classe: " + classe);
+                    } //------------------------------- Fim verifica classe------------------------------
                     //------------------------------ Verifica método ----------------------------------
-                    else if (tagMetodo.equals("privtate") || tagMetodo.equals("public") || tagMetodo.equals("protected")) {
-
+                    //else if (tagMetodo.equals("privtate") || tagMetodo.equals("public") || tagMetodo.equals("protected")) {
+                    else if (element.getElementsByTag("span").text().contains("privtate")
+                            || element.getElementsByTag("span").text().contains("public")
+                            || element.getElementsByTag("span").text().contains("protected")) {
                         element.select("span.keyword").remove();
                         String[] s = element.text().split(" ");
                         for (int i = 0; i < s.length; i++) {
@@ -162,7 +165,7 @@ public class Ecobertura {
                             }
                         }
                     }
-                    
+
                     // --------------------------- Fim Verifica Método ------------------------------------
                 }
 
@@ -233,31 +236,27 @@ public class Ecobertura {
         //System.out.println("[" +qtdeLinhas +"]" + "[" + metodo + "]" + "[" + metodoTeste + "]" + "[" + falharam + "]" + "[" + passaram + "]");
     }
 
+    //----------------------------- Retorna as linhas cobertas pelos testes ----------------------------------------
     public ArrayList<Integer> qtdeLinhasCod() {
         char[] aux;
         StringBuffer sbLinha = new StringBuffer();
         Elements elements = document.getElementsByTag("tr");
-
         for (Element children : elements) {
-            System.out.println();
-            if (!children.select("span.keyword").eq(1).text().equals("class")) {
+            if (StringUtils.isNotBlank(children.getElementsByClass("numLineCover").text())) {
                 aux = children.getElementsByClass("numLineCover").text().toCharArray();
-
                 for (int i = 0; i < aux.length; i++) {
                     //System.out.println("["+aux[i]+"]");
-                    if (aux[i] > 48 && aux[i] < 57) {
+                    if (aux[i] >= 48 && aux[i] <= 57) {
                         sbLinha.append(aux[i]);
                     }
                 }
-                if (!sbLinha.toString().equals("")) {
+                if (StringUtils.isNotBlank(sbLinha.toString())) {
                     linhasCod.add(Integer.parseInt(sbLinha.toString()));
+                     sbLinha.delete(0, sbLinha.length());
                 }
-                sbLinha.delete(0, sbLinha.length());
             }
-
         }
-        // System.out.println(linhasCod);
-
         return linhasCod;
     }
+
 }

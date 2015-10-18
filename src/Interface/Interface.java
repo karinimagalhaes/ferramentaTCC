@@ -278,7 +278,7 @@ public class Interface extends javax.swing.JFrame {
         JTextArea sbi = new JTextArea();
 
         // Lê Junit
-        File fileJunit = new File("C:\\Users\\Karini\\workspace\\cakupan-maven-code-9de516f4e431a686f91ab095e2f89d756503ef2b\\target\\site\\surefire-report.html");
+        File fileJunit = new File("C:\\Users\\Karini\\workspace\\myProject\\target\\site\\surefire-report.html");
         //File diretorioJunit = new File(junit.getPath());
         Document documentoJunit;
         try {
@@ -290,39 +290,38 @@ public class Interface extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
-        // Lê Ecobertura
+
+        // ---------------------------- Processa arquivos Ecobertura --------------------------------------
         ArrayList<String> filesEcob = new ArrayList<>();
         //filesEcob = navegar(ecobertura.getPath());
-        String path = "C:\\Users\\Karini\\workspace\\cakupan-maven-code-9de516f4e431a686f91ab095e2f89d756503ef2b\\target\\site\\cobertura";
+        String path = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\cobertura";
         navegar(path);
         for (int i = 0; i < files.size(); i++) {
-            File fileEcob = new File(files.get(2));
+            File fileEcob = new File(files.get(i));
             Document documentoEcob;
             try {
                 documentoEcob = Jsoup.parse(fileEcob, null);
                 Interface parserHtmlEcob = new Interface(documentoEcob);
                 lerEcob = new Ecobertura(parserHtmlEcob.document);
                 boolean cobertura = lerEcob.cobertura();
-                if(cobertura == true){
-                    System.out.println(fileEcob.getName());
+                if (cobertura == true) {            // se o arquivo não cobrir o código fonte -> dispensa arquivo
                     lerEcob.escreveTxt();
-                    linhas.put(lerEcob.getClasse(), lerEcob.qtdeLinhasCod());
-                    System.out.println("passei");
+                    linhas.put(lerEcob.getClasse(), lerEcob.qtdeLinhasCod());   // armazena e classe e as linhas cobertas da classe
+                    //System.out.println(linhas.toString()+linhas.get(linhas.toString()));
                 }
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
-
         }
-        //files.clear();
         
+        files.clear();
+        
+        //----------------------------------- Fim processamento Ecobertura--------------------------------------
 
-        // Lê Jxr
-       /* ArrayList<String> filesJxr = new ArrayList<>();
+        // ----------------------------------Processamento arquivos JXR (código de teste) -----------------------------
+        /*ArrayList<String> filesJxr = new ArrayList<>();
         //filesJxr = navegar(jxr.getPath());
-        String arq = "C:\\Users\\Karini\\workspace\\cakupan-maven-code-9de516f4e431a686f91ab095e2f89d756503ef2b\\target\\site\\xref-test";
+        String arq = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\xref-test";
         navegar(arq);
         for (int i = 0; i < files.size(); i++) {
             File fileJxr = new File(files.get(i));
@@ -345,7 +344,7 @@ public class Interface extends javax.swing.JFrame {
         ArrayList<Double> totSucesso = new ArrayList<>();
         ArrayList<Double> totFalha = new ArrayList<>();
         for (int i = 0; i < linhas.size(); i++) {
-            lerEcob.falharam(linhas.get(i), lerJxr, lerJunit);
+            lerEcob.falharam(, lerJxr, lerJunit);
 
             sucesso.add((double) lerEcob.getPassaram());
             falha.add((double) lerEcob.getFalharam());

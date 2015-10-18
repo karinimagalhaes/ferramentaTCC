@@ -5,22 +5,14 @@
  */
 package Interface;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Scanner;
-import java.util.StringTokenizer;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
@@ -144,7 +136,6 @@ public class Jxr {
                     mChamado = sbaux.toString();    // metodo do codigo encontrado
                     cod = false;
                     ponto = false;
-                    //System.out.println(mChamados);
                     
                 }
             }
@@ -152,7 +143,7 @@ public class Jxr {
             if(metodoTeste != null && classeObj != null && objeto != null && mChamado != null){
                 dadosTeste = new DadosTeste(classeObj, objeto, mChamado, metodoTeste);
                 inf.put(metodoTeste, dadosTeste);       // adiciona na hashtable
-                //System.out.println(metodoTeste + "->" + dadosTeste.getClasse() + "->" + dadosTeste.getObjetos() +"->" + dadosTeste.getmChamados());
+                System.out.println(metodoTeste + "->" + dadosTeste.getClasse() + "->" + dadosTeste.getObjetos() +"->" + dadosTeste.getmChamados());
                 classeObj = null;
                 objeto = null;
                 mChamado = null;
