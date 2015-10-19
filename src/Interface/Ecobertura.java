@@ -39,7 +39,7 @@ public class Ecobertura {
     private int passaram = 0;
     private Hashtable infJxr = new Hashtable();
     private Document document;
-    private TreeMap<String, String> inf = new TreeMap();       // armazena a linha e o método chamado
+    private TreeMap<String, Informacoes> inf = new TreeMap();       // armazena a linha e o método chamado
 
     public int getQtdeLinhas() {
         return qtdeLinhas;
@@ -73,13 +73,10 @@ public class Ecobertura {
 
     public void escreveTxt() throws IOException {   //método para pegar os nomes dos métodos declarados
         String auxLinha = null;
-        int linhaInicial;
         char aux[] = null;
         StringBuffer sbClasse = new StringBuffer();
         StringBuffer sbLinha = new StringBuffer();
-        boolean comentario = false;
-        boolean controle = false;
-
+        StringBuffer sbMetodo = new StringBuffer();
         // Pega somente os elementos com tag "tr"
         Elements elements = document.getElementsByTag("tr");
         for (Element children : elements) {
@@ -130,7 +127,7 @@ public class Ecobertura {
                 Elements pre = children.getElementsByTag("pre");
                 for (Element element : pre) {
                     String tagMetodo = element.getElementsByTag("span").eq(0).text();
-
+                    
                     //------------------------- Verifica classe -------------------------
                     if (element.getElementsByTag("span").text().contains("class")) {
                         element.select("span.keyword").remove();
@@ -163,9 +160,22 @@ public class Ecobertura {
                         String[] s = element.text().split(" ");
                         for (int i = 0; i < s.length; i++) {
                             if (s[i].contains("(")) {
-                                metodo = s[i].replace("(", "").replace(")", "");
-                                System.out.println(auxLinha);
-                                inf.put(auxLinha+"_"+classe, metodo.replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", ""));
+                                aux = s[i].toCharArray();
+                                for(int j=0; j<aux.length; j++){
+                                    if(aux[j] == '('){
+                                        for(int k=j; k<aux.length; k++)
+                                            aux[k] = ' ';
+                                        break;
+                                    }
+                                    sbMetodo.append(aux[j]);
+                                }
+                                String metodoTemp = sbMetodo.toString();
+                                metodo = metodoTemp.replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "");
+                                sbMetodo.delete(0, aux.length);
+                                Informacoes informacoes = new Informacoes(classe, 
+                                        metodo, Integer.parseInt(auxLinha));
+                                
+                                inf.put(auxLinha+classe, informacoes);
                             }
                         }
                     }
@@ -175,77 +185,102 @@ public class Ecobertura {
 
            // }
         }
-        for(Map.Entry<String,String> entry : inf.entrySet()) {
+       
+       /* for(Map.Entry<String,Informacoes> entry : inf.entrySet()) {
             String key = entry.getKey();
-            String value = entry.getValue();
+            int value = entry.getValue().getLinha();
+            String metodov = entry.getValue().getMetodo();
+            String classev = entry.getValue().getClasse();
 
-            System.out.println(key + " => " + value);
-}
+            System.out.println(key + " => " + classev+ " => " +metodov+ " => " +value);
+}*/
 
     }
 
-    public void falharam(ArrayList linha, Jxr jxr, Junit junit) {
+    public void falharam(String classe, int linha, Jxr jxr, Junit junit) {
         passaram = 0;
         falharam = 0;
-        ArrayList<Integer> arrayLinhas = new ArrayList<Integer>();
+         System.out.println(inf.keySet());
+        ArrayList<String> arrayLinhas = new ArrayList<String>();
         DadosTeste dadosTeste;
+        String linhaTemp = Integer.toString(linha);
         // verifica em qual método do codigo a linha é chamada
-        /*if (inf.containsKey(linha)) {
-            metodo = inf.get(linha);       // retorna o metodo da linha
+        
+        /*if (inf.containsKey(linhaTemp+classe)) {
+            metodo = inf.get(linhaTemp+classe).getMetodo();       // retorna o metodo da linha
+           // System.out.println(linha +"->"+ metodo);
         } else {
-            Set<Integer> linhas = inf.keySet();
-            Iterator<Integer> linhasIterator = linhas.iterator();
+           // --------- passa a chave (linhas) para um array -------------
+            Set<String> linhas = inf.keySet();
+            Iterator<String> linhasIterator = linhas.iterator();
             while (linhasIterator.hasNext()) {
                 arrayLinhas.add(linhasIterator.next());
+            }*/
+            // ------------- termina --------------------------------------
+            
+            // --------- passa a chave (linhas) para um array -------------
+            /*Set<String> linhas = inf.keySet();
+            Iterator<String> linhasIterator = linhas.iterator();
+            while (linhasIterator.hasNext()) {
+                if(inf.containsKey(classe)){
+                    
+                    System.out.println(inf.keySet());
+                    arrayLinhas.add(linhasIterator.next());
+                }
             }
-            for (int i = 0; i < arrayLinhas.size() - 1; i++) {
-                // System.out.println(linha +"->"+arrayLinhas.get(i));
+            
+            
+            
+            // verifica as linhas percorrendo o array
+           /* for (int i = 0; i < arrayLinhas.size() - 1; i++) {
                 int j = i + 1;
                 if (linha > arrayLinhas.get(i) && linha < arrayLinhas.get(j)) {
                     metodo = inf.get(arrayLinhas.get(i));
+                    System.out.println(arrayLinhas.get(i) +"->"+ metodo);
                     break;
                 }
                 if ((linha > arrayLinhas.get(i)) && (linha < qtdeLinhas) && (i == arrayLinhas.size() - 1)) {
                     metodo = inf.get(arrayLinhas.get(i));
+                 System.out.println(arrayLinhas.get(i) +"->"+ metodo);
+                 break;
                 }
             }
-
-            // System.out.println("metodo: " + metodo);
+             
         }
+        //System.out.println("linha: " + linha + " metodo: " + metodo);
 
         // verifica qual/quais são os casos de teste que chamam este método
         /*verificar se a classe do objeto é a mesma do código
          se sim -> verificar quais métodos de teste o metodo co código eh chamado
          */
-        infJxr = jxr.getInf();
+       /* infJxr = jxr.getInf();
         for (Enumeration n = infJxr.keys(); n.hasMoreElements();) {
             dadosTeste = (DadosTeste) infJxr.get(n.nextElement());
             if (classe.equals(dadosTeste.getClasse())) { // verifica a classe do objeto
                 //System.out.println(metodo);
                 if (dadosTeste.getmChamados().contains(metodo)) {
                     metodoTeste.add(dadosTeste.getMetodoTeste());  // armazena metodo de teste que chama o metodo do codigo
-
+                    
                 }
             }
         }
-
+        
         /*
          verifica se o teste passou ou falhou
          */
         for (int i = 0; i < metodoTeste.size(); i++) {
             //System.out.println(junit.getTestesFalhos().get(i));
-            //System.out.println(metodoTeste.get(i));
             if (junit.getTestesFalhos().contains(metodoTeste.get(i))) {
                 falharam++;
             }
         }
-
+        
         passaram = abs(metodoTeste.size() - falharam);
         metodoTeste.clear();
-
-        System.out.println("classe: ["+ "]"+"qtdeLinhas: [" +qtdeLinhas +"]" + "metodo: [" + metodo + "]" +
-                "metodoTEste: [" + metodoTeste + "]" + "falharam: [" + falharam + "]" + "passaram:[" + passaram + "]");
+        
+        //System.out.println("[" +qtdeLinhas +"]" + "[" + metodo + "]" + "[" + metodoTeste + "]" + "[" + falharam + "]" + "[" + passaram + "]");
     }
+    
 
     //----------------------------- Retorna as linhas cobertas pelos testes ----------------------------------------
     public ArrayList<Integer> qtdeLinhasCod() {

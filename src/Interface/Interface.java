@@ -276,6 +276,10 @@ public class Interface extends javax.swing.JFrame {
 
     private void btnExecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExecutarActionPerformed
         // TODO add your handling code here:
+        if (!csTarantula.isSelected() && !csJaccard.isSelected() && !csOchiai.isSelected() && !csSBI.isSelected()) {
+            JOptionPane.showMessageDialog(null, "Selecione uma heurística");
+        }
+
         double probabilidade;
         JTextArea tar = new JTextArea();
         JTextArea och = new JTextArea();
@@ -290,8 +294,8 @@ public class Interface extends javax.swing.JFrame {
             documentoJunit = Jsoup.parse(fileJunit, null);
             Interface parserHtmlJunit = new Interface(documentoJunit);
             lerJunit = new Junit(parserHtmlJunit.document);
-            lerJunit.totais();
-            lerJunit.testesFalhos();
+            lerJunit.totais();                              // possui qtde de testes, falhas e sucesso do projeto
+            lerJunit.testesFalhos();                        // possui os testes que falharam ou contiveram erros
         } catch (IOException ex) {
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -300,7 +304,7 @@ public class Interface extends javax.swing.JFrame {
         ArrayList<String> filesEcob = new ArrayList<>();
         //filesEcob = navegar(ecobertura.getPath());
         String path = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\cobertura";
-        navegar(path);
+        navegar(path);     // armazena os arquivos do diretório no arrayList files
         for (int i = 0; i < files.size(); i++) {
             File fileEcob = new File(files.get(i));
             Document documentoEcob;
@@ -311,8 +315,8 @@ public class Interface extends javax.swing.JFrame {
                 boolean cobertura = lerEcob.cobertura();
                 if (cobertura == true) {            // se o arquivo não cobrir o código fonte -> dispensa arquivo
                     lerEcob.escreveTxt();
-                    linhas.put(lerEcob.getClasse(), lerEcob.qtdeLinhasCod());   // armazena e classe e as linhas cobertas da classe
-                    classes.add(lerEcob.getClasse());
+                    linhas.put(lerEcob.getClasse(), lerEcob.qtdeLinhasCod());   // armazena a classe e as linhas cobertas da classe
+                    classes.add(lerEcob.getClasse());                           // armazena todas as classes do sistema
                 }
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
@@ -336,11 +340,9 @@ public class Interface extends javax.swing.JFrame {
                 lerJxr = new Jxr(parserHtmlJxr.document);
                 parserHtmlJxr.elementos = lerJxr.leituraJxr();  // retorna o código do relatório sem lixo
                 lerJxr.escreveTxt(parserHtmlJxr.elementos);     // escreve ocódigo em um arquivo TXT para nova leitura
-                
                 for (String classe : classes) {
-                    lerJxr.leTxt(classe);
+                    lerJxr.leTxt(classe);                       // busca métodos, objetos da classe passada por parâmetro em todos os códigos de teste
                 }
-
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -348,14 +350,14 @@ public class Interface extends javax.swing.JFrame {
 
         //------------------------------------------ imprime valores do hashtable -----------------------------
         /*Hashtable teste = lerJxr.getInf();
-        Set values = teste.entrySet();
-        Iterator myIterator = values.iterator();
-        System.out.println("Listando arquivos contidos no HashMap myHashMap:");
-        while (myIterator.hasNext()) {
-            DadosTeste dados = (DadosTeste) ((Entry) myIterator.next()).getValue();
-            System.out.println("Classe: " + dados.getClasse() + " MetodoTeste: " + dados.getMetodoTeste()
-                    + " Objetos: " + dados.getObjetos() + " MChamados: " + dados.getmChamados() + " Objetos: " + dados.getObjetos());
-        }*/
+         Set values = teste.entrySet();
+         Iterator myIterator = values.iterator();
+         System.out.println("Listando arquivos contidos no HashMap myHashMap:");
+         while (myIterator.hasNext()) {
+         DadosTeste dados = (DadosTeste) ((Entry) myIterator.next()).getValue();
+         System.out.println("Classe: " + dados.getClasse() + " MetodoTeste: " + dados.getMetodoTeste()
+         + " Objetos: " + dados.getObjetos() + " MChamados: " + dados.getmChamados() + " Objetos: " + dados.getObjetos());
+         }*/
         //---------------------------------- fim impressão hashtable---------------------------------------------
         files.clear();
         //----------------------------------- Fim processamento Jxr -----------------------------------------------
@@ -364,61 +366,65 @@ public class Interface extends javax.swing.JFrame {
         ArrayList<Double> falha = new ArrayList<>();
         ArrayList<Double> totSucesso = new ArrayList<>();
         ArrayList<Double> totFalha = new ArrayList<>();
+        ArrayList<Integer> linhasClasse = new ArrayList<>();
         /*
          Para cada array de linha dentro da treeMap temos que passá-lo para o método falharam
          */
-        for (Entry<String, ArrayList<Integer>> entry : linhas.entrySet()) {
-            lerEcob.falharam(entry.getValue(), lerJxr, lerJunit);   // pega todos os arraylist contidos em linhas
-        }/*falharam*/
-            sucesso.add((double) lerEcob.getPassaram());
-            falha.add((double) lerEcob.getFalharam());
-            totSucesso.add((double) lerJunit.getQtdeSucesso());
-            totFalha.add((double) lerJunit.getQtdeFalhas());
+        
+        
+        for(int i=0; i<classes.size(); i++){
             
-            for(int i=0; i<sucesso.size(); i++){
-                //System.out.println(sucesso.get(i));
+            linhasClasse = linhas.get(classes.get(i));
+            //System.out.println(classes.get(i)+"->"+linhasClasse);
+            for(int count=0; count<linhasClasse.size(); count++){
+               lerEcob.falharam(classes.get(i), linhasClasse.get(count), lerJxr, lerJunit);   // pega todos os arraylist contidos em linhas
+               sucesso.add((double) lerEcob.getPassaram());
+               falha.add((double) lerEcob.getFalharam());
+           }
+                
             }
-        /*}
-        if (!csTarantula.isSelected() && !csJaccard.isSelected() && !csOchiai.isSelected() && !csSBI.isSelected()) {
-            JOptionPane.showMessageDialog(null, "Selecione uma heurística");
-        }
-        if (csTarantula.isSelected()) {
-            for (int i = 0; i < linhas.size(); i++) {
-                heuristicas = new FaultLocalization(sucesso.get(i), falha.get(i), totSucesso.get(i), totFalha.get(i));
-                probabilidade = heuristicas.tarantula();
-                probTar.put(linhas.get(i), probabilidade);
-            }
-            entriesSortedByValues(probTar);
-            System.out.println(entriesSortedByValues(probTar));
-        }
-        if (csOchiai.isSelected()) {
+             /*   
+                totSucesso.add((double) lerJunit.getQtdeSucesso());
+                totFalha.add((double) lerJunit.getQtdeFalhas());
 
-            for (int i = 0; i < linhas.size(); i++) {
-                heuristicas = new FaultLocalization(sucesso.get(i), falha.get(i), totSucesso.get(i), totFalha.get(i));
-                probabilidade = heuristicas.ochiai();
-                probOch.put(linhas.get(i), probabilidade);
+                for (int i = 0; i < sucesso.size(); i++) {
+                    //System.out.println(sucesso.get(i));
+                }
+
+                if (csTarantula.isSelected()) {
+                    heuristicas = new FaultLocalization(sucesso.get(count), falha.get(count), totSucesso.get(count), totFalha.get(count));
+                    probabilidade = heuristicas.tarantula();
+                    probTar.put(linhasClasse.get(count), probabilidade);
+                }
+                entriesSortedByValues(probTar);
+                ///System.out.println(entriesSortedByValues(probTar));
+
+                if (csOchiai.isSelected()) {
+
+                    heuristicas = new FaultLocalization(sucesso.get(count), falha.get(count), totSucesso.get(count), totFalha.get(count));
+                    probabilidade = heuristicas.ochiai();
+                    probOch.put(linhasClasse.get(count), probabilidade);
+                }
+                //System.out.println(entriesSortedByValues(probOch));
+
+                if (csJaccard.isSelected()) {
+                    heuristicas = new FaultLocalization(sucesso.get(count), falha.get(count), totSucesso.get(count), totFalha.get(count));
+                    probabilidade = heuristicas.jaccard();
+                    probJac.put(linhasClasse.get(count), probabilidade);
+                    //System.out.println(entriesSortedByValues(probJac));
+                }
+                if (csSBI.isSelected()) {
+                    heuristicas = new FaultLocalization(sucesso.get(count), falha.get(count), totSucesso.get(count), totFalha.get(count));
+                    probabilidade = heuristicas.sbi();
+                    probSbi.put(linhasClasse.get(count), probabilidade);
+                    //System.out.println("linha: " + linhas.get(i)+ " falha: " + falhasLinha.get(i) + " sucesso: " + sucessoLinha.get(i) );
+                    //System.out.println(entriesSortedByValues(probSbi));
+                }
             }
-            System.out.println(entriesSortedByValues(probOch));
-        }
-        if (csJaccard.isSelected()) {
-            for (int i = 0; i < linhas.size(); i++) {
-                heuristicas = new FaultLocalization(sucesso.get(i), falha.get(i), totSucesso.get(i), totFalha.get(i));
-                probabilidade = heuristicas.jaccard();
-                probJac.put(linhas.get(i), probabilidade);
-            }
-            System.out.println(entriesSortedByValues(probJac));
-        }
-        if (csSBI.isSelected()) {
-            for (int i = 0; i < linhas.size(); i++) {
-                heuristicas = new FaultLocalization(sucesso.get(i), falha.get(i), totSucesso.get(i), totFalha.get(i));
-                probabilidade = heuristicas.sbi();
-                probSbi.put(linhas.get(i), probabilidade);
-                //System.out.println("linha: " + linhas.get(i)+ " falha: " + falhasLinha.get(i) + " sucesso: " + sucessoLinha.get(i) );
-            }
-            System.out.println(entriesSortedByValues(probSbi));
-        }
-        JanelaResult panel = new JanelaResult();
-        panel.setVisible(true);*/
+
+        }/*
+         JanelaResult panel = new JanelaResult();
+         panel.setVisible(true);*/
     }//GEN-LAST:event_btnExecutarActionPerformed
 
     public void navegar(String caminho) {

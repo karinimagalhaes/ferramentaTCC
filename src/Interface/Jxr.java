@@ -151,7 +151,6 @@ public class Jxr {
                     //System.out.println("Chave: "+metodoTeste+"_"+classe+ "Metodo Teste: "+metodoTeste + " Classe: " + dadosTeste.getClasse() + 
                       // "Objetos: " + dadosTeste.getObjetos() +"metodosChamados" + dadosTeste.getmChamados());
                 }
-                
                 classeObj = null;
                 objeto = null;
                 mChamado = null;
