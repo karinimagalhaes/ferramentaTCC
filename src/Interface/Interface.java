@@ -206,18 +206,23 @@ public class Interface extends javax.swing.JFrame {
     private Interface parserHtmlJunit;
     private Interface parserHtmlEcobertura;
     private Interface parserHtmlJxr;
+    private ArrayList<Informacoes> linhaMetodo;       // armazena a linha e o método chamado
+    private Junit lerJunit;
+    private Ecobertura lerEcob;
+    private Jxr lerJxr;
+    private FaultLocalization heuristicas;
+    
     //private Hashtable prob = new Hashtable();
     private TreeMap<Integer, Double> probTar = new TreeMap<>();
     private TreeMap<Integer, Double> probOch = new TreeMap<>();
     private TreeMap<Integer, Double> probJac = new TreeMap<>();
     private TreeMap<Integer, Double> probSbi = new TreeMap<>();
+    private TreeMap<String, Informacoes> inf = new TreeMap<>();
     private Map<String, ArrayList<Integer>> linhas = new TreeMap();  // armazena e classe e as linhas cobertas da classe
     private ArrayList<String> classes = new ArrayList<>();
     private ArrayList<String> files = new ArrayList<>();    // armazena a lista de arquivos do diretório
-    private Junit lerJunit;
-    private Ecobertura lerEcob;
-    private Jxr lerJxr;
-    private FaultLocalization heuristicas;
+    
+    
 
     public Interface(Document document) {
         this.document = document;
@@ -280,11 +285,6 @@ public class Interface extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Selecione uma heurística");
         }
 
-        double probabilidade;
-        JTextArea tar = new JTextArea();
-        JTextArea och = new JTextArea();
-        JTextArea jac = new JTextArea();
-        JTextArea sbi = new JTextArea();
 
         // Lê Junit
         File fileJunit = new File("C:\\Users\\Karini\\workspace\\myProject\\target\\site\\surefire-report.html");
@@ -308,6 +308,7 @@ public class Interface extends javax.swing.JFrame {
         for (int i = 0; i < files.size(); i++) {
             File fileEcob = new File(files.get(i));
             Document documentoEcob;
+            
             try {
                 documentoEcob = Jsoup.parse(fileEcob, null);
                 Interface parserHtmlEcob = new Interface(documentoEcob);
@@ -317,12 +318,16 @@ public class Interface extends javax.swing.JFrame {
                     lerEcob.escreveTxt();
                     linhas.put(lerEcob.getClasse(), lerEcob.qtdeLinhasCod());   // armazena a classe e as linhas cobertas da classe
                     classes.add(lerEcob.getClasse());                           // armazena todas as classes do sistema
+                    linhaMetodo = lerEcob.getInf();
+                    for(int j=0; j<linhaMetodo.size(); j++){        // linhaMetodo é um array de informacoes
+                        String chave = Integer.toString(linhaMetodo.get(j).getLinha())+lerEcob.getClasse();    // chave da treeMap
+                        inf.put(chave, linhaMetodo.get(j));         // inf armazena a linha e o método chamado por ela
+                    }
                 }
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
         files.clear();
 
         //----------------------------------- Fim processamento Ecobertura--------------------------------------
@@ -361,7 +366,7 @@ public class Interface extends javax.swing.JFrame {
         //---------------------------------- fim impressão hashtable---------------------------------------------
         files.clear();
         //----------------------------------- Fim processamento Jxr -----------------------------------------------
-
+        
         ArrayList<Double> sucesso = new ArrayList<>();
         ArrayList<Double> falha = new ArrayList<>();
         ArrayList<Double> totSucesso = new ArrayList<>();
@@ -371,13 +376,15 @@ public class Interface extends javax.swing.JFrame {
          Para cada array de linha dentro da treeMap temos que passá-lo para o método falharam
          */
         
+        //
         
         for(int i=0; i<classes.size(); i++){
             
             linhasClasse = linhas.get(classes.get(i));
-            //System.out.println(classes.get(i)+"->"+linhasClasse);
+            //System.out.println(inf.keySet());
+            //System.out.println(linhasClasse);
             for(int count=0; count<linhasClasse.size(); count++){
-               lerEcob.falharam(classes.get(i), linhasClasse.get(count), lerJxr, lerJunit);   // pega todos os arraylist contidos em linhas
+               lerEcob.falharam(classes.get(i), linhasClasse.get(count), inf, lerJxr, lerJunit);   // pega todos os arraylist contidos em linhas
                sucesso.add((double) lerEcob.getPassaram());
                falha.add((double) lerEcob.getFalharam());
            }
