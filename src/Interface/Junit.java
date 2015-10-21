@@ -24,6 +24,7 @@ public class Junit {
     private ArrayList<String> falhas;
     private Document document;
     
+    
     public Junit(Document document){
         this.document = document;
     }
