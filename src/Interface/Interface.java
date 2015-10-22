@@ -218,10 +218,10 @@ public class Interface extends javax.swing.JFrame {
     private String path = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\teste.txt";
     
     //private Hashtable prob = new Hashtable();
-    private TreeMap<Integer, Double> probTar = new TreeMap<>();
-    private TreeMap<Integer, Double> probOch = new TreeMap<>();
-    private TreeMap<Integer, Double> probJac = new TreeMap<>();
-    private TreeMap<Integer, Double> probSbi = new TreeMap<>();
+    private TreeMap<String, Resultado> probTar = new TreeMap<>();
+    private TreeMap<String, Resultado> probOch = new TreeMap<>();
+    private TreeMap<String, Resultado> probJac = new TreeMap<>();
+    private TreeMap<String, Resultado> probSbi = new TreeMap<>();
     private TreeMap<String, Informacoes> inf = new TreeMap<>();
     private Map<String, ArrayList<Integer>> linhas = new TreeMap();  // armazena e classe e as linhas cobertas da classe
     private ArrayList<String> classes = new ArrayList<>();
@@ -378,28 +378,33 @@ public class Interface extends javax.swing.JFrame {
         }
 
         //------------------------------------------ imprime valores do hashtable -----------------------------
-       Set values = infJxr.entrySet();
+       /*Set values = infJxr.entrySet();
          Iterator myIterator = values.iterator();
          System.out.println("Listando arquivos contidos no HashMap myHashMap:");
          while (myIterator.hasNext()) {
          DadosTeste dados = (DadosTeste) ((Entry) myIterator.next()).getValue();
          System.out.println(" Classe: " + dados.getClasse() + " MetodoTeste: " + dados.getMetodoTeste()
          + " Objetos: " + dados.getObjetos() + " MChamados: " + dados.getmChamado() );
-         }
+         }*/
         //---------------------------------- fim impressão hashtable---------------------------------------------
         files.clear();
         //----------------------------------- Fim processamento Jxr -----------------------------------------------
         
-        ArrayList<Double> sucesso = new ArrayList<>();
-        ArrayList<Double> falha = new ArrayList<>();
-        ArrayList<Double> totSucesso = new ArrayList<>();
-        ArrayList<Double> totFalha = new ArrayList<>();
+        
+        //--------------------------------------- Início cálculo das heurísticas -------------------------------------
+        Double sucesso = 0.0;
+        Double falha = 0.0;
+        Double totSucesso = 0.0;
+        Double totFalha = 0.0;
+        Double probabilidade = 0.0;
         ArrayList<Integer> linhasClasse = new ArrayList<>();
         /*
          Para cada array de linha dentro da treeMap temos que passá-lo para o método falharam
          */
         
         //
+        totSucesso = (double) lerJunit.getQtdeSucesso();
+        totFalha = (double) lerJunit.getQtdeFalhas();
         
         for(int i=0; i<classes.size(); i++){
             
@@ -408,51 +413,48 @@ public class Interface extends javax.swing.JFrame {
             //System.out.println(linhasClasse);
             for(int count=0; count<linhasClasse.size(); count++){
                lerEcob.falharam(classes.get(i), linhasClasse.get(count), inf, infJxr, lerJunit);   // pega todos os arraylist contidos em linhas
-               sucesso.add((double) lerEcob.getPassaram());
-               falha.add((double) lerEcob.getFalharam());
-           }
-                
-            }
-             /*   
-                totSucesso.add((double) lerJunit.getQtdeSucesso());
-                totFalha.add((double) lerJunit.getQtdeFalhas());
-
-                for (int i = 0; i < sucesso.size(); i++) {
-                    //System.out.println(sucesso.get(i));
-                }
+               sucesso = (double) lerEcob.getPassaram();
+               falha = (double) lerEcob.getFalharam();
 
                 if (csTarantula.isSelected()) {
-                    heuristicas = new FaultLocalization(sucesso.get(count), falha.get(count), totSucesso.get(count), totFalha.get(count));
+                    heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                     probabilidade = heuristicas.tarantula();
-                    probTar.put(linhasClasse.get(count), probabilidade);
+                    Resultado tar = new Resultado(classes.get(i), linhasClasse.get(count), probabilidade);
+                    probTar.put(linhasClasse.get(count)+classes.get(i), tar);
                 }
-                entriesSortedByValues(probTar);
+               // entriesSortedByValues(probTar);
                 ///System.out.println(entriesSortedByValues(probTar));
 
                 if (csOchiai.isSelected()) {
 
-                    heuristicas = new FaultLocalization(sucesso.get(count), falha.get(count), totSucesso.get(count), totFalha.get(count));
+                    heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                     probabilidade = heuristicas.ochiai();
-                    probOch.put(linhasClasse.get(count), probabilidade);
+                    Resultado och = new Resultado(classes.get(i), linhasClasse.get(count), probabilidade);
+                    probOch.put(linhasClasse.get(count)+classes.get(i), och);
                 }
                 //System.out.println(entriesSortedByValues(probOch));
 
                 if (csJaccard.isSelected()) {
-                    heuristicas = new FaultLocalization(sucesso.get(count), falha.get(count), totSucesso.get(count), totFalha.get(count));
+                    heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                     probabilidade = heuristicas.jaccard();
-                    probJac.put(linhasClasse.get(count), probabilidade);
+                    Resultado jac = new Resultado(classes.get(i), linhasClasse.get(count), probabilidade);
+                    probJac.put(linhasClasse.get(count)+classes.get(i), jac);
                     //System.out.println(entriesSortedByValues(probJac));
                 }
                 if (csSBI.isSelected()) {
-                    heuristicas = new FaultLocalization(sucesso.get(count), falha.get(count), totSucesso.get(count), totFalha.get(count));
+                    heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                     probabilidade = heuristicas.sbi();
-                    probSbi.put(linhasClasse.get(count), probabilidade);
+                    Resultado sbi = new Resultado(classes.get(i), linhasClasse.get(count), probabilidade);
+                    probSbi.put(linhasClasse.get(count)+classes.get(i), sbi);
                     //System.out.println("linha: " + linhas.get(i)+ " falha: " + falhasLinha.get(i) + " sucesso: " + sucessoLinha.get(i) );
                     //System.out.println(entriesSortedByValues(probSbi));
                 }
             }
-
-        }/*
+        }
+        
+        //--------------------------------------------Fim cálculo das heurísticas -----------------------------------------------------
+        
+        /*
          JanelaResult panel = new JanelaResult();
          panel.setVisible(true);*/
     }//GEN-LAST:event_btnExecutarActionPerformed
@@ -505,7 +507,7 @@ public class Interface extends javax.swing.JFrame {
         sortedEntries.addAll(map.entrySet());
         return sortedEntries;
     }
-
+        
 
     private void csTarantulaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csTarantulaActionPerformed
         // TODO add your handling code here:

@@ -5,6 +5,8 @@
  */
 package faultlocalization;
 
+import static java.lang.Math.sqrt;
+
 /**
  *
  * @author Karini
@@ -38,15 +40,10 @@ public class FaultLocalization {
     public double tarantula(){
         
         double prob = 0.0;
-        prob = (sucesso/totSucesso)/((sucesso/totSucesso)+(falha/totFalha));
+        prob = (falha/totFalha)/((sucesso/totSucesso)+(falha/totFalha));
         return prob;
     }
     
-    public double ochiai(){
-        double prob = 0.0;
-        prob = falha/(totFalha * (falha + sucesso));
-        return prob;
-    }
     public double jaccard(){
         /*
         sucesso é o numero de testes de sucesso que passaram na linha x
@@ -57,6 +54,12 @@ public class FaultLocalization {
         
         double prob = 0.0;
         prob = falha/(totFalha + sucesso);
+        return prob;
+    }
+    
+    public double ochiai(){
+        double prob = 0.0;
+        prob = falha/sqrt(totFalha * (falha + sucesso));
         return prob;
     }
     

@@ -157,7 +157,7 @@ public class Jxr {
                         " Objetos: " + dadosTeste.getObjetos() +" metodosChamados" + dadosTeste.getmChamado());*/
                 
                 classeObj = null;
-               // object.clear();
+                //object.clear();
                // mChamado.clear();
                 metodoTeste = null;
                 // System.out.println(contagem+"->"+dados.get(contagem).getClasse()+"->"+dados.get(contagem).getMetodoTeste()+"->"+dados.get(contagem).getObjetos()+"->"+dados.get(contagem).getmChamado());

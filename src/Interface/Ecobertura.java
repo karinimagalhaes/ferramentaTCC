@@ -214,7 +214,7 @@ public class Ecobertura {
         if (inf.containsKey(linhaTemp + classe)) {
             metodo = inf.get(linhaTemp + classe).getMetodo();       // retorna o metodo da linha
             verificaMetodo(linha, classe, jxr);
-            //  System.out.println(linha +"->"+ metodo);
+              //System.out.println(linha +"->"+ metodo);
         } /*
          2º caso: se não a linha não for chave da treeMap passar todos as as linhas para um array
          TreeMap não avança posições e a busca não é sequencial
@@ -240,12 +240,12 @@ public class Ecobertura {
                         linhaTemp = Integer.toString(arrayLinhas.get(i));
                         metodo = inf.get(linhaTemp + classe).getMetodo();
                         verificaMetodo(linha, classe, jxr);
-                        //System.out.println(classe+"->"+linha + "->" + metodo);
+                       // System.out.println(classe+"->"+linha + "->" + metodo);
                     } else if ((linha > arrayLinhas.get(i)) && (linha < qtdeLinhas) && (i == arrayLinhas.size() - 1)) {
                         linhaTemp = Integer.toString(arrayLinhas.get(i));
                         metodo = inf.get(linhaTemp + classe).getMetodo();
                         verificaMetodo(linha, classe, jxr);
-                        //System.out.println(classe+"->"+linha + "->" + metodo);
+                       // System.out.println(classe+"->"+linha + "->" + metodo);
                     }
                 } else if (linha > arrayLinhas.get(arrayLinhas.size() - 1)) {
                     linhaTemp = Integer.toString(arrayLinhas.get(arrayLinhas.size() - 1));
@@ -290,7 +290,7 @@ public class Ecobertura {
                 for(int i=0; i<dadosTeste.getmChamado().size(); i++){
                     if (dadosTeste.getmChamado().get(i).contains(metodo)) {
                         metodoTeste.add(dadosTeste.getMetodoTeste());  // armazena metodo de teste que chama o metodo do codigo
-                        //System.out.println("ENTREI: ["+linha+"]"+"["+metodo+"_"+classe+"]"+dadosTeste.getMetodoTeste());
+                        System.out.println("ENTREI: ["+linha+"]"+"["+metodo+"_"+classe+"]"+dadosTeste.getMetodoTeste());
                         break;
                     }
                 }
