@@ -14,14 +14,14 @@ import java.util.ArrayList;
 public class DadosTeste {
     private String classe;
     private ArrayList<String> objetos = new ArrayList< String>();
-    private ArrayList<String> mChamados = new ArrayList< String>();
+    private ArrayList<String> mChamado = new ArrayList< String>();
     private String metodoTeste;
 
     
-    public DadosTeste(String classe, String objeto, String mChamado, String metodoTeste) {
+    public DadosTeste(String classe, String objeto, ArrayList<String> mChamado, String metodoTeste) {
         this.classe = classe;
         this.objetos.add(objeto);
-        this.mChamados.add(mChamado);
+        this.mChamado = mChamado;
         this.metodoTeste = metodoTeste;
     }
 
@@ -50,7 +50,7 @@ public class DadosTeste {
         this.objetos = objetos;
     }
     
-    public ArrayList<String> getmChamados() {
-        return mChamados;
+    public ArrayList<String> getmChamado() {
+        return mChamado;
     }
 }

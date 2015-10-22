@@ -211,6 +211,11 @@ public class Interface extends javax.swing.JFrame {
     private Ecobertura lerEcob;
     private Jxr lerJxr;
     private FaultLocalization heuristicas;
+    private File file;
+    private FileWriter fw;
+    private BufferedWriter bw;
+    private FileInputStream reader;
+    private String path = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\teste.txt";
     
     //private Hashtable prob = new Hashtable();
     private TreeMap<Integer, Double> probTar = new TreeMap<>();
@@ -303,8 +308,8 @@ public class Interface extends javax.swing.JFrame {
         // ---------------------------- Processa arquivos Ecobertura --------------------------------------
         ArrayList<String> filesEcob = new ArrayList<>();
         //filesEcob = navegar(ecobertura.getPath());
-        String path = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\cobertura";
-        navegar(path);     // armazena os arquivos do diretório no arrayList files
+        String pathCob = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\cobertura";
+        navegar(pathCob);     // armazena os arquivos do diretório no arrayList files
         for (int i = 0; i < files.size(); i++) {
             File fileEcob = new File(files.get(i));
             Document documentoEcob;
@@ -339,29 +344,34 @@ public class Interface extends javax.swing.JFrame {
         for (int i = 0; i < files.size(); i++) {
             File fileJxr = new File(files.get(i));
             Document documentoJxr;
+            
             try {
                 documentoJxr = Jsoup.parse(fileJxr, null);
                 Interface parserHtmlJxr = new Interface(documentoJxr);
                 lerJxr = new Jxr(parserHtmlJxr.document);
                 parserHtmlJxr.elementos = lerJxr.leituraJxr();  // retorna o código do relatório sem lixo
-                lerJxr.escreveTxt(parserHtmlJxr.elementos);     // escreve ocódigo em um arquivo TXT para nova leitura
+                escreveTxt(parserHtmlJxr.elementos);     // escreve ocódigo em um arquivo TXT para nova leitura
+                reader = new FileInputStream(path);
                 for (String classe : classes) {
-                    lerJxr.leTxt(classe);                       // busca métodos, objetos da classe passada por parâmetro em todos os códigos de teste
+                    
+                    lerJxr.leTxt(classe, path, reader);                       // busca métodos, objetos da classe passada por parâmetro em todos os códigos de teste
                 }
+                reader.close();
+                file.delete();
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
         //------------------------------------------ imprime valores do hashtable -----------------------------
-        /*Hashtable teste = lerJxr.getInf();
+       /* Hashtable teste = lerJxr.getInf();
          Set values = teste.entrySet();
          Iterator myIterator = values.iterator();
          System.out.println("Listando arquivos contidos no HashMap myHashMap:");
          while (myIterator.hasNext()) {
          DadosTeste dados = (DadosTeste) ((Entry) myIterator.next()).getValue();
-         System.out.println("Classe: " + dados.getClasse() + " MetodoTeste: " + dados.getMetodoTeste()
-         + " Objetos: " + dados.getObjetos() + " MChamados: " + dados.getmChamados() + " Objetos: " + dados.getObjetos());
+         System.out.println("Chave: "+ ((Entry) myIterator.next()).getKey()+" Classe: " + dados.getClasse() + " MetodoTeste: " + dados.getMetodoTeste()
+         + " Objetos: " + dados.getObjetos() + " MChamados: " + dados.getmChamado() + " Objetos: " + dados.getObjetos());
          }*/
         //---------------------------------- fim impressão hashtable---------------------------------------------
         files.clear();
@@ -434,6 +444,22 @@ public class Interface extends javax.swing.JFrame {
          panel.setVisible(true);*/
     }//GEN-LAST:event_btnExecutarActionPerformed
 
+    public void escreveTxt(String elementos) throws IOException {       //escreve código do teste no arquivo txt
+        file = new File(path);
+        if (!file.exists()) {
+            file.createNewFile();
+        }else{
+            file.deleteOnExit();
+            file.createNewFile();
+        }
+        fw = new FileWriter(file, true);
+        bw = new BufferedWriter(fw);
+        bw.write(elementos);
+        bw.flush();
+        bw.close();
+        fw.close();
+    }
+    
     public void navegar(String caminho) {
         File diretorio = new File(caminho);
         for (File file : diretorio.listFiles()) {

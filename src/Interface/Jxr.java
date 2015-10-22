@@ -12,6 +12,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
@@ -21,19 +24,17 @@ import org.jsoup.select.Elements;
  */
 public class Jxr {
 
-    private String path = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\teste.txt";
+    
     private ArrayList <String> object = new ArrayList<String>();
     private String metodoTeste;
     private String classeObj;
     private String objeto;
-    private String mChamado;
+    private ArrayList<String> mChamado = new ArrayList<String>();
     private DadosTeste dadosTeste = null;
     private Document document;
-    private FileInputStream reader;
+    
     private Hashtable inf = new Hashtable();
-    private File file;
-    private FileWriter fw;
-    private BufferedWriter bw;
+  
 
     public Jxr(Document document) {
         this.document = document;
@@ -53,36 +54,26 @@ public class Jxr {
         return elements.text();     // retorna o código sem lixo
     }
 
-    public void escreveTxt(String elementos) throws IOException {       //escreve código do teste no arquivo txt
-        file = new File(path);
-        if (!file.exists()) {
-            file.createNewFile();
-        }else{
-            file.deleteOnExit();
-            file.createNewFile();
-        }
-        fw = new FileWriter(file, true);
-        bw = new BufferedWriter(fw);
-        bw.write(elementos);
-        bw.flush();
-       
-    }
+    
 
-    public void leTxt(String classe) throws IOException {
+    public void leTxt(String classe, String path, FileInputStream reader) throws IOException {
         StringBuffer sbaux = new StringBuffer();
         char corrente;
+        int bloco = 0;
         char [] aux;
         boolean met = false;
         boolean obj = false;
         boolean cod = false;
         boolean ponto = false;
         String auxiliar = null;
-        reader = new FileInputStream(path);
+        
         while (reader.available() > 0) {
             corrente = (char) reader.read();
             if((corrente == '\t') || (corrente == '\r')){
                 continue;
             }
+            
+            
             sbaux.append(corrente);
             
             //ler os caracteres até formar uma palavra reservada do java
@@ -99,11 +90,20 @@ public class Jxr {
                         metodoTeste = sbaux.toString();     //encontrei metodo do teste
                         sbaux.delete(0, sbaux.length());
                         met = false;
+                        
                         //System.out.println("metodo ->" + metodoTeste);
                     }
                 }
             }
             
+            // verifica abertura de blocos
+            if(corrente == '{'){
+                bloco++;
+            }
+            
+            if(corrente == '}'){
+                bloco--;
+            }
             //verificar objetos
             if(corrente != '='){
                 auxiliar = sbaux.toString();    // guarda o nome do objeto
@@ -113,19 +113,18 @@ public class Jxr {
                 obj = true; // encontrou um objeto
                 sbaux.delete(0, sbaux.length());
             }
-            if(corrente == '('){
-                obj = false;    // torna obj falso para não pegar a instanciação do pbjeto ex: Calculadora calc = new Calculadora()
+            if((corrente == '(')){
+                obj = false;    // torna obj falso para não pegar a instanciação do objeto ex: Calculadora calc = new Calculadora()
             }
             if((obj == true) && ((corrente == '=') || (corrente == ';'))){
-                //sbaux.deleteCharAt(sbaux.length());
                 objeto = auxiliar.trim();
                 object.add(objeto);
             }
             
             // verifica os métodos do código
             for(int i=0; i<object.size(); i++){
-               // System.out.println("["+sbaux.toString()+"]" + " " + "["+objetos.get(i)+"]");
-                if(sbaux.toString().equals(object.get(i))){
+                //System.out.println("["+sbaux.toString()+"]" + " " + "["+objetos.get(i)+"]");
+                if((sbaux.toString()).equals(object.get(i))){
                     cod = true;    // verifica se encontrou um objeto
                 }
             }
@@ -137,23 +136,27 @@ public class Jxr {
             if(cod == true && ponto == true){
                 if((corrente == '(') || (corrente == ' ')){
                     sbaux.deleteCharAt(sbaux.length()-1);
-                    mChamado = sbaux.toString();    // metodo do codigo encontrado
+                    mChamado.add(sbaux.toString());    // metodo do codigo encontrado
+                    
                     cod = false;
                     ponto = false;
                     
                 }
             }
             
-            if(metodoTeste != null && classeObj != null && objeto != null && mChamado != null){
+            if(metodoTeste != null && classeObj != null && objeto != null && !mChamado.isEmpty() && bloco == 1){
                 dadosTeste = new DadosTeste(classeObj, objeto, mChamado, metodoTeste);
+                
                 if(!inf.containsKey(metodoTeste+"_"+classe)){
                     inf.put(metodoTeste+"_"+classe, dadosTeste);       // adiciona na hashtable
-                    //System.out.println("Chave: "+metodoTeste+"_"+classe+ "Metodo Teste: "+metodoTeste + " Classe: " + dadosTeste.getClasse() + 
-                      // "Objetos: " + dadosTeste.getObjetos() +"metodosChamados" + dadosTeste.getmChamados());
+                    /*System.out.println("Chave: "+metodoTeste+"_"+classe+ " Metodo Teste: "+metodoTeste + " Classe: " + dadosTeste.getClasse() + 
+                        " Objetos: " + dadosTeste.getObjetos() +" metodosChamados" + dadosTeste.getmChamado());*/
                 }
+                
+                
                 classeObj = null;
                 objeto = null;
-                mChamado = null;
+                mChamado.clear();
                 metodoTeste = null;
             }
             
@@ -163,5 +166,8 @@ public class Jxr {
             }
             
         }
+        
+       /* bw.close();
+        fw.close();*/
     }
 }
