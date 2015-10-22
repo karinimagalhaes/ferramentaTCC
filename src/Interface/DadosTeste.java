@@ -18,9 +18,9 @@ public class DadosTeste {
     private String metodoTeste;
 
     
-    public DadosTeste(String classe, String objeto, ArrayList<String> mChamado, String metodoTeste) {
+    public DadosTeste(String classe, ArrayList<String> objeto, ArrayList<String> mChamado, String metodoTeste) {
         this.classe = classe;
-        this.objetos.add(objeto);
+        this.objetos = objeto;
         this.mChamado = mChamado;
         this.metodoTeste = metodoTeste;
     }

@@ -226,7 +226,12 @@ public class Interface extends javax.swing.JFrame {
     private Map<String, ArrayList<Integer>> linhas = new TreeMap();  // armazena e classe e as linhas cobertas da classe
     private ArrayList<String> classes = new ArrayList<>();
     private ArrayList<String> files = new ArrayList<>();    // armazena a lista de arquivos do diretório
+    private Hashtable infJxr = new Hashtable();
+    private ArrayList<DadosTeste> aux = new ArrayList<>();
     
+    public Hashtable getInfJxr() {
+        return infJxr;
+    }
     
 
     public Interface(Document document) {
@@ -350,29 +355,37 @@ public class Interface extends javax.swing.JFrame {
                 Interface parserHtmlJxr = new Interface(documentoJxr);
                 lerJxr = new Jxr(parserHtmlJxr.document);
                 parserHtmlJxr.elementos = lerJxr.leituraJxr();  // retorna o código do relatório sem lixo
+               // System.out.println(parserHtmlJxr.elementos);
                 escreveTxt(parserHtmlJxr.elementos);     // escreve ocódigo em um arquivo TXT para nova leitura
-                reader = new FileInputStream(path);
-                for (String classe : classes) {
-                    
-                    lerJxr.leTxt(classe, path, reader);                       // busca métodos, objetos da classe passada por parâmetro em todos os códigos de teste
+                
+                for (int j=0; j<classes.size(); j++) {
+                    reader = new FileInputStream(path);
+                    aux = lerJxr.leTxt(classes.get(j), path, reader);                       // busca métodos, objetos da classe passada por parâmetro em todos os códigos de teste
+                    for(int k=0; k<aux.size();k++){
+                        infJxr.put(aux.get(k).getMetodoTeste()+"_"+aux.get(k).getClass(), aux.get(k));
+                       // System.out.println(aux.get(k).getMetodoTeste()+"_"+aux.get(k).getClasse());
+                    }
+                    reader.close();
                 }
                 reader.close();
                 file.delete();
+                aux.clear();
+               
+         
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
         //------------------------------------------ imprime valores do hashtable -----------------------------
-       /* Hashtable teste = lerJxr.getInf();
-         Set values = teste.entrySet();
+       Set values = infJxr.entrySet();
          Iterator myIterator = values.iterator();
          System.out.println("Listando arquivos contidos no HashMap myHashMap:");
          while (myIterator.hasNext()) {
          DadosTeste dados = (DadosTeste) ((Entry) myIterator.next()).getValue();
-         System.out.println("Chave: "+ ((Entry) myIterator.next()).getKey()+" Classe: " + dados.getClasse() + " MetodoTeste: " + dados.getMetodoTeste()
-         + " Objetos: " + dados.getObjetos() + " MChamados: " + dados.getmChamado() + " Objetos: " + dados.getObjetos());
-         }*/
+         System.out.println(" Classe: " + dados.getClasse() + " MetodoTeste: " + dados.getMetodoTeste()
+         + " Objetos: " + dados.getObjetos() + " MChamados: " + dados.getmChamado() );
+         }
         //---------------------------------- fim impressão hashtable---------------------------------------------
         files.clear();
         //----------------------------------- Fim processamento Jxr -----------------------------------------------
@@ -394,7 +407,7 @@ public class Interface extends javax.swing.JFrame {
             //System.out.println(inf.keySet());
             //System.out.println(linhasClasse);
             for(int count=0; count<linhasClasse.size(); count++){
-               lerEcob.falharam(classes.get(i), linhasClasse.get(count), inf, lerJxr, lerJunit);   // pega todos os arraylist contidos em linhas
+               lerEcob.falharam(classes.get(i), linhasClasse.get(count), inf, infJxr, lerJunit);   // pega todos os arraylist contidos em linhas
                sucesso.add((double) lerEcob.getPassaram());
                falha.add((double) lerEcob.getFalharam());
            }
@@ -449,7 +462,7 @@ public class Interface extends javax.swing.JFrame {
         if (!file.exists()) {
             file.createNewFile();
         }else{
-            file.deleteOnExit();
+            file.delete();
             file.createNewFile();
         }
         fw = new FileWriter(file, true);

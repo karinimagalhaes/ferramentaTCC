@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
@@ -33,30 +34,29 @@ public class Jxr {
     private DadosTeste dadosTeste = null;
     private Document document;
     
-    private Hashtable inf = new Hashtable();
+    private ArrayList<DadosTeste> dados = new ArrayList<>();
   
 
     public Jxr(Document document) {
         this.document = document;
     }
     
-    public Hashtable getInf(){
-        return inf;
-    }
 
     public String leituraJxr() throws IOException {   //método para pegar os nomes dos métodos declarados
         Elements elements = document.getElementsByTag("pre");
         elements.select("a.jxr_linenumber").remove();
        // elements.select("strong.jxr_keyword").remove();
         // elements.select("span.jxr_string").remove();
-        elements.select("em.jxr_comment").remove();
-        //System.out.println(elements.text());
+       // elements.select("em.jxr_comment").remove();
+        for(Element children : elements){
+            children.getElementsByClass("jxr_comment").remove();
+        }
         return elements.text();     // retorna o código sem lixo
     }
 
     
 
-    public void leTxt(String classe, String path, FileInputStream reader) throws IOException {
+    public ArrayList<DadosTeste> leTxt(String classe, String path, FileInputStream reader) throws IOException {
         StringBuffer sbaux = new StringBuffer();
         char corrente;
         int bloco = 0;
@@ -66,7 +66,8 @@ public class Jxr {
         boolean cod = false;
         boolean ponto = false;
         String auxiliar = null;
-        
+        int contagem = 0;
+       // System.out.println(reader.available()+"->"+classe);
         while (reader.available() > 0) {
             corrente = (char) reader.read();
             if((corrente == '\t') || (corrente == '\r')){
@@ -90,8 +91,8 @@ public class Jxr {
                         metodoTeste = sbaux.toString();     //encontrei metodo do teste
                         sbaux.delete(0, sbaux.length());
                         met = false;
-                        
-                        //System.out.println("metodo ->" + metodoTeste);
+                        obj=false;
+                       // System.out.println("metodo ->" + metodoTeste);
                     }
                 }
             }
@@ -119,11 +120,11 @@ public class Jxr {
             if((obj == true) && ((corrente == '=') || (corrente == ';'))){
                 objeto = auxiliar.trim();
                 object.add(objeto);
+                //System.out.println(object);
             }
             
             // verifica os métodos do código
             for(int i=0; i<object.size(); i++){
-                //System.out.println("["+sbaux.toString()+"]" + " " + "["+objetos.get(i)+"]");
                 if((sbaux.toString()).equals(object.get(i))){
                     cod = true;    // verifica se encontrou um objeto
                 }
@@ -133,31 +134,34 @@ public class Jxr {
                 ponto = true;   // verifica se o objeto vai chamar um metodo
                 sbaux.delete(0, sbaux.length());
             }
-            if(cod == true && ponto == true){
+            if((cod == true) && (ponto == true)){
                 if((corrente == '(') || (corrente == ' ')){
                     sbaux.deleteCharAt(sbaux.length()-1);
-                    mChamado.add(sbaux.toString());    // metodo do codigo encontrado
                     
+                    mChamado.add(sbaux.toString());    // metodo do codigo encontrado
                     cod = false;
                     ponto = false;
-                    
+                   
                 }
             }
-            
-            if(metodoTeste != null && classeObj != null && objeto != null && !mChamado.isEmpty() && bloco == 1){
-                dadosTeste = new DadosTeste(classeObj, objeto, mChamado, metodoTeste);
-                
-                if(!inf.containsKey(metodoTeste+"_"+classe)){
-                    inf.put(metodoTeste+"_"+classe, dadosTeste);       // adiciona na hashtable
+           
+            if(metodoTeste != null && classeObj != null && object != null && !mChamado.isEmpty() && bloco == 1){
+                dadosTeste = new DadosTeste(classeObj, object, mChamado, metodoTeste);
+               // System.out.println(dadosTeste.getClasse() + "->"+dadosTeste.getObjetos()+"->"+dadosTeste.getmChamado()+"->"+dadosTeste.getMetodoTeste());
+                 
+                    dados.add(dadosTeste);     // adiciona na hashtable
+               //   
+                    
+                    //System.out.println("entrei");
                     /*System.out.println("Chave: "+metodoTeste+"_"+classe+ " Metodo Teste: "+metodoTeste + " Classe: " + dadosTeste.getClasse() + 
                         " Objetos: " + dadosTeste.getObjetos() +" metodosChamados" + dadosTeste.getmChamado());*/
-                }
-                
                 
                 classeObj = null;
-                objeto = null;
-                mChamado.clear();
+               // object.clear();
+               // mChamado.clear();
                 metodoTeste = null;
+                // System.out.println(contagem+"->"+dados.get(contagem).getClasse()+"->"+dados.get(contagem).getMetodoTeste()+"->"+dados.get(contagem).getObjetos()+"->"+dados.get(contagem).getmChamado());
+           // contagem++;
             }
             
             
@@ -166,8 +170,17 @@ public class Jxr {
             }
             
         }
+        /*System.out.println("hashmap");
+        Set values = inf.entrySet();
+         Iterator myIterator = values.iterator();
+         while (myIterator.hasNext()) {
+         DadosTeste dados = (DadosTeste) ((Entry) myIterator.next()).getValue();
+         System.out.println("Chave: "+ ((Entry) myIterator.next()).getKey()+" Classe: " + dados.getClasse() + " MetodoTeste: " + dados.getMetodoTeste()
+         + " Objetos: " + dados.getObjetos().size() + " MChamados: " + dados.getmChamado().size());
+         }*/
+       //reader.reset();
         
-       /* bw.close();
-        fw.close();*/
+         return dados;
     }
+    
 }

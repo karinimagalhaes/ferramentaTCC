@@ -200,7 +200,7 @@ public class Ecobertura {
          }*/
     }
 
-    public void falharam(String classe, int linha, TreeMap<String, Informacoes> inf, Jxr jxr, Junit junit) {
+    public void falharam(String classe, int linha, TreeMap<String, Informacoes> inf, Hashtable jxr, Junit junit) {
         passaram = 0;
         falharam = 0;
 
@@ -213,7 +213,7 @@ public class Ecobertura {
          */
         if (inf.containsKey(linhaTemp + classe)) {
             metodo = inf.get(linhaTemp + classe).getMetodo();       // retorna o metodo da linha
-            verificaMetodo(linha, classe, jxr.getInf());
+            verificaMetodo(linha, classe, jxr);
             //  System.out.println(linha +"->"+ metodo);
         } /*
          2º caso: se não a linha não for chave da treeMap passar todos as as linhas para um array
@@ -239,18 +239,18 @@ public class Ecobertura {
                     if (linha > arrayLinhas.get(i) && linha < arrayLinhas.get(j)) {
                         linhaTemp = Integer.toString(arrayLinhas.get(i));
                         metodo = inf.get(linhaTemp + classe).getMetodo();
-                        verificaMetodo(linha, classe, jxr.getInf());
+                        verificaMetodo(linha, classe, jxr);
                         //System.out.println(classe+"->"+linha + "->" + metodo);
                     } else if ((linha > arrayLinhas.get(i)) && (linha < qtdeLinhas) && (i == arrayLinhas.size() - 1)) {
                         linhaTemp = Integer.toString(arrayLinhas.get(i));
                         metodo = inf.get(linhaTemp + classe).getMetodo();
-                        verificaMetodo(linha, classe, jxr.getInf());
+                        verificaMetodo(linha, classe, jxr);
                         //System.out.println(classe+"->"+linha + "->" + metodo);
                     }
                 } else if (linha > arrayLinhas.get(arrayLinhas.size() - 1)) {
                     linhaTemp = Integer.toString(arrayLinhas.get(arrayLinhas.size() - 1));
                     metodo = inf.get(linhaTemp + classe).getMetodo();
-                    verificaMetodo(linha, classe, jxr.getInf());
+                    verificaMetodo(linha, classe, jxr);
                     //System.out.println(classe+"->"+linha + "->" + metodo);
                 }
             }
