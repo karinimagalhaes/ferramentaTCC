@@ -21,14 +21,24 @@ import org.jfree.data.category.DefaultCategoryDataset;
  * @author Karini
  */
 public class ResultadoJanela extends JFrame {
-    DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
+    DefaultCategoryDataset dataSet;
     private String classe;
+
+    public void setDataSet(DefaultCategoryDataset dataSet) {
+        this.dataSet = dataSet;
+    }
+
+    public void setClasse(String classe) {
+        this.classe = classe;
+    }
+    
+    
     
     public ResultadoJanela() {
         super("Resultado");
-        
         JFreeChart chart = gerarGrafico(dataSet, classe);
         this.add(new ChartPanel(chart));
+       
         this.pack();
         
        /* //Cria um dataSet para inserir os dados que serão passados para a criação do grafico tipo Pie
@@ -69,35 +79,6 @@ dataset.addValue(1, "Azul", "Gol");
     }
     
 
-    
-    public void gerarDataSet(TreeMap<String, Resultado> tar, TreeMap<String, Resultado> jac,
-            TreeMap<String, Resultado> och, TreeMap<String, Resultado> sbi){
-        int i=0;
-        for (Map.Entry<String, Resultado> probEntry : tar.entrySet()) {
-            classe = probEntry.getValue().getClasse();
-            dataSet.addValue(probEntry.getValue().getProbabilidade(), "Tarantula", Integer.toString(probEntry.getValue().getLinha()));
-            if(i==8)
-                break;
-        }
-        i=0;
-        for (Map.Entry<String, Resultado> probEntry : jac.entrySet()) {  
-            dataSet.addValue(probEntry.getValue().getProbabilidade(), "Jaccard", Integer.toString(probEntry.getValue().getLinha()));
-            if(i==8)
-                break;
-        }
-        i=0;
-        for (Map.Entry<String, Resultado> probEntry : och.entrySet()) {  
-            dataSet.addValue(probEntry.getValue().getProbabilidade(), "Ochiai", Integer.toString(probEntry.getValue().getLinha()));
-            if(i==8)
-                break;
-        }
-        i=0;
-        for (Map.Entry<String, Resultado> probEntry : sbi.entrySet()) {  
-            dataSet.addValue(probEntry.getValue().getProbabilidade(), "SBI", Integer.toString(probEntry.getValue().getLinha()));
-            if(i==8)
-                break;
-        } 
-    }
     
     public JFreeChart gerarGrafico(CategoryDataset dataSet, String classe){
         JFreeChart chart = ChartFactory.createBarChart(

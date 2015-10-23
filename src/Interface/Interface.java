@@ -23,6 +23,8 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -189,7 +191,6 @@ public class Interface extends javax.swing.JFrame {
     public Hashtable getInfJxr() {
         return infJxr;
     }
-    
 
     public Interface(Document document) {
         this.document = document;
@@ -248,7 +249,7 @@ public class Interface extends javax.swing.JFrame {
 
     private void btnExecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExecutarActionPerformed
         // TODO add your handling code here:
-        //ResultadoJanela.inicializaJanela();
+        ResultadoJanela.inicializaJanela();
         
         if (!csTarantula.isSelected() && !csJaccard.isSelected() && !csOchiai.isSelected() && !csSBI.isSelected()) {
             JOptionPane.showMessageDialog(null, "Selecione uma heurística");
@@ -378,16 +379,14 @@ public class Interface extends javax.swing.JFrame {
                 if (csTarantula.isSelected()) {
                     heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                     probabilidade = heuristicas.tarantula();
+                   // System.out.println("Linha: "+linhasClasse.get(count)+" probabilidade: "+probabilidade);
                     Resultado tar = new Resultado(classes.get(i), linhasClasse.get(count), probabilidade);
                     probTar.put(linhasClasse.get(count)+classes.get(i), tar);
-                    
-    
                 }
                // entriesSortedByValues(probTar);
                 ///System.out.println(entriesSortedByValues(probTar));
 
                 if (csOchiai.isSelected()) {
-
                     heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                     probabilidade = heuristicas.ochiai();
                     Resultado och = new Resultado(classes.get(i), linhasClasse.get(count), probabilidade);
@@ -413,11 +412,17 @@ public class Interface extends javax.swing.JFrame {
             }
         }
         
+        /*Set values = probTar.entrySet();
+         Iterator myIterator = values.iterator();
+         System.out.println("Listando arquivos contidos no HashMap probTar:");
+         while (myIterator.hasNext()) {
+         Resultado dados = (Resultado) ((Entry) myIterator.next()).getValue();
+         System.out.println(" Linha: " + dados.getLinha() + " Probabilidade: " + dados.getProbabilidade() );
+         }*/
+        
         //--------------------------------------------Fim cálculo das heurísticas -----------------------------------------------------
         
-        /*
-         JanelaResult panel = new JanelaResult();
-         panel.setVisible(true);*/
+        
     }//GEN-LAST:event_btnExecutarActionPerformed
 
     public void escreveTxt(String elementos) throws IOException {       //escreve código do teste no arquivo txt
@@ -468,7 +473,19 @@ public class Interface extends javax.swing.JFrame {
         sortedEntries.addAll(map.entrySet());
         return sortedEntries;
     }
-        
+     
+            
+   /*public void gerarDataSet(TreeMap<String, Resultado> map){
+       
+        int i=0;
+        if(!map.isEmpty()){
+            for (Map.Entry<String, Resultado> probEntry : map.entrySet()) {
+                dataSet.addValue(probEntry.getValue().getProbabilidade(), "Tarantula", Integer.toString(probEntry.getValue().getLinha()));
+                if(i==8)
+                    break;
+            }
+        }
+   }*/
 
     private void csTarantulaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csTarantulaActionPerformed
         // TODO add your handling code here:

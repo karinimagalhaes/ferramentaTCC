@@ -261,7 +261,7 @@ public class Ecobertura {
         /*
          verifica se o teste passou ou falhou
          */
-        System.out.println(metodoTeste.size());
+        //System.out.println(metodoTeste.size());
         for (int i = 0; i < metodoTeste.size(); i++) {
             //System.out.println(junit.getTestesFalhos().get(i));
             if (junit.getTestesFalhos().contains(metodoTeste.get(i))) {

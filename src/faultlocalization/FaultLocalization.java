@@ -40,7 +40,12 @@ public class FaultLocalization {
     public double tarantula(){
         
         double prob = 0.0;
-        prob = (falha/totFalha)/((sucesso/totSucesso)+(falha/totFalha));
+        if((falha==0 && totFalha==0) || (sucesso==0 && totSucesso==0)){
+            prob=0.0;
+        }
+        else {
+            prob = (falha/totFalha)/((sucesso/totSucesso)+(falha/totFalha));
+        }
         return prob;
     }
     
@@ -59,7 +64,12 @@ public class FaultLocalization {
     
     public double ochiai(){
         double prob = 0.0;
-        prob = falha/sqrt(totFalha * (falha + sucesso));
+        if(totFalha==0){
+            prob=0.0;
+        }
+        else{
+            prob = falha/sqrt(totFalha * (falha + sucesso));
+        }
         return prob;
     }
     
