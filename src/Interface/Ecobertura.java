@@ -123,6 +123,7 @@ public class Ecobertura {
                 if (StringUtils.isNotBlank(auxLinha)) {     // transforma a linha para inteiro
                     qtdeLinhas = Integer.parseInt(auxLinha);
                 }
+                
                 sbLinha.delete(0, sbLinha.length());
             }
 
@@ -257,13 +258,10 @@ public class Ecobertura {
 
         }
              //System.out.println("linha: " + linha + " metodo: " + metodo);
-
-        
-       
-
         /*
          verifica se o teste passou ou falhou
          */
+        System.out.println(metodoTeste.size());
         for (int i = 0; i < metodoTeste.size(); i++) {
             //System.out.println(junit.getTestesFalhos().get(i));
             if (junit.getTestesFalhos().contains(metodoTeste.get(i))) {
@@ -272,9 +270,11 @@ public class Ecobertura {
         }
 
         passaram = abs(metodoTeste.size() - falharam);
+        /*System.out.println("Classe: ["+classe+"]"+"linha: [" +linha +"]" + " Metodo: [" + metodo + "]" + " metodo de teste[" + metodoTeste + "]" +
+                " Falharam: [" + falharam + "]" + " Passaram: [" + passaram + "]");*/
         metodoTeste.clear();
 
-        //System.out.println("[" +qtdeLinhas +"]" + "[" + metodo + "]" + "[" + metodoTeste + "]" + "[" + falharam + "]" + "[" + passaram + "]");
+        
     }
     
     public void verificaMetodo(int linha, String classe, Hashtable infJxr){
@@ -290,7 +290,7 @@ public class Ecobertura {
                 for(int i=0; i<dadosTeste.getmChamado().size(); i++){
                     if (dadosTeste.getmChamado().get(i).contains(metodo)) {
                         metodoTeste.add(dadosTeste.getMetodoTeste());  // armazena metodo de teste que chama o metodo do codigo
-                        System.out.println("ENTREI: ["+linha+"]"+"["+metodo+"_"+classe+"]"+dadosTeste.getMetodoTeste());
+                        //System.out.println("ENTREI: ["+linha+"]"+"["+metodo+"_"+classe+"]"+dadosTeste.getMetodoTeste());
                         break;
                     }
                 }
@@ -318,6 +318,7 @@ public class Ecobertura {
                 }
             }
         }
+        
         return linhasCod;
     }
 

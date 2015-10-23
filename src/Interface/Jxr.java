@@ -25,16 +25,7 @@ import org.jsoup.select.Elements;
  */
 public class Jxr {
 
-    
-    private ArrayList <String> object = new ArrayList<String>();
-    private String metodoTeste;
-    private String classeObj;
-    private String objeto;
-    private ArrayList<String> mChamado = new ArrayList<String>();
-    private DadosTeste dadosTeste = null;
     private Document document;
-    
-    private ArrayList<DadosTeste> dados = new ArrayList<>();
   
 
     public Jxr(Document document) {
@@ -65,15 +56,21 @@ public class Jxr {
         boolean obj = false;
         boolean cod = false;
         boolean ponto = false;
+        ArrayList <String> object = new ArrayList<String>();
+        ArrayList<String> mChamado = new ArrayList<String>();
+        ArrayList<DadosTeste> dados = new ArrayList<>();
+        String metodoTeste = null;
+        String classeObj = null;
+        String objeto = null;
         String auxiliar = null;
-        int contagem = 0;
+        DadosTeste dadosTeste = null;
+        
        // System.out.println(reader.available()+"->"+classe);
         while (reader.available() > 0) {
             corrente = (char) reader.read();
             if((corrente == '\t') || (corrente == '\r')){
                 continue;
             }
-            
             
             sbaux.append(corrente);
             
@@ -107,15 +104,15 @@ public class Jxr {
             }
             //verificar objetos
             if(corrente != '='){
-                auxiliar = sbaux.toString();    // guarda o nome do objeto
+                auxiliar = sbaux.toString();                // guarda o nome do objeto
             }
             if(sbaux.toString().equals(classe)){
                 classeObj = classe;
-                obj = true; // encontrou um objeto
+                obj = true;                                 // encontrou um objeto
                 sbaux.delete(0, sbaux.length());
             }
             if((corrente == '(')){
-                obj = false;    // torna obj falso para não pegar a instanciação do objeto ex: Calculadora calc = new Calculadora()
+                obj = false;                                // torna obj falso para não pegar a instanciação do objeto ex: Calculadora calc = new Calculadora()
             }
             if((obj == true) && ((corrente == '=') || (corrente == ';'))){
                 objeto = auxiliar.trim();
@@ -126,12 +123,12 @@ public class Jxr {
             // verifica os métodos do código
             for(int i=0; i<object.size(); i++){
                 if((sbaux.toString()).equals(object.get(i))){
-                    cod = true;    // verifica se encontrou um objeto
+                    cod = true;                          // verifica se encontrou um objeto
                 }
             }
             
             if((corrente == '.') && (cod == true)){
-                ponto = true;   // verifica se o objeto vai chamar um metodo
+                ponto = true;                           // verifica se o objeto vai chamar um metodo
                 sbaux.delete(0, sbaux.length());
             }
             if((cod == true) && (ponto == true)){
@@ -147,21 +144,11 @@ public class Jxr {
            
             if(metodoTeste != null && classeObj != null && object != null && !mChamado.isEmpty() && bloco == 1){
                 dadosTeste = new DadosTeste(classeObj, object, mChamado, metodoTeste);
-               // System.out.println(dadosTeste.getClasse() + "->"+dadosTeste.getObjetos()+"->"+dadosTeste.getmChamado()+"->"+dadosTeste.getMetodoTeste());
-                 
-                    dados.add(dadosTeste);     // adiciona na hashtable
-               //   
-                    
-                    //System.out.println("entrei");
-                    /*System.out.println("Chave: "+metodoTeste+"_"+classe+ " Metodo Teste: "+metodoTeste + " Classe: " + dadosTeste.getClasse() + 
-                        " Objetos: " + dadosTeste.getObjetos() +" metodosChamados" + dadosTeste.getmChamado());*/
-                
+                dados.add(dadosTeste);   
                 classeObj = null;
-                //object.clear();
-               // mChamado.clear();
+                object = new ArrayList<>();
+                mChamado = new ArrayList<>();
                 metodoTeste = null;
-                // System.out.println(contagem+"->"+dados.get(contagem).getClasse()+"->"+dados.get(contagem).getMetodoTeste()+"->"+dados.get(contagem).getObjetos()+"->"+dados.get(contagem).getmChamado());
-           // contagem++;
             }
             
             
@@ -170,15 +157,6 @@ public class Jxr {
             }
             
         }
-        /*System.out.println("hashmap");
-        Set values = inf.entrySet();
-         Iterator myIterator = values.iterator();
-         while (myIterator.hasNext()) {
-         DadosTeste dados = (DadosTeste) ((Entry) myIterator.next()).getValue();
-         System.out.println("Chave: "+ ((Entry) myIterator.next()).getKey()+" Classe: " + dados.getClasse() + " MetodoTeste: " + dados.getMetodoTeste()
-         + " Objetos: " + dados.getObjetos().size() + " MChamados: " + dados.getmChamado().size());
-         }*/
-       //reader.reset();
         
          return dados;
     }

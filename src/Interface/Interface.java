@@ -81,7 +81,7 @@ public class Interface extends javax.swing.JFrame {
                 abrEcoberturaActionPerformed(evt);
             }
         });
-        getContentPane().add(abrEcobertura, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 40, 75, -1));
+        getContentPane().add(abrEcobertura, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 40, 75, -1));
 
         lJunit.setText("Junit*:");
         getContentPane().add(lJunit, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 40, -1));
@@ -94,7 +94,7 @@ public class Interface extends javax.swing.JFrame {
                 abrJunitActionPerformed(evt);
             }
         });
-        getContentPane().add(abrJunit, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 140, 75, -1));
+        getContentPane().add(abrJunit, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 140, 75, -1));
 
         lheuristica.setBackground(new java.awt.Color(255, 255, 255));
         lheuristica.setText("Heurística*:");
@@ -107,7 +107,7 @@ public class Interface extends javax.swing.JFrame {
                 btnExecutarActionPerformed(evt);
             }
         });
-        getContentPane().add(btnExecutar, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 250, -1, -1));
+        getContentPane().add(btnExecutar, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 250, -1, -1));
 
         lJxr.setText("Jxr*:");
         getContentPane().add(lJxr, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 30, -1));
@@ -120,7 +120,7 @@ public class Interface extends javax.swing.JFrame {
                 abrJxrActionPerformed(evt);
             }
         });
-        getContentPane().add(abrJxr, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 90, 75, -1));
+        getContentPane().add(abrJxr, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 90, 75, -1));
         getContentPane().add(arqEcobertura, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 39, 540, -1));
 
         csTarantula.setText("Tarantula");
@@ -146,7 +146,7 @@ public class Interface extends javax.swing.JFrame {
                 jLabel2MouseClicked(evt);
             }
         });
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(588, 10, 40, -1));
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 10, 40, -1));
 
         jLabel1.setText("* campos obrigatórios.");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 280, 130, -1));
@@ -248,7 +248,7 @@ public class Interface extends javax.swing.JFrame {
 
     private void btnExecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExecutarActionPerformed
         // TODO add your handling code here:
-        ResultadoJanela.inicializaJanela();
+        //ResultadoJanela.inicializaJanela();
         
         if (!csTarantula.isSelected() && !csJaccard.isSelected() && !csOchiai.isSelected() && !csSBI.isSelected()) {
             JOptionPane.showMessageDialog(null, "Selecione uma heurística");
