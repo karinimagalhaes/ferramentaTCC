@@ -8,6 +8,7 @@ package Interface;
 import faultlocalization.FaultLocalization;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -62,12 +63,16 @@ public class Interface extends javax.swing.JFrame {
         csOchiai = new javax.swing.JCheckBox();
         csJaccard = new javax.swing.JCheckBox();
         csSBI = new javax.swing.JCheckBox();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Localizador de Defeitos");
         setName("principal"); // NOI18N
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        lEcobertura.setText("Cobertura:");
+        lEcobertura.setText("Cobertura *:");
+        getContentPane().add(lEcobertura, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 19, 70, -1));
 
         abrEcobertura.setBackground(new java.awt.Color(204, 204, 255));
         abrEcobertura.setText("Abrir");
@@ -76,8 +81,11 @@ public class Interface extends javax.swing.JFrame {
                 abrEcoberturaActionPerformed(evt);
             }
         });
+        getContentPane().add(abrEcobertura, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 40, 75, -1));
 
-        lJunit.setText("Junit:");
+        lJunit.setText("Junit*:");
+        getContentPane().add(lJunit, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 40, -1));
+        getContentPane().add(arqJunit, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 540, -1));
 
         abrJunit.setBackground(new java.awt.Color(204, 204, 255));
         abrJunit.setText("Abrir");
@@ -86,9 +94,11 @@ public class Interface extends javax.swing.JFrame {
                 abrJunitActionPerformed(evt);
             }
         });
+        getContentPane().add(abrJunit, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 140, 75, -1));
 
         lheuristica.setBackground(new java.awt.Color(255, 255, 255));
-        lheuristica.setText("Heurística:");
+        lheuristica.setText("Heurística*:");
+        getContentPane().add(lheuristica, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 70, -1));
 
         btnExecutar.setBackground(new java.awt.Color(153, 204, 255));
         btnExecutar.setText("Executar");
@@ -97,8 +107,11 @@ public class Interface extends javax.swing.JFrame {
                 btnExecutarActionPerformed(evt);
             }
         });
+        getContentPane().add(btnExecutar, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 250, -1, -1));
 
-        lJxr.setText("Jxr:");
+        lJxr.setText("Jxr*:");
+        getContentPane().add(lJxr, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 30, -1));
+        getContentPane().add(arqJxr, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 540, -1));
 
         abrJxr.setBackground(new java.awt.Color(204, 204, 255));
         abrJxr.setText("Abrir");
@@ -107,6 +120,8 @@ public class Interface extends javax.swing.JFrame {
                 abrJxrActionPerformed(evt);
             }
         });
+        getContentPane().add(abrJxr, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 90, 75, -1));
+        getContentPane().add(arqEcobertura, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 39, 540, -1));
 
         csTarantula.setText("Tarantula");
         csTarantula.addActionListener(new java.awt.event.ActionListener() {
@@ -114,85 +129,27 @@ public class Interface extends javax.swing.JFrame {
                 csTarantulaActionPerformed(evt);
             }
         });
+        getContentPane().add(csTarantula, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, -1, -1));
 
         csOchiai.setText("Ochiai");
+        getContentPane().add(csOchiai, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, -1, -1));
 
         csJaccard.setText("Jaccard");
+        getContentPane().add(csJaccard, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, -1, -1));
 
         csSBI.setText("SBI");
+        getContentPane().add(csSBI, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 250, -1, -1));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(arqJxr)
-                            .addComponent(arqJunit)
-                            .addComponent(arqEcobertura)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lheuristica)
-                                    .addComponent(csTarantula)
-                                    .addComponent(csSBI))
-                                .addGap(0, 370, Short.MAX_VALUE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(abrJunit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(abrEcobertura, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnExecutar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(abrJxr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(csJaccard)
-                            .addComponent(lEcobertura)
-                            .addComponent(lJunit)
-                            .addComponent(lJxr)
-                            .addComponent(csOchiai))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lEcobertura)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(abrEcobertura)
-                    .addComponent(arqEcobertura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lJunit)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(arqJunit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(abrJunit))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lJxr)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(arqJxr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(abrJxr))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lheuristica)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(csTarantula)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(csOchiai)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(csJaccard)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(btnExecutar))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(csSBI)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        jLabel2.setText("Ajuda");
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel2MouseClicked(evt);
+            }
+        });
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(588, 10, 40, -1));
+
+        jLabel1.setText("* campos obrigatórios.");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 280, 130, -1));
 
         pack();
         setLocationRelativeTo(null);
@@ -291,6 +248,8 @@ public class Interface extends javax.swing.JFrame {
 
     private void btnExecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExecutarActionPerformed
         // TODO add your handling code here:
+        ResultadoJanela.inicializaJanela();
+        
         if (!csTarantula.isSelected() && !csJaccard.isSelected() && !csOchiai.isSelected() && !csSBI.isSelected()) {
             JOptionPane.showMessageDialog(null, "Selecione uma heurística");
         }
@@ -421,6 +380,8 @@ public class Interface extends javax.swing.JFrame {
                     probabilidade = heuristicas.tarantula();
                     Resultado tar = new Resultado(classes.get(i), linhasClasse.get(count), probabilidade);
                     probTar.put(linhasClasse.get(count)+classes.get(i), tar);
+                    
+    
                 }
                // entriesSortedByValues(probTar);
                 ///System.out.println(entriesSortedByValues(probTar));
@@ -513,6 +474,16 @@ public class Interface extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_csTarantulaActionPerformed
 
+    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(null, "Este programa tem como objetivo auxiliar os desenvolvedores na procura por defeitos no código fonte.\n"
+                + "Abaixo são descritas as funcionalidades de cada campo:\n"
+                + "*Cobertura: Destinado para inserção do DIRETÓRIO dos relatórios de cobertura de código gerados pelo plugin Maven Cobertura.\n"
+                + "*Jxr: Destinado para inserção do DIRETÓRIO dos relatórios com os códigos dos testes unitários gerados pelo plugin Maven Jxr.\n"
+                + "*Junit: Destinado para inserção do RALATÓRIO de teste gerado pelo plugin Surefire Report.\n"
+                + "*Heurística: Destinado para a escolha de pelo menos uma heurística de localização.");
+    }//GEN-LAST:event_jLabel2MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -560,6 +531,8 @@ public class Interface extends javax.swing.JFrame {
     private javax.swing.JCheckBox csOchiai;
     private javax.swing.JCheckBox csSBI;
     private javax.swing.JCheckBox csTarantula;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel lEcobertura;
     private javax.swing.JLabel lJunit;
     private javax.swing.JLabel lJxr;
