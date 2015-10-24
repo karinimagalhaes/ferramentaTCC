@@ -6,6 +6,7 @@
 package Interface;
 
 import faultlocalization.FaultLocalization;
+import groovy.ui.SystemOutputInterceptor;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -187,6 +188,24 @@ public class Interface extends javax.swing.JFrame {
     private ArrayList<String> files = new ArrayList<>();    // armazena a lista de arquivos do diretório
     private Hashtable infJxr = new Hashtable();
     private ArrayList<DadosTeste> aux = new ArrayList<>();
+
+    public TreeMap<String, Resultado> getProbTar() {
+        return probTar;
+    }
+
+    public TreeMap<String, Resultado> getProbOch() {
+        return probOch;
+    }
+
+    public TreeMap<String, Resultado> getProbJac() {
+        return probJac;
+    }
+
+    public TreeMap<String, Resultado> getProbSbi() {
+        return probSbi;
+    }
+    
+    
     
     public Hashtable getInfJxr() {
         return infJxr;
@@ -210,7 +229,7 @@ public class Interface extends javax.swing.JFrame {
     private void abrJunitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrJunitActionPerformed
         // TODO add your handling code here:
         JFileChooser file = new JFileChooser();
-        file.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        file.setFileSelectionMode(JFileChooser.FILES_ONLY);
         int i = file.showSaveDialog(null);
         if (i == 1) {
             arqJunit.setText("");
@@ -249,15 +268,12 @@ public class Interface extends javax.swing.JFrame {
 
     private void btnExecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExecutarActionPerformed
         // TODO add your handling code here:
-        ResultadoJanela.inicializaJanela();
         
         if (!csTarantula.isSelected() && !csJaccard.isSelected() && !csOchiai.isSelected() && !csSBI.isSelected()) {
             JOptionPane.showMessageDialog(null, "Selecione uma heurística");
         }
-
-
         // Lê Junit
-        File fileJunit = new File("C:\\Users\\Karini\\workspace\\myProject\\target\\site\\surefire-report.html");
+        File fileJunit = new File(junit.getPath());
         //File diretorioJunit = new File(junit.getPath());
         Document documentoJunit;
         try {
@@ -271,27 +287,29 @@ public class Interface extends javax.swing.JFrame {
         }
 
         // ---------------------------- Processa arquivos Ecobertura --------------------------------------
-        ArrayList<String> filesEcob = new ArrayList<>();
-        //filesEcob = navegar(ecobertura.getPath());
-        String pathCob = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\cobertura";
-        navegar(pathCob);     // armazena os arquivos do diretório no arrayList files
+      
+        
+        navegar(ecobertura.getPath());     // armazena os arquivos do diretório no arrayList files
         for (int i = 0; i < files.size(); i++) {
             File fileEcob = new File(files.get(i));
             Document documentoEcob;
             
             try {
+                System.out.println(files.get(i));
                 documentoEcob = Jsoup.parse(fileEcob, null);
                 Interface parserHtmlEcob = new Interface(documentoEcob);
                 lerEcob = new Ecobertura(parserHtmlEcob.document);
                 boolean cobertura = lerEcob.cobertura();
                 if (cobertura == true) {            // se o arquivo não cobrir o código fonte -> dispensa arquivo
                     lerEcob.escreveTxt();
-                    linhas.put(lerEcob.getClasse(), lerEcob.qtdeLinhasCod());   // armazena a classe e as linhas cobertas da classe
-                    classes.add(lerEcob.getClasse());                           // armazena todas as classes do sistema
-                    linhaMetodo = lerEcob.getInf();
-                    for(int j=0; j<linhaMetodo.size(); j++){        // linhaMetodo é um array de informacoes
-                        String chave = Integer.toString(linhaMetodo.get(j).getLinha())+lerEcob.getClasse();    // chave da treeMap
-                        inf.put(chave, linhaMetodo.get(j));         // inf armazena a linha e o método chamado por ela
+                    if(lerEcob.getClasse() != null){
+                        linhas.put(lerEcob.getClasse(), lerEcob.qtdeLinhasCod());   // armazena a classe e as linhas cobertas da classe
+                        classes.add(lerEcob.getClasse());                           // armazena todas as classes do sistema
+                        linhaMetodo = lerEcob.getInf();
+                        for(int j=0; j<linhaMetodo.size(); j++){        // linhaMetodo é um array de informacoes
+                            String chave = Integer.toString(linhaMetodo.get(j).getLinha())+lerEcob.getClasse();    // chave da treeMap
+                            inf.put(chave, linhaMetodo.get(j));         // inf armazena a linha e o método chamado por ela
+                        }
                     }
                 }
             } catch (IOException ex) {
@@ -302,10 +320,8 @@ public class Interface extends javax.swing.JFrame {
 
         //----------------------------------- Fim processamento Ecobertura--------------------------------------
         // ----------------------------------Processamento arquivos JXR (código de teste) -----------------------------
-        ArrayList<String> filesJxr = new ArrayList<>();
-        //filesJxr = navegar(jxr.getPath());
-        String arq = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\xref-test";
-        navegar(arq);
+        
+        navegar(jxr.getPath());
         for (int i = 0; i < files.size(); i++) {
             File fileJxr = new File(files.get(i));
             Document documentoJxr;
@@ -327,7 +343,7 @@ public class Interface extends javax.swing.JFrame {
                     }
                     reader.close();
                 }
-                reader.close();
+              //  reader.close();
                 file.delete();
                 aux.clear();
                
@@ -410,9 +426,12 @@ public class Interface extends javax.swing.JFrame {
                     //System.out.println(entriesSortedByValues(probSbi));
                 }
             }
+            ResultadoJanela.inicializaJanela();
         }
         
-        /*Set values = probTar.entrySet();
+        
+        
+       /* Set values = probTar.entrySet();
          Iterator myIterator = values.iterator();
          System.out.println("Listando arquivos contidos no HashMap probTar:");
          while (myIterator.hasNext()) {
@@ -475,17 +494,7 @@ public class Interface extends javax.swing.JFrame {
     }
      
             
-   /*public void gerarDataSet(TreeMap<String, Resultado> map){
-       
-        int i=0;
-        if(!map.isEmpty()){
-            for (Map.Entry<String, Resultado> probEntry : map.entrySet()) {
-                dataSet.addValue(probEntry.getValue().getProbabilidade(), "Tarantula", Integer.toString(probEntry.getValue().getLinha()));
-                if(i==8)
-                    break;
-            }
-        }
-   }*/
+ 
 
     private void csTarantulaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csTarantulaActionPerformed
         // TODO add your handling code here:

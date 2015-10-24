@@ -81,6 +81,7 @@ public class Ecobertura {
         StringBuffer sbLinha = new StringBuffer();
         StringBuffer sbMetodo = new StringBuffer();
         String metodoTemp;
+        boolean controleClasse = false;
 
         // Pega somente os elementos com tag "tr"
         Elements elements = document.getElementsByTag("tr");
@@ -135,24 +136,33 @@ public class Ecobertura {
                 //------------------------- Verifica classe -------------------------
                 if (element.getElementsByTag("span").text().contains("class")) {
                     element.select("span.keyword").remove();
-                    classe = element.text().trim();
-                    aux = classe.toCharArray();
-                    //for (int i = 0; i < classe.length(); i++) {
-                    for (int j = 0; j < aux.length; j++) {
-                        if ((65 <= aux[j]) && (aux[j] <= 90) || (aux[j] >= 97) && (aux[j] <= 122) || (aux[j] == 95)) {
-                            sbClasse.append(aux[j]);
-                            //System.out.println(j + ", " + sbClasse);
-                            if ((aux[j + 1] == ' ') || (aux[j + 1] == '{')) {
-                                // System.out.println("entrei");
-                                for (int k = j++; k < aux.length; k++) {
-                                    aux[k] = ' ';
+                    if(controleClasse == false){
+                        classe = element.text().trim();
+                        aux = classe.toCharArray();
+                        
+                        for (int j = 0; j < aux.length; j++) {
+                            if ((65 <= aux[j]) && (aux[j] <= 90) || (aux[j] >= 97) && (aux[j] <= 122) || (aux[j] == 95)) {
+                                sbClasse.append(aux[j]);
+                                //System.out.println(j + ", " + sbClasse);
+                                if(j < aux.length-1){
+                                   // System.out.println("size: "+aux.length+" j: "+j);
+                                    if ((aux[j + 1] == ' ') || (aux[j + 1] == '{')) {
+                                        // System.out.println("entrei");
+                                        if((j+1) < aux.length-1){
+                                            for (int k = j++; k < aux.length; k++) {
+                                                aux[k] = ' ';
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    excluiLinhas.add(qtdeLinhas);
-                    classe = sbClasse.toString().replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "");
+                        excluiLinhas.add(qtdeLinhas);
+                        classe = sbClasse.toString().replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "");
+                       // System.out.println(classe);
+                        controleClasse = true;
+                    }
                     // System.out.println("Classe: " + classe);
                 } //------------------------------- Fim verifica classe------------------------------
                 //------------------------------ Verifica método ----------------------------------
@@ -234,6 +244,7 @@ public class Ecobertura {
              verifica as linhas percorrendo o array
              arrayLinhas armazena as linhas onde os métodos foram instanciados
              */
+            System.out.println("classe: "+classe+" linha: "+linha);
             for (int i = 0; i < arrayLinhas.size(); i++) {
                 int j = i + 1;
                 if (j < arrayLinhas.size()) {

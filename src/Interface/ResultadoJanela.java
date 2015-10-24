@@ -5,10 +5,15 @@
  */
 package Interface;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -21,25 +26,38 @@ import org.jfree.data.category.DefaultCategoryDataset;
  * @author Karini
  */
 public class ResultadoJanela extends JFrame {
-    DefaultCategoryDataset dataSet;
-    private String classe;
-
-    public void setDataSet(DefaultCategoryDataset dataSet) {
-        this.dataSet = dataSet;
-    }
-
-    public void setClasse(String classe) {
-        this.classe = classe;
-    }
-    
-    
-    
+    DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
+    String classe;
     public ResultadoJanela() {
         super("Resultado");
-        JFreeChart chart = gerarGrafico(dataSet, classe);
-        this.add(new ChartPanel(chart));
-       
-        this.pack();
+        //DefaultCategoryDataset dataSet = gerarDataSet();
+         //chart = gerarGrafico(dataSet, classe);
+        JFrame frame = new JFrame("Chart");
+        /*frame.getContentPane().add(new ChartPanel(chart), BorderLayout.WEST);
+        frame.setSize(12, 16);
+        frame.getContentPane().add(new ChartPanel(chart), BorderLayout.EAST);
+        frame.setSize(12, 16);
+        frame.pack();*/
+        
+        final DefaultTableModel modelo = new DefaultTableModel(); 
+        
+        JTable tabela = new JTable(modelo);
+        
+        modelo.addColumn("Classe");
+        modelo.addColumn("Linha");
+        modelo.addColumn("Probabilidade");
+        modelo.addColumn("Heurística");
+        
+        tabela.setPreferredScrollableViewportSize(new Dimension(580, 100));  
+        tabela.getColumnModel().getColumn(0).setPreferredWidth(50);  
+        tabela.getColumnModel().getColumn(1).setPreferredWidth(200);  
+        tabela.getColumnModel().getColumn(2).setPreferredWidth(80);  
+        tabela.getColumnModel().getColumn(3).setPreferredWidth(50);       
+        JScrollPane scrollPane = new JScrollPane(tabela);  
+        scrollPane.setLocation(300,350);  
+        scrollPane.setSize(300,100);  
+        frame.add(scrollPane);  
+        frame.setVisible(true);
         
        /* //Cria um dataSet para inserir os dados que serão passados para a criação do grafico tipo Pie
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
@@ -78,8 +96,6 @@ dataset.addValue(1, "Azul", "Gol");
         new ResultadoJanela().setVisible(true);
     }
     
-
-    
     public JFreeChart gerarGrafico(CategoryDataset dataSet, String classe){
         JFreeChart chart = ChartFactory.createBarChart(
             "Resultado da Localização para "+classe, //Titulo
@@ -92,4 +108,16 @@ dataset.addValue(1, "Azul", "Gol");
             false); // exibir: legendas, tooltips, url
         return chart;
     }
+    
+    /*public CategoryDataset gerarDataSet(DefaultCategoryDataset dataSet){
+        int i=0;
+        if(!map.isEmpty()){
+            for (Map.Entry<String, Resultado> probEntry : map.entrySet()) {
+                dataSet.addValue(probEntry.getValue().getProbabilidade(), "Tarantula", Integer.toString(probEntry.getValue().getLinha()));
+                if(i==8)
+                    break;
+            }
+        }
+        return dataSet;
+   }*/
 }
