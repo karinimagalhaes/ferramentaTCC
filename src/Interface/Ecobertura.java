@@ -124,7 +124,7 @@ public class Ecobertura {
                 if (StringUtils.isNotBlank(auxLinha)) {     // transforma a linha para inteiro
                     qtdeLinhas = Integer.parseInt(auxLinha);
                 }
-                
+
                 sbLinha.delete(0, sbLinha.length());
             }
 
@@ -136,19 +136,19 @@ public class Ecobertura {
                 //------------------------- Verifica classe -------------------------
                 if (element.getElementsByTag("span").text().contains("class")) {
                     element.select("span.keyword").remove();
-                    if(controleClasse == false){
+                    if (controleClasse == false) {
                         classe = element.text().trim();
                         aux = classe.toCharArray();
-                        
+
                         for (int j = 0; j < aux.length; j++) {
                             if ((65 <= aux[j]) && (aux[j] <= 90) || (aux[j] >= 97) && (aux[j] <= 122) || (aux[j] == 95)) {
                                 sbClasse.append(aux[j]);
                                 //System.out.println(j + ", " + sbClasse);
-                                if(j < aux.length-1){
-                                   // System.out.println("size: "+aux.length+" j: "+j);
+                                if (j < aux.length - 1) {
+                                    // System.out.println("size: "+aux.length+" j: "+j);
                                     if ((aux[j + 1] == ' ') || (aux[j + 1] == '{')) {
                                         // System.out.println("entrei");
-                                        if((j+1) < aux.length-1){
+                                        if ((j + 1) < aux.length - 1) {
                                             for (int k = j++; k < aux.length; k++) {
                                                 aux[k] = ' ';
                                             }
@@ -160,7 +160,7 @@ public class Ecobertura {
 
                         excluiLinhas.add(qtdeLinhas);
                         classe = sbClasse.toString().replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "");
-                       // System.out.println(classe);
+                        // System.out.println(classe);
                         controleClasse = true;
                     }
                     // System.out.println("Classe: " + classe);
@@ -211,7 +211,7 @@ public class Ecobertura {
          }*/
     }
 
-    public void falharam(String classe, int linha, TreeMap<String, Informacoes> inf, Hashtable jxr, Junit junit) {
+    public void falharam(String classe, int linha, TreeMap<String, Informacoes> infEcob, Hashtable jxr, Junit junit) {
         passaram = 0;
         falharam = 0;
 
@@ -222,47 +222,53 @@ public class Ecobertura {
          Verifica o método que cada linha de código pertence
          1º caso: verifica se a linha e a classe é chave de algum método
          */
-        if (inf.containsKey(linhaTemp + classe)) {
-            metodo = inf.get(linhaTemp + classe).getMetodo();       // retorna o metodo da linha
+        if (infEcob.containsKey(linhaTemp + classe)) {
+            metodo = infEcob.get(linhaTemp + classe).getMetodo();       // retorna o metodo da linha
             verificaMetodo(linha, classe, jxr);
-              //System.out.println(linha +"->"+ metodo);
+            //System.out.println(linha +"->"+ metodo);
         } /*
          2º caso: se não a linha não for chave da treeMap passar todos as as linhas para um array
          TreeMap não avança posições e a busca não é sequencial
          */ else {
             // --------- passa a chave (linhas) para um array -------------
-            for (Map.Entry<String, Informacoes> entry : inf.entrySet()) {
+            for (Map.Entry<String, Informacoes> entry : infEcob.entrySet()) {
                 if (entry.getKey().contains(classe)) {
                     arrayLinhas.add(entry.getValue().getLinha());
                 }
             }
             Collections.sort(arrayLinhas);
-            //System.out.println(classe+"->"+arrayLinhas);
+                //System.out.println(classe+"->"+arrayLinhas);
             // ------------- termina --------------------------------------
 
             /*
              verifica as linhas percorrendo o array
              arrayLinhas armazena as linhas onde os métodos foram instanciados
              */
-            System.out.println("classe: "+classe+" linha: "+linha);
+            //System.out.println("classe: " + classe + " linha: " + linha);
             for (int i = 0; i < arrayLinhas.size(); i++) {
                 int j = i + 1;
                 if (j < arrayLinhas.size()) {
                     if (linha > arrayLinhas.get(i) && linha < arrayLinhas.get(j)) {
                         linhaTemp = Integer.toString(arrayLinhas.get(i));
-                        metodo = inf.get(linhaTemp + classe).getMetodo();
-                        verificaMetodo(linha, classe, jxr);
-                       // System.out.println(classe+"->"+linha + "->" + metodo);
+                        if(infEcob.get(linhaTemp + classe) != null){
+                            metodo = infEcob.get(linhaTemp + classe).getMetodo();
+                            verificaMetodo(linha, classe, jxr);
+                        }
+                        // System.out.println(classe+"->"+linha + "->" + metodo);
                     } else if ((linha > arrayLinhas.get(i)) && (linha < qtdeLinhas) && (i == arrayLinhas.size() - 1)) {
                         linhaTemp = Integer.toString(arrayLinhas.get(i));
-                        metodo = inf.get(linhaTemp + classe).getMetodo();
-                        verificaMetodo(linha, classe, jxr);
-                       // System.out.println(classe+"->"+linha + "->" + metodo);
+                        if(infEcob.get(linhaTemp + classe) != null){
+                            metodo = infEcob.get(linhaTemp + classe).getMetodo();
+                            verificaMetodo(linha, classe, jxr);
+                        }
+                        // System.out.println(classe+"->"+linha + "->" + metodo);
                     }
                 } else if (linha > arrayLinhas.get(arrayLinhas.size() - 1)) {
                     linhaTemp = Integer.toString(arrayLinhas.get(arrayLinhas.size() - 1));
-                    metodo = inf.get(linhaTemp + classe).getMetodo();
-                    verificaMetodo(linha, classe, jxr);
+                    if(infEcob.get(linhaTemp + classe) != null){
+                        metodo = infEcob.get(linhaTemp + classe).getMetodo();
+                        verificaMetodo(linha, classe, jxr);
+                    }
                     //System.out.println(classe+"->"+linha + "->" + metodo);
                 }
             }
@@ -282,23 +288,22 @@ public class Ecobertura {
 
         passaram = abs(metodoTeste.size() - falharam);
         /*System.out.println("Classe: ["+classe+"]"+"linha: [" +linha +"]" + " Metodo: [" + metodo + "]" + " metodo de teste[" + metodoTeste + "]" +
-                " Falharam: [" + falharam + "]" + " Passaram: [" + passaram + "]");*/
+         " Falharam: [" + falharam + "]" + " Passaram: [" + passaram + "]");*/
         metodoTeste.clear();
 
-        
     }
-    
-    public void verificaMetodo(int linha, String classe, Hashtable infJxr){
+
+    public void verificaMetodo(int linha, String classe, Hashtable infJxr) {
         // verifica qual/quais são os casos de teste que chamam este método
              /*verificar se a classe do objeto é a mesma do código
          se sim -> verificar quais métodos de teste o metodo do código eh chamado
          */
-        
+
         for (Enumeration n = infJxr.keys(); n.hasMoreElements();) {
             DadosTeste dadosTeste = (DadosTeste) infJxr.get(n.nextElement());
             if (classe.equals(dadosTeste.getClasse())) { // verifica a classe do objeto
                 //System.out.println(classe+"->"+linha+"->"+dadosTeste.getmChamados()+"->"+metodo);
-                for(int i=0; i<dadosTeste.getmChamado().size(); i++){
+                for (int i = 0; i < dadosTeste.getmChamado().size(); i++) {
                     if (dadosTeste.getmChamado().get(i).contains(metodo)) {
                         metodoTeste.add(dadosTeste.getMetodoTeste());  // armazena metodo de teste que chama o metodo do codigo
                         //System.out.println("ENTREI: ["+linha+"]"+"["+metodo+"_"+classe+"]"+dadosTeste.getMetodoTeste());
@@ -329,7 +334,6 @@ public class Ecobertura {
                 }
             }
         }
-        
         return linhasCod;
     }
 

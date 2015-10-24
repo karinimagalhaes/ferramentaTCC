@@ -295,7 +295,7 @@ public class Interface extends javax.swing.JFrame {
             Document documentoEcob;
             
             try {
-                System.out.println(files.get(i));
+                //System.out.println(files.get(i));
                 documentoEcob = Jsoup.parse(fileEcob, null);
                 Interface parserHtmlEcob = new Interface(documentoEcob);
                 lerEcob = new Ecobertura(parserHtmlEcob.document);
@@ -426,18 +426,18 @@ public class Interface extends javax.swing.JFrame {
                     //System.out.println(entriesSortedByValues(probSbi));
                 }
             }
-            ResultadoJanela.inicializaJanela();
+            //ResultadoJanela.inicializaJanela();
         }
         
         
         
-       /* Set values = probTar.entrySet();
+        Set values = probTar.entrySet();
          Iterator myIterator = values.iterator();
          System.out.println("Listando arquivos contidos no HashMap probTar:");
          while (myIterator.hasNext()) {
          Resultado dados = (Resultado) ((Entry) myIterator.next()).getValue();
-         System.out.println(" Linha: " + dados.getLinha() + " Probabilidade: " + dados.getProbabilidade() );
-         }*/
+         System.out.println(" Linha: " + dados.getLinha() + " Classe: " + dados.getClasse()+ " Probabilidade: " + dados.getProbabilidade());
+         }
         
         //--------------------------------------------Fim cálculo das heurísticas -----------------------------------------------------
         
