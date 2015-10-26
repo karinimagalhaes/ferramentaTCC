@@ -14,11 +14,13 @@ public class Resultado {
     private String classe;
     private int linha;
     private double probabilidade;
+    private String heuristica;
     
-     public Resultado(String classe, int linha, double probabilidade) {
+     public Resultado(String classe, int linha, double probabilidade, String heuristica) {
         this.classe = classe;
         this.linha = linha;
         this.probabilidade = probabilidade;
+        this.heuristica = heuristica;
     }
     
     public String getClasse() {
@@ -33,8 +35,7 @@ public class Resultado {
         return probabilidade;
     }
     
-
-   
-    
-    
+    public String getHeuristica(){
+        return heuristica;
+    }
 }

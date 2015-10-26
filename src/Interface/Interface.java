@@ -5,14 +5,15 @@
  */
 package Interface;
 
+import faultlocalization.ComparatorResultado;
 import faultlocalization.FaultLocalization;
-import groovy.ui.SystemOutputInterceptor;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -23,9 +24,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
-import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.category.DefaultCategoryDataset;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -178,10 +176,10 @@ public class Interface extends javax.swing.JFrame {
     private String path = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\teste.txt";
     
     //private Hashtable prob = new Hashtable();
-    private TreeMap<String, Resultado> probTar = new TreeMap<>();
-    private TreeMap<String, Resultado> probOch = new TreeMap<>();
-    private TreeMap<String, Resultado> probJac = new TreeMap<>();
-    private TreeMap<String, Resultado> probSbi = new TreeMap<>();
+    private List<Resultado> probTar = new ArrayList<>();
+    private List<Resultado> probOch = new ArrayList<>();
+    private List<Resultado> probJac = new ArrayList<>();
+    private List<Resultado> probSbi = new ArrayList<>();
     private TreeMap<String, Informacoes> inf = new TreeMap<>();
     private Map<String, ArrayList<Integer>> linhas = new TreeMap();  // armazena e classe e as linhas cobertas da classe
     private ArrayList<String> classes = new ArrayList<>();
@@ -189,24 +187,6 @@ public class Interface extends javax.swing.JFrame {
     private Hashtable infJxr = new Hashtable();
     private ArrayList<DadosTeste> aux = new ArrayList<>();
 
-    public TreeMap<String, Resultado> getProbTar() {
-        return probTar;
-    }
-
-    public TreeMap<String, Resultado> getProbOch() {
-        return probOch;
-    }
-
-    public TreeMap<String, Resultado> getProbJac() {
-        return probJac;
-    }
-
-    public TreeMap<String, Resultado> getProbSbi() {
-        return probSbi;
-    }
-    
-    
-    
     public Hashtable getInfJxr() {
         return infJxr;
     }
@@ -396,8 +376,7 @@ public class Interface extends javax.swing.JFrame {
                     heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                     probabilidade = heuristicas.tarantula();
                    // System.out.println("Linha: "+linhasClasse.get(count)+" probabilidade: "+probabilidade);
-                    Resultado tar = new Resultado(classes.get(i), linhasClasse.get(count), probabilidade);
-                    probTar.put(linhasClasse.get(count)+classes.get(i), tar);
+                    probTar.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Tarantula"));
                 }
                // entriesSortedByValues(probTar);
                 ///System.out.println(entriesSortedByValues(probTar));
@@ -405,39 +384,37 @@ public class Interface extends javax.swing.JFrame {
                 if (csOchiai.isSelected()) {
                     heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                     probabilidade = heuristicas.ochiai();
-                    Resultado och = new Resultado(classes.get(i), linhasClasse.get(count), probabilidade);
-                    probOch.put(linhasClasse.get(count)+classes.get(i), och);
+                    probOch.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Ochiai"));
                 }
                 //System.out.println(entriesSortedByValues(probOch));
 
                 if (csJaccard.isSelected()) {
                     heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                     probabilidade = heuristicas.jaccard();
-                    Resultado jac = new Resultado(classes.get(i), linhasClasse.get(count), probabilidade);
-                    probJac.put(linhasClasse.get(count)+classes.get(i), jac);
+                    probJac.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Jaccard"));
                     //System.out.println(entriesSortedByValues(probJac));
                 }
                 if (csSBI.isSelected()) {
                     heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                     probabilidade = heuristicas.sbi();
-                    Resultado sbi = new Resultado(classes.get(i), linhasClasse.get(count), probabilidade);
-                    probSbi.put(linhasClasse.get(count)+classes.get(i), sbi);
+                    probSbi.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "SBI"));
                     //System.out.println("linha: " + linhas.get(i)+ " falha: " + falhasLinha.get(i) + " sucesso: " + sucessoLinha.get(i) );
                     //System.out.println(entriesSortedByValues(probSbi));
                 }
             }
-            //ResultadoJanela.inicializaJanela();
         }
         
-        
-        
-        Set values = probTar.entrySet();
-         Iterator myIterator = values.iterator();
-         System.out.println("Listando arquivos contidos no HashMap probTar:");
-         while (myIterator.hasNext()) {
-         Resultado dados = (Resultado) ((Entry) myIterator.next()).getValue();
-         System.out.println(" Linha: " + dados.getLinha() + " Classe: " + dados.getClasse()+ " Probabilidade: " + dados.getProbabilidade());
-         }
+        Comparator crescente = new ComparatorResultado();  
+        Comparator decrescente = Collections.reverseOrder(crescente);  
+        Collections.sort(probTar, decrescente);
+        Collections.sort(probJac, decrescente);
+        Collections.sort(probOch, decrescente);
+        Collections.sort(probSbi, decrescente);
+        System.out.println("IMPRESSAO TARANTULA\n"+probTar);
+        System.out.println("IMPRESSAO JACCARD\n"+probJac);
+        System.out.println("IMPRESSAO OCHIAI\n"+probOch);
+        System.out.println("IMPRESSAO SBI\n"+probSbi);
+        ResultadoJanela.inicializaJanela(probTar, probJac, probOch, probSbi);
         
         //--------------------------------------------Fim cálculo das heurísticas -----------------------------------------------------
         

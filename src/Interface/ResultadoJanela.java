@@ -8,6 +8,7 @@ package Interface;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.swing.JFrame;
@@ -26,79 +27,42 @@ import org.jfree.data.category.DefaultCategoryDataset;
  * @author Karini
  */
 public class ResultadoJanela extends JFrame {
-    DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
-    String classe;
-    public ResultadoJanela() {
+   
+    public ResultadoJanela(List<Resultado> tar, List<Resultado> jac, List<Resultado> och, List<Resultado> sbi) {
         super("Resultado");
-        //DefaultCategoryDataset dataSet = gerarDataSet();
-         //chart = gerarGrafico(dataSet, classe);
+        CategoryDataset dataset;
+        JFreeChart chart;
+        dataset = gerarDataset(tar);
+        chart = gerarGrafico(dataset);
         JFrame frame = new JFrame("Chart");
-        /*frame.getContentPane().add(new ChartPanel(chart), BorderLayout.WEST);
+        frame.getContentPane().add(new ChartPanel(chart), BorderLayout.WEST);
         frame.setSize(12, 16);
+        
+        dataset = gerarDataset(jac);
+        chart = gerarGrafico(dataset);
         frame.getContentPane().add(new ChartPanel(chart), BorderLayout.EAST);
         frame.setSize(12, 16);
-        frame.pack();*/
         
-        final DefaultTableModel modelo = new DefaultTableModel(); 
+        dataset = gerarDataset(och);
+        chart = gerarGrafico(dataset);
+        frame.getContentPane().add(new ChartPanel(chart), BorderLayout.SOUTH);
+        frame.setSize(12, 16);
         
-        JTable tabela = new JTable(modelo);
-        
-        modelo.addColumn("Classe");
-        modelo.addColumn("Linha");
-        modelo.addColumn("Probabilidade");
-        modelo.addColumn("Heurística");
-        
-        tabela.setPreferredScrollableViewportSize(new Dimension(580, 100));  
-        tabela.getColumnModel().getColumn(0).setPreferredWidth(50);  
-        tabela.getColumnModel().getColumn(1).setPreferredWidth(200);  
-        tabela.getColumnModel().getColumn(2).setPreferredWidth(80);  
-        tabela.getColumnModel().getColumn(3).setPreferredWidth(50);       
-        JScrollPane scrollPane = new JScrollPane(tabela);  
-        scrollPane.setLocation(300,350);  
-        scrollPane.setSize(300,100);  
-        frame.add(scrollPane);  
-        frame.setVisible(true);
-        
-       /* //Cria um dataSet para inserir os dados que serão passados para a criação do grafico tipo Pie
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        dataset = gerarDataset(jac);
+        chart = gerarGrafico(dataset);
+        frame.getContentPane().add(new ChartPanel(chart), BorderLayout.NORTH);
+        frame.setSize(12, 16);
+        frame.pack();
 
-        //gerar um gráfico para cada classe
-        
-        // (probabilidade, heuristica, linha)
-        dataset.addValue(6, "Preto", "Corsa");
-dataset.addValue(4, "Preto", "Fiesta");
-dataset.addValue(3, "Preto", "Gol");
-dataset.addValue(5, "Vermelho", "Corsa");
-dataset.addValue(2, "Vermelho", "Fiesta");
-dataset.addValue(3, "Vermelho", "Gol");
-dataset.addValue(2, "Azul", "Corsa");
-dataset.addValue(8, "Azul", "Fiesta");
-dataset.addValue(1, "Azul", "Gol");
-
-//Cria um objeto JFreeChart passando os seguintes parametros
-        JFreeChart grafico = ChartFactory.createBarChart(
-                "Título", 
-                "Veículo",    // eixo x 
-                "Quantidade",   // eixo y 
-                dataset, 
-                PlotOrientation.VERTICAL, 
-                true,   // exibir legenda
-                false, // exibir tooltip
-                false   // exibir url
-        );
-
-        this.add(new ChartPanel(grafico));
-        
-        this.pack();*/
     }
 
-    public static void inicializaJanela() {
-        new ResultadoJanela().setVisible(true);
+    public static void inicializaJanela(List<Resultado> tar, List<Resultado> jac, List<Resultado> och, List<Resultado> sbi) {
+        new ResultadoJanela(tar, jac, och, sbi).setVisible(true);
     }
     
-    public JFreeChart gerarGrafico(CategoryDataset dataSet, String classe){
+    public JFreeChart gerarGrafico(CategoryDataset dataSet){
         JFreeChart chart = ChartFactory.createBarChart(
-            "Resultado da Localização para "+classe, //Titulo
+            "Resultado da Localização para classe", //Titulo
             "Heurística", // Eixo X
             "Probabilidade", //Eixo Y
             dataSet, // Dados para o grafico
@@ -109,15 +73,11 @@ dataset.addValue(1, "Azul", "Gol");
         return chart;
     }
     
-    /*public CategoryDataset gerarDataSet(DefaultCategoryDataset dataSet){
-        int i=0;
-        if(!map.isEmpty()){
-            for (Map.Entry<String, Resultado> probEntry : map.entrySet()) {
-                dataSet.addValue(probEntry.getValue().getProbabilidade(), "Tarantula", Integer.toString(probEntry.getValue().getLinha()));
-                if(i==8)
-                    break;
-            }
+    private static CategoryDataset gerarDataset(List<Resultado> resultado) {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        for(int i=0; i<8; i++){
+            dataset.addValue(resultado.get(i).getProbabilidade(), resultado.get(i).getHeuristica(), Integer.toString(resultado.get(i).getLinha()));
         }
-        return dataSet;
-   }*/
+        return dataset;
+    }
 }
