@@ -34,26 +34,29 @@ public class ResultadoJanela extends JFrame {
         JFreeChart chart;
         dataset = gerarDataset(tar);
         chart = gerarGrafico(dataset);
-        JFrame frame = new JFrame("Chart");
+        /*JFrame frame = new JFrame("Chart");
         frame.getContentPane().add(new ChartPanel(chart), BorderLayout.WEST);
-        frame.setSize(12, 16);
+        frame.setSize(12, 16);*/
         
         dataset = gerarDataset(jac);
         chart = gerarGrafico(dataset);
-        frame.getContentPane().add(new ChartPanel(chart), BorderLayout.EAST);
-        frame.setSize(12, 16);
+       /* frame.getContentPane().add(new ChartPanel(chart), BorderLayout.EAST);
+        frame.setSize(12, 16);*/
         
         dataset = gerarDataset(och);
         chart = gerarGrafico(dataset);
-        frame.getContentPane().add(new ChartPanel(chart), BorderLayout.SOUTH);
-        frame.setSize(12, 16);
+        /*frame.getContentPane().add(new ChartPanel(chart), BorderLayout.SOUTH);
+        frame.setSize(12, 16);*/
         
         dataset = gerarDataset(jac);
         chart = gerarGrafico(dataset);
-        frame.getContentPane().add(new ChartPanel(chart), BorderLayout.NORTH);
+       /* frame.getContentPane().add(new ChartPanel(chart), BorderLayout.NORTH);
         frame.setSize(12, 16);
-        frame.pack();
+        frame.pack();*/
 
+        final ChartPanel chartPanel = new ChartPanel(chart, true, true, true, false, true);
+        chartPanel.setPreferredSize(new java.awt.Dimension(600, 380));
+        setContentPane(chartPanel);
     }
 
     public static void inicializaJanela(List<Resultado> tar, List<Resultado> jac, List<Resultado> och, List<Resultado> sbi) {

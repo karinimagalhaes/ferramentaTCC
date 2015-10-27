@@ -174,7 +174,7 @@ public class Interface extends javax.swing.JFrame {
     private BufferedWriter bw;
     private FileInputStream reader;
     private String path = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\teste.txt";
-    
+
     //private Hashtable prob = new Hashtable();
     private List<Resultado> probTar = new ArrayList<>();
     private List<Resultado> probOch = new ArrayList<>();
@@ -248,7 +248,7 @@ public class Interface extends javax.swing.JFrame {
 
     private void btnExecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExecutarActionPerformed
         // TODO add your handling code here:
-        
+
         if (!csTarantula.isSelected() && !csJaccard.isSelected() && !csOchiai.isSelected() && !csSBI.isSelected()) {
             JOptionPane.showMessageDialog(null, "Selecione uma heurística");
         }
@@ -267,13 +267,11 @@ public class Interface extends javax.swing.JFrame {
         }
 
         // ---------------------------- Processa arquivos Ecobertura --------------------------------------
-      
-        
         navegar(ecobertura.getPath());     // armazena os arquivos do diretório no arrayList files
         for (int i = 0; i < files.size(); i++) {
             File fileEcob = new File(files.get(i));
             Document documentoEcob;
-            
+
             try {
                 //System.out.println(files.get(i));
                 documentoEcob = Jsoup.parse(fileEcob, null);
@@ -282,12 +280,12 @@ public class Interface extends javax.swing.JFrame {
                 boolean cobertura = lerEcob.cobertura();
                 if (cobertura == true) {            // se o arquivo não cobrir o código fonte -> dispensa arquivo
                     lerEcob.escreveTxt();
-                    if(lerEcob.getClasse() != null){
+                    if (lerEcob.getClasse() != null) {
                         linhas.put(lerEcob.getClasse(), lerEcob.qtdeLinhasCod());   // armazena a classe e as linhas cobertas da classe
                         classes.add(lerEcob.getClasse());                           // armazena todas as classes do sistema
                         linhaMetodo = lerEcob.getInf();
-                        for(int j=0; j<linhaMetodo.size(); j++){        // linhaMetodo é um array de informacoes
-                            String chave = Integer.toString(linhaMetodo.get(j).getLinha())+lerEcob.getClasse();    // chave da treeMap
+                        for (int j = 0; j < linhaMetodo.size(); j++) {        // linhaMetodo é um array de informacoes
+                            String chave = Integer.toString(linhaMetodo.get(j).getLinha()) + lerEcob.getClasse();    // chave da treeMap
                             inf.put(chave, linhaMetodo.get(j));         // inf armazena a linha e o método chamado por ela
                         }
                     }
@@ -300,34 +298,32 @@ public class Interface extends javax.swing.JFrame {
 
         //----------------------------------- Fim processamento Ecobertura--------------------------------------
         // ----------------------------------Processamento arquivos JXR (código de teste) -----------------------------
-        
         navegar(jxr.getPath());
         for (int i = 0; i < files.size(); i++) {
             File fileJxr = new File(files.get(i));
             Document documentoJxr;
-            
+
             try {
                 documentoJxr = Jsoup.parse(fileJxr, null);
                 Interface parserHtmlJxr = new Interface(documentoJxr);
                 lerJxr = new Jxr(parserHtmlJxr.document);
                 parserHtmlJxr.elementos = lerJxr.leituraJxr();  // retorna o código do relatório sem lixo
-               // System.out.println(parserHtmlJxr.elementos);
+                // System.out.println(parserHtmlJxr.elementos);
                 escreveTxt(parserHtmlJxr.elementos);     // escreve ocódigo em um arquivo TXT para nova leitura
-                
-                for (int j=0; j<classes.size(); j++) {
+
+                for (int j = 0; j < classes.size(); j++) {
                     reader = new FileInputStream(path);
                     aux = lerJxr.leTxt(classes.get(j), path, reader);                       // busca métodos, objetos da classe passada por parâmetro em todos os códigos de teste
-                    for(int k=0; k<aux.size();k++){
-                        infJxr.put(aux.get(k).getMetodoTeste()+"_"+aux.get(k).getClass(), aux.get(k));
-                       // System.out.println(aux.get(k).getMetodoTeste()+"_"+aux.get(k).getClasse());
+                    for (int k = 0; k < aux.size(); k++) {
+                        infJxr.put(aux.get(k).getMetodoTeste() + "_" + aux.get(k).getClass(), aux.get(k));
+                        // System.out.println(aux.get(k).getMetodoTeste()+"_"+aux.get(k).getClasse());
                     }
                     reader.close();
                 }
-              //  reader.close();
+                //  reader.close();
                 file.delete();
                 aux.clear();
-               
-         
+
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -345,8 +341,7 @@ public class Interface extends javax.swing.JFrame {
         //---------------------------------- fim impressão hashtable---------------------------------------------
         files.clear();
         //----------------------------------- Fim processamento Jxr -----------------------------------------------
-        
-        
+
         //--------------------------------------- Início cálculo das heurísticas -------------------------------------
         Double sucesso = 0.0;
         Double falha = 0.0;
@@ -357,28 +352,28 @@ public class Interface extends javax.swing.JFrame {
         /*
          Para cada array de linha dentro da treeMap temos que passá-lo para o método falharam
          */
-        
+
         //
         totSucesso = (double) lerJunit.getQtdeSucesso();
         totFalha = (double) lerJunit.getQtdeFalhas();
-        
-        for(int i=0; i<classes.size(); i++){
-            
+
+        for (int i = 0; i < classes.size(); i++) {
+
             linhasClasse = linhas.get(classes.get(i));
             //System.out.println(inf.keySet());
             //System.out.println(linhasClasse);
-            for(int count=0; count<linhasClasse.size(); count++){
-               lerEcob.falharam(classes.get(i), linhasClasse.get(count), inf, infJxr, lerJunit);   // pega todos os arraylist contidos em linhas
-               sucesso = (double) lerEcob.getPassaram();
-               falha = (double) lerEcob.getFalharam();
+            for (int count = 0; count < linhasClasse.size(); count++) {
+                lerEcob.falharam(classes.get(i), linhasClasse.get(count), inf, infJxr, lerJunit);   // pega todos os arraylist contidos em linhas
+                sucesso = (double) lerEcob.getPassaram();
+                falha = (double) lerEcob.getFalharam();
 
                 if (csTarantula.isSelected()) {
                     heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                     probabilidade = heuristicas.tarantula();
-                   // System.out.println("Linha: "+linhasClasse.get(count)+" probabilidade: "+probabilidade);
+                    // System.out.println("Linha: "+linhasClasse.get(count)+" probabilidade: "+probabilidade);
                     probTar.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Tarantula"));
                 }
-               // entriesSortedByValues(probTar);
+                // entriesSortedByValues(probTar);
                 ///System.out.println(entriesSortedByValues(probTar));
 
                 if (csOchiai.isSelected()) {
@@ -403,29 +398,29 @@ public class Interface extends javax.swing.JFrame {
                 }
             }
         }
-        
-        Comparator crescente = new ComparatorResultado();  
-        Comparator decrescente = Collections.reverseOrder(crescente);  
-        Collections.sort(probTar, decrescente);
-        Collections.sort(probJac, decrescente);
-        Collections.sort(probOch, decrescente);
-        Collections.sort(probSbi, decrescente);
-        System.out.println("IMPRESSAO TARANTULA\n"+probTar);
-        System.out.println("IMPRESSAO JACCARD\n"+probJac);
-        System.out.println("IMPRESSAO OCHIAI\n"+probOch);
-        System.out.println("IMPRESSAO SBI\n"+probSbi);
+
+        Comparator crescente = new ComparatorResultado();
+        Collections.sort(probTar, crescente);
+        Collections.sort(probJac, crescente);
+        Collections.sort(probOch, crescente);
+        Collections.sort(probSbi, crescente);
+        for (int i = 0; i < probTar.size(); i++) {
+            System.out.println("IMPRESSAO TARANTULA\n" + probTar.get(i).getLinha() + "->" + probTar.get(i).getProbabilidade());
+            System.out.println("IMPRESSAO JACCARD\n" + probJac.get(i).getLinha() + "->" + probJac.get(i).getProbabilidade());
+            System.out.println("IMPRESSAO OCHIAI\n" + probOch.get(i).getLinha() + "->" + probOch.get(i).getProbabilidade());
+            System.out.println("IMPRESSAO SBI\n" + probSbi.get(i).getLinha() + "->" + probSbi.get(i).getProbabilidade());
+        }
         ResultadoJanela.inicializaJanela(probTar, probJac, probOch, probSbi);
-        
+
         //--------------------------------------------Fim cálculo das heurísticas -----------------------------------------------------
-        
-        
+
     }//GEN-LAST:event_btnExecutarActionPerformed
 
     public void escreveTxt(String elementos) throws IOException {       //escreve código do teste no arquivo txt
         file = new File(path);
         if (!file.exists()) {
             file.createNewFile();
-        }else{
+        } else {
             file.delete();
             file.createNewFile();
         }
@@ -436,7 +431,7 @@ public class Interface extends javax.swing.JFrame {
         bw.close();
         fw.close();
     }
-    
+
     public void navegar(String caminho) {
         File diretorio = new File(caminho);
         for (File file : diretorio.listFiles()) {
@@ -469,9 +464,7 @@ public class Interface extends javax.swing.JFrame {
         sortedEntries.addAll(map.entrySet());
         return sortedEntries;
     }
-     
-            
- 
+
 
     private void csTarantulaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csTarantulaActionPerformed
         // TODO add your handling code here:

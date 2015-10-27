@@ -9,7 +9,7 @@ package Interface;
  *
  * @author Karini
  */
-public class Resultado {
+public class Resultado implements Comparable<Resultado> {
 
     private String classe;
     private int linha;
@@ -38,4 +38,16 @@ public class Resultado {
     public String getHeuristica(){
         return heuristica;
     }
+
+    @Override
+    public int compareTo(Resultado outro) {
+        if(this.probabilidade < outro.probabilidade){
+            return -1;
+        }
+        if(this.probabilidade > outro.probabilidade){
+            return 1;
+        }
+        return 0;
+    }
+    
 }

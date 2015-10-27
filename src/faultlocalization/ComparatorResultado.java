@@ -14,6 +14,10 @@ import java.util.Comparator;
  */
 public class ComparatorResultado implements Comparator<Resultado>{
      public int compare(Resultado r1,Resultado r2) {  
-          return r1.getProbabilidade() < r2.getProbabilidade() ? -1 : (r1.getProbabilidade() > r2.getProbabilidade() ? +1 : 0);  
+         if(r1.getProbabilidade() < r2.getProbabilidade())
+             return -1;
+         if(r1.getProbabilidade() > r2.getProbabilidade())
+             return 1; 
+         return 0;
      }  
 }
