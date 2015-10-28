@@ -13,6 +13,7 @@ import java.util.Comparator;
  * @author Karini
  */
 public class ComparatorResultado implements Comparator<Resultado>{
+     @Override
      public int compare(Resultado r1,Resultado r2) {  
          if(r1.getProbabilidade() < r2.getProbabilidade())
              return -1;

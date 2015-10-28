@@ -43,6 +43,7 @@ public class Ecobertura {
     public ArrayList<Informacoes> getInf() {
         return inf;
     }
+    
 
     public int getQtdeLinhas() {
         return qtdeLinhas;
@@ -285,7 +286,6 @@ public class Ecobertura {
                 falharam++;
             }
         }
-
         passaram = abs(metodoTeste.size() - falharam);
         /*System.out.println("Classe: ["+classe+"]"+"linha: [" +linha +"]" + " Metodo: [" + metodo + "]" + " metodo de teste[" + metodoTeste + "]" +
          " Falharam: [" + falharam + "]" + " Passaram: [" + passaram + "]");*/

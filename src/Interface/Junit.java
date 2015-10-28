@@ -58,7 +58,7 @@ public class Junit {
        // Soma da 2ª e 3ª coluna do Surefire (Error e failures)
         qtdeFalhas = Integer.parseInt(children.get(1).text()) + Integer.parseInt(children.get(2).text()); 
         qtdeSucesso = qtdeTestes - qtdeFalhas;
-       //System.out.println(qtdeTestes + " " + qtdeFalhas + " " + qtdeSucesso);
+       System.out.println(qtdeTestes + " " + qtdeFalhas + " " + qtdeSucesso);
     }
     
     public void testesFalhos(){
@@ -84,16 +84,17 @@ public class Junit {
                 }
             }
             
-           /* if(element.getElementsByTag("a").attr("name").equals( "Errors_Details")){   // Identifica o espaço com as informações de erros
+            if(element.getElementsByTag("a").attr("name").equals( "Errors_Details")){   // Identifica o espaço com as informações de erros
                 Elements children = element.getElementsByTag("td");
                 for(Element td : children){
                     if(!td.getElementsByTag("a").attr("name").equals("")){
                         falhas.add(td.getElementsByTag("td").text());
                     }
                 }
-            }*/
+            }
             
         }
+        System.out.println("Testes falhos: " +falhas);
        
     }
 }

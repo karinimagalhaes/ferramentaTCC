@@ -399,23 +399,44 @@ public class Interface extends javax.swing.JFrame {
             }
         }
 
-        Comparator crescente = new ComparatorResultado();
-        Collections.sort(probTar, crescente);
-        Collections.sort(probJac, crescente);
-        Collections.sort(probOch, crescente);
-        Collections.sort(probSbi, crescente);
-        for (int i = 0; i < probTar.size(); i++) {
-            System.out.println("IMPRESSAO TARANTULA\n" + probTar.get(i).getLinha() + "->" + probTar.get(i).getProbabilidade());
-            System.out.println("IMPRESSAO JACCARD\n" + probJac.get(i).getLinha() + "->" + probJac.get(i).getProbabilidade());
-            System.out.println("IMPRESSAO OCHIAI\n" + probOch.get(i).getLinha() + "->" + probOch.get(i).getProbabilidade());
-            System.out.println("IMPRESSAO SBI\n" + probSbi.get(i).getLinha() + "->" + probSbi.get(i).getProbabilidade());
+    
+     ordena(probTar);
+     ordena(probJac);
+     ordena(probOch);
+     ordena(probSbi);
+     System.out.println("------------------------IMPRESSAO TAR-----------------------------------------------------\n" );
+        for(int i=0; i<probTar.size(); i++){
+            System.out.println("Classe: "+ probTar.get(i).getClasse()+" Linha: "+probTar.get(i).getLinha()+" Probabilidade: "+probTar.get(i).getProbabilidade());
         }
-        ResultadoJanela.inicializaJanela(probTar, probJac, probOch, probSbi);
+        System.out.println("-----------------------------IMPRESSAO Jac------------------------------------------------\n");
+        for(int i=0; i<probJac.size(); i++){
+            System.out.println("Classe: "+ probJac.get(i).getClasse()+" Linha: "+probJac.get(i).getLinha()+" Probabilidade: "+probJac.get(i).getProbabilidade());
+        }
+        System.out.println("----------------------------------------IMPRESSAO OCH-----------------------------------------\n" );
+        for(int i=0; i<probTar.size(); i++){
+            System.out.println("Classe: "+ probOch.get(i).getClasse()+" Linha: "+probOch.get(i).getLinha()+" Probabilidade: "+probOch.get(i).getProbabilidade());
+        }
+        System.out.println("---------------------------------------------IMPRESSAO SBI-----------------------------------------------\n" );
+        for(int i=0; i<probTar.size(); i++){
+            System.out.println("Classe: "+ probSbi.get(i).getClasse()+" Linha: "+probSbi.get(i).getLinha()+" Probabilidade: "+probSbi.get(i).getProbabilidade());
+        }/*
+    
+        
+        ResultadoJanela.inicializaJanela(probTar, probJac, probOch, probSbi);*/
 
         //--------------------------------------------Fim cálculo das heurísticas -----------------------------------------------------
 
     }//GEN-LAST:event_btnExecutarActionPerformed
 
+    public void ordena(List<Resultado> outro){
+            Collections.sort(outro, new Comparator<Resultado>() {
+    @Override
+    public int compare(Resultado c1, Resultado c2) {
+        return Double.compare(c1.getProbabilidade(), c2.getProbabilidade());
+    }
+});
+    }
+    
     public void escreveTxt(String elementos) throws IOException {       //escreve código do teste no arquivo txt
         file = new File(path);
         if (!file.exists()) {

@@ -5,15 +5,19 @@
  */
 package Interface;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 /**
  *
  * @author Karini
  */
-public class Resultado implements Comparable<Resultado> {
+public class Resultado {
 
     private String classe;
     private int linha;
-    private double probabilidade;
+    private Double probabilidade;
     private String heuristica;
     
      public Resultado(String classe, int linha, double probabilidade, String heuristica) {
@@ -38,16 +42,7 @@ public class Resultado implements Comparable<Resultado> {
     public String getHeuristica(){
         return heuristica;
     }
+     
 
-    @Override
-    public int compareTo(Resultado outro) {
-        if(this.probabilidade < outro.probabilidade){
-            return -1;
-        }
-        if(this.probabilidade > outro.probabilidade){
-            return 1;
-        }
-        return 0;
-    }
     
 }
