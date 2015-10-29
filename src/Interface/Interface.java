@@ -164,7 +164,7 @@ public class Interface extends javax.swing.JFrame {
     private Interface parserHtmlJunit;
     private Interface parserHtmlEcobertura;
     private Interface parserHtmlJxr;
-    private ArrayList<Informacoes> linhaMetodo;       // armazena a linha e o método chamado
+    private ArrayList<Informacoes> linhaMetodo = new ArrayList<Informacoes>();       // armazena a linha e o método chamado
     private Junit lerJunit;
     private Ecobertura lerEcob;
     private Jxr lerJxr;
@@ -184,12 +184,8 @@ public class Interface extends javax.swing.JFrame {
     private Map<String, ArrayList<Integer>> linhas = new TreeMap();  // armazena e classe e as linhas cobertas da classe
     private ArrayList<String> classes = new ArrayList<>();
     private ArrayList<String> files = new ArrayList<>();    // armazena a lista de arquivos do diretório
-    private Hashtable infJxr = new Hashtable();
-    private ArrayList<DadosTeste> aux = new ArrayList<>();
+    private ArrayList<DadosTeste> dadosTeste = new ArrayList<>();
 
-    public Hashtable getInfJxr() {
-        return infJxr;
-    }
 
     public Interface(Document document) {
         this.document = document;
@@ -282,18 +278,22 @@ public class Interface extends javax.swing.JFrame {
                     lerEcob.escreveTxt();
                     if (lerEcob.getClasse() != null) {
                         linhas.put(lerEcob.getClasse(), lerEcob.qtdeLinhasCod());   // armazena a classe e as linhas cobertas da classe
-                        classes.add(lerEcob.getClasse());                           // armazena todas as classes do sistema
-                        linhaMetodo = lerEcob.getInf();
-                        for (int j = 0; j < linhaMetodo.size(); j++) {        // linhaMetodo é um array de informacoes
+                        classes.add(lerEcob.getClasse()); // armazena todas as classes do sistema
+                        linhaMetodo.addAll(lerEcob.getInf());
+                      /*  for (int j = 0; j < linhaMetodo.size(); j++) {        // linhaMetodo é um array de informacoes
                             String chave = Integer.toString(linhaMetodo.get(j).getLinha()) + lerEcob.getClasse();    // chave da treeMap
                             inf.put(chave, linhaMetodo.get(j));         // inf armazena a linha e o método chamado por ela
-                        }
+                        }*/
                     }
                 }
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        /*for(int i=0; i<linhaMetodo.size(); i++){
+            System.out.println("Classe:"+linhaMetodo.get(i).getClasse()+" Metodo codigo: "+linhaMetodo.get(i).getMetodo()
+                +" Linha inicial: "+linhaMetodo.get(i).getLinha());
+        }*/
         files.clear();
 
         //----------------------------------- Fim processamento Ecobertura--------------------------------------
@@ -313,24 +313,24 @@ public class Interface extends javax.swing.JFrame {
 
                 for (int j = 0; j < classes.size(); j++) {
                     reader = new FileInputStream(path);
-                    aux = lerJxr.leTxt(classes.get(j), path, reader);                       // busca métodos, objetos da classe passada por parâmetro em todos os códigos de teste
-                    for (int k = 0; k < aux.size(); k++) {
-                        infJxr.put(aux.get(k).getMetodoTeste() + "_" + aux.get(k).getClass(), aux.get(k));
-                        // System.out.println(aux.get(k).getMetodoTeste()+"_"+aux.get(k).getClasse());
-                    }
+                    dadosTeste.addAll(lerJxr.leTxt(classes.get(j), path, reader));                       // busca métodos, objetos da classe passada por parâmetro em todos os códigos de teste
                     reader.close();
                 }
                 //  reader.close();
                 file.delete();
-                aux.clear();
 
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
+        /*for(int i=0; i<dadosFinal.size(); i++){
+            System.out.println("Classe:"+dadosFinal.get(i).getClasse()+" Metodo Chamado: "+dadosFinal.get(i).getmChamado()
+                +" MetodoTeste: "+dadosFinal.get(i).getMetodoTeste()+" Objeto:" + dadosFinal.get(i).getObjetos());
+        }
 
         //------------------------------------------ imprime valores do hashtable -----------------------------
-       /*Set values = infJxr.entrySet();
+       /* Set values = lerJxr.getInfJxr().entrySet();
          Iterator myIterator = values.iterator();
          System.out.println("Listando arquivos contidos no HashMap myHashMap:");
          while (myIterator.hasNext()) {
@@ -353,57 +353,59 @@ public class Interface extends javax.swing.JFrame {
          Para cada array de linha dentro da treeMap temos que passá-lo para o método falharam
          */
 
-        //
+        
         totSucesso = (double) lerJunit.getQtdeSucesso();
         totFalha = (double) lerJunit.getQtdeFalhas();
-
+        
         for (int i = 0; i < classes.size(); i++) {
-
+            
             linhasClasse = linhas.get(classes.get(i));
-            //System.out.println(inf.keySet());
-            //System.out.println(linhasClasse);
-            for (int count = 0; count < linhasClasse.size(); count++) {
-                lerEcob.falharam(classes.get(i), linhasClasse.get(count), inf, infJxr, lerJunit);   // pega todos os arraylist contidos em linhas
-                sucesso = (double) lerEcob.getPassaram();
-                falha = (double) lerEcob.getFalharam();
+            for (int count = 1; count < linhasClasse.size(); count++) {
+                lerEcob.falharam(classes.get(i), linhasClasse.get(count), linhaMetodo, dadosTeste, lerJunit);   // pega todos os arraylist contidos em linhas
+               /* System.out.println("Classe: ["+classes.get(i)+"]"+"linha: [" +linhasClasse.get(count) +"]"  +
+             " Falharam: [" + lerEcob.getFalharam() + "]" + " Passaram: [" + lerEcob.getPassaram() + "]");*/
+                    sucesso = (double) lerEcob.getPassaram();
+                    falha = (double) lerEcob.getFalharam();
+                    if(falha!=0 && sucesso !=0){
+                    if (csTarantula.isSelected()) {
+                        heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
+                        probabilidade = heuristicas.tarantula();
+                        // System.out.println("Linha: "+linhasClasse.get(count)+" probabilidade: "+probabilidade);
+                        probTar.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Tarantula"));
+                    }
+                    // entriesSortedByValues(probTar);
+                    ///System.out.println(entriesSortedByValues(probTar));
 
-                if (csTarantula.isSelected()) {
-                    heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
-                    probabilidade = heuristicas.tarantula();
-                    // System.out.println("Linha: "+linhasClasse.get(count)+" probabilidade: "+probabilidade);
-                    probTar.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Tarantula"));
-                }
-                // entriesSortedByValues(probTar);
-                ///System.out.println(entriesSortedByValues(probTar));
+                    if (csOchiai.isSelected()) {
+                        heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
+                        probabilidade = heuristicas.ochiai();
+                        probOch.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Ochiai"));
+                    }
+                    //System.out.println(entriesSortedByValues(probOch));
 
-                if (csOchiai.isSelected()) {
-                    heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
-                    probabilidade = heuristicas.ochiai();
-                    probOch.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Ochiai"));
-                }
-                //System.out.println(entriesSortedByValues(probOch));
-
-                if (csJaccard.isSelected()) {
-                    heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
-                    probabilidade = heuristicas.jaccard();
-                    probJac.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Jaccard"));
-                    //System.out.println(entriesSortedByValues(probJac));
-                }
-                if (csSBI.isSelected()) {
-                    heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
-                    probabilidade = heuristicas.sbi();
-                    probSbi.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "SBI"));
-                    //System.out.println("linha: " + linhas.get(i)+ " falha: " + falhasLinha.get(i) + " sucesso: " + sucessoLinha.get(i) );
-                    //System.out.println(entriesSortedByValues(probSbi));
+                    if (csJaccard.isSelected()) {
+                        heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
+                        probabilidade = heuristicas.jaccard();
+                        probJac.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Jaccard"));
+                        //System.out.println(entriesSortedByValues(probJac));
+                    }
+                    if (csSBI.isSelected()) {
+                        heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
+                        probabilidade = heuristicas.sbi();
+                        probSbi.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "SBI"));
+                        //System.out.println("linha: " + linhas.get(i)+ " falha: " + falhasLinha.get(i) + " sucesso: " + sucessoLinha.get(i) );
+                        //System.out.println(entriesSortedByValues(probSbi));
+                    }
                 }
             }
+            
         }
 
     
-     ordena(probTar);
-     ordena(probJac);
-     ordena(probOch);
-     ordena(probSbi);
+   //  ordena(probTar);
+   //  ordena(probJac);
+    // ordena(probOch);
+    // ordena(probSbi);
      System.out.println("------------------------IMPRESSAO TAR-----------------------------------------------------\n" );
         for(int i=0; i<probTar.size(); i++){
             System.out.println("Classe: "+ probTar.get(i).getClasse()+" Linha: "+probTar.get(i).getLinha()+" Probabilidade: "+probTar.get(i).getProbabilidade());
@@ -413,15 +415,15 @@ public class Interface extends javax.swing.JFrame {
             System.out.println("Classe: "+ probJac.get(i).getClasse()+" Linha: "+probJac.get(i).getLinha()+" Probabilidade: "+probJac.get(i).getProbabilidade());
         }
         System.out.println("----------------------------------------IMPRESSAO OCH-----------------------------------------\n" );
-        for(int i=0; i<probTar.size(); i++){
+        for(int i=0; i<probOch.size(); i++){
             System.out.println("Classe: "+ probOch.get(i).getClasse()+" Linha: "+probOch.get(i).getLinha()+" Probabilidade: "+probOch.get(i).getProbabilidade());
         }
         System.out.println("---------------------------------------------IMPRESSAO SBI-----------------------------------------------\n" );
-        for(int i=0; i<probTar.size(); i++){
+        for(int i=0; i<probSbi.size(); i++){
             System.out.println("Classe: "+ probSbi.get(i).getClasse()+" Linha: "+probSbi.get(i).getLinha()+" Probabilidade: "+probSbi.get(i).getProbabilidade());
-        }/*
+        }
     
-        
+        /*
         ResultadoJanela.inicializaJanela(probTar, probJac, probOch, probSbi);*/
 
         //--------------------------------------------Fim cálculo das heurísticas -----------------------------------------------------
@@ -460,7 +462,7 @@ public class Interface extends javax.swing.JFrame {
                 if (!file.getName().startsWith("frame") && !file.getName().startsWith("index")
                         && !file.getName().startsWith("help") && !file.getName().startsWith("package")
                         && !file.getName().startsWith("allclasses") && !file.getName().startsWith("overview")
-                        && !file.getName().startsWith("stylesheet")) {
+                        && !file.getName().startsWith("stylesheet") ) {
                     files.add(caminho + "\\" + file.getName());
                 }
             } else if ((!file.getName().equals("css") && !file.getName().equals("images") && !file.getName().equals("js"))) {

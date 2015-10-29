@@ -58,7 +58,7 @@ public class Junit {
        // Soma da 2ª e 3ª coluna do Surefire (Error e failures)
         qtdeFalhas = Integer.parseInt(children.get(1).text()) + Integer.parseInt(children.get(2).text()); 
         qtdeSucesso = qtdeTestes - qtdeFalhas;
-       System.out.println(qtdeTestes + " " + qtdeFalhas + " " + qtdeSucesso);
+       //System.out.println(qtdeTestes + " " + qtdeFalhas + " " + qtdeSucesso);
     }
     
     public void testesFalhos(){
@@ -94,7 +94,7 @@ public class Junit {
             }
             
         }
-        System.out.println("Testes falhos: " +falhas);
+        //System.out.println("Testes falhos: " +falhas);
        
     }
 }

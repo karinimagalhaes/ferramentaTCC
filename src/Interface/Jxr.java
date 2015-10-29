@@ -5,16 +5,10 @@
  */
 package Interface;
 
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Set;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -26,8 +20,7 @@ import org.jsoup.select.Elements;
 public class Jxr {
 
     private Document document;
-  
-
+    
     public Jxr(Document document) {
         this.document = document;
     }
@@ -75,10 +68,14 @@ public class Jxr {
             sbaux.append(corrente);
             
             //ler os caracteres até formar uma palavra reservada do java
-            if ((sbaux.toString().equals("public")) || (sbaux.toString().equals("protected")) || (sbaux.toString().equals("private"))) {
+            if ((sbaux.toString().equals("public")) || (sbaux.toString().equals("protected")) || (sbaux.toString().equals("private"))
+                    || (sbaux.toString().equals("static")) || (sbaux.toString().equals("final"))|| (sbaux.toString().equals("native"))
+                    || (sbaux.toString().equals("synchronized"))|| (sbaux.toString().equals("abstract")) || (sbaux.toString().equals("threadsafe"))
+                    || (sbaux.toString().equals("transient"))) {
                 met = true;   // encontrei palavra reservada
                 sbaux.delete(0, sbaux.length());
             }
+            
             //verificar se a palavra reservada eh de um método
             if ((met == true) && ((corrente == ' ') || (corrente == '('))) {
                 aux = sbaux.toString().toCharArray();       // verifica se eh um metoo ou declaração de variável
@@ -89,7 +86,7 @@ public class Jxr {
                         sbaux.delete(0, sbaux.length());
                         met = false;
                         obj=false;
-                       // System.out.println("metodo ->" + metodoTeste);
+                        System.out.println("metodo ->" + metodoTeste);
                     }
                 }
             }
@@ -133,6 +130,7 @@ public class Jxr {
             }
             if((cod == true) && (ponto == true)){
                 if((corrente == '(') || (corrente == ' ')){
+                    
                     sbaux.deleteCharAt(sbaux.length()-1);
                     
                     mChamado.add(sbaux.toString());    // metodo do codigo encontrado
@@ -144,7 +142,8 @@ public class Jxr {
            
             if(metodoTeste != null && classeObj != null && object != null && !mChamado.isEmpty() && bloco == 1){
                 dadosTeste = new DadosTeste(classeObj, object, mChamado, metodoTeste);
-                dados.add(dadosTeste);   
+                //infJxr.put(metodoTeste + "_" + classeObj, dadosTeste);
+                dados.add(dadosTeste);
                 classeObj = null;
                 object = new ArrayList<>();
                 mChamado = new ArrayList<>();
@@ -157,8 +156,7 @@ public class Jxr {
             }
             
         }
-        
-         return dados;
+        return dados;
     }
     
 }

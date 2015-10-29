@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
@@ -36,14 +38,17 @@ public class Ecobertura {
     private int qtdeLinhas = 0;
     private int falharam = 0;
     private int passaram = 0;
-    private Hashtable infJxr = new Hashtable();
     private Document document;
     Informacoes informacoes;
+    private boolean linhaControl = false;
 
     public ArrayList<Informacoes> getInf() {
         return inf;
     }
-    
+
+    public boolean isLinhaControl() {
+        return linhaControl;
+    }
 
     public int getQtdeLinhas() {
         return qtdeLinhas;
@@ -161,10 +166,10 @@ public class Ecobertura {
 
                         excluiLinhas.add(qtdeLinhas);
                         classe = sbClasse.toString().replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "");
-                        // System.out.println(classe);
+                         
                         controleClasse = true;
                     }
-                    // System.out.println("Classe: " + classe);
+                   //  System.out.println("Classe: " + classe);
                 } //------------------------------- Fim verifica classe------------------------------
                 //------------------------------ Verifica método ----------------------------------
                 //else if (tagMetodo.equals("privtate") || tagMetodo.equals("public") || tagMetodo.equals("protected")) {
@@ -188,8 +193,7 @@ public class Ecobertura {
                             metodoTemp = sbMetodo.toString();
                             metodo = metodoTemp.replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "");
                             sbMetodo.delete(0, aux.length);
-                            informacoes = new Informacoes(classe,
-                                    metodo, Integer.parseInt(auxLinha));
+                            informacoes = new Informacoes(classe, metodo, Integer.parseInt(auxLinha));
                             inf.add(informacoes);
                         }
                     }
@@ -197,8 +201,13 @@ public class Ecobertura {
 
                 // --------------------------- Fim Verifica Método ------------------------------------
             }
+           
+            
 
             // }
+        }
+       /* for(int i=0; i<inf.size(); i++){
+        System.out.println("Classe:"+inf.get(i).getClasse()+" Metodo:"+inf.get(i).getMetodo()+" Linha: "+inf.get(i).getLinha());
         }
         //
 
@@ -212,102 +221,82 @@ public class Ecobertura {
          }*/
     }
 
-    public void falharam(String classe, int linha, TreeMap<String, Informacoes> infEcob, Hashtable jxr, Junit junit) {
+    public void falharam(String classeMetodo, int linha, ArrayList<Informacoes> linhaMetodo, ArrayList<DadosTeste> dadosTeste, Junit junit) {
         passaram = 0;
         falharam = 0;
-
-        ArrayList<Integer> arrayLinhas = new ArrayList<>();
-        String linhaTemp = Integer.toString(linha);
-
-        /*
-         Verifica o método que cada linha de código pertence
-         1º caso: verifica se a linha e a classe é chave de algum método
-         */
-        if (infEcob.containsKey(linhaTemp + classe)) {
-            metodo = infEcob.get(linhaTemp + classe).getMetodo();       // retorna o metodo da linha
-            verificaMetodo(linha, classe, jxr);
-            //System.out.println(linha +"->"+ metodo);
-        } /*
-         2º caso: se não a linha não for chave da treeMap passar todos as as linhas para um array
-         TreeMap não avança posições e a busca não é sequencial
-         */ else {
-            // --------- passa a chave (linhas) para um array -------------
-            for (Map.Entry<String, Informacoes> entry : infEcob.entrySet()) {
-                if (entry.getKey().contains(classe)) {
-                    arrayLinhas.add(entry.getValue().getLinha());
+        String metodoCodigo = null;
+        List<Integer> arrayLinhas = new ArrayList<>();
+        HashMap<Integer, Informacoes> informacoes = new HashMap<>();
+            /*
+             ordenar as linhas onde os metodos começam e pegar somente as linhas da classe
+             */
+       
+            for (int i = 0; i < linhaMetodo.size(); i++) {
+                if(linhaMetodo.get(i).getClasse().equals(classeMetodo)){
+                    arrayLinhas.add(linhaMetodo.get(i).getLinha());
+                    informacoes.put(linhaMetodo.get(i).getLinha(), linhaMetodo.get(i));
                 }
             }
-            Collections.sort(arrayLinhas);
-                //System.out.println(classe+"->"+arrayLinhas);
-            // ------------- termina --------------------------------------
-
-            /*
-             verifica as linhas percorrendo o array
-             arrayLinhas armazena as linhas onde os métodos foram instanciados
-             */
-            //System.out.println("classe: " + classe + " linha: " + linha);
-            for (int i = 0; i < arrayLinhas.size(); i++) {
+            for(int i=0; i<arrayLinhas.size(); i++){
                 int j = i + 1;
                 if (j < arrayLinhas.size()) {
                     if (linha > arrayLinhas.get(i) && linha < arrayLinhas.get(j)) {
-                        linhaTemp = Integer.toString(arrayLinhas.get(i));
-                        if(infEcob.get(linhaTemp + classe) != null){
-                            metodo = infEcob.get(linhaTemp + classe).getMetodo();
-                            verificaMetodo(linha, classe, jxr);
-                        }
-                        // System.out.println(classe+"->"+linha + "->" + metodo);
-                    } else if ((linha > arrayLinhas.get(i)) && (linha < qtdeLinhas) && (i == arrayLinhas.size() - 1)) {
-                        linhaTemp = Integer.toString(arrayLinhas.get(i));
-                        if(infEcob.get(linhaTemp + classe) != null){
-                            metodo = infEcob.get(linhaTemp + classe).getMetodo();
-                            verificaMetodo(linha, classe, jxr);
-                        }
-                        // System.out.println(classe+"->"+linha + "->" + metodo);
+                        metodoCodigo = informacoes.get(arrayLinhas.get(i)).getMetodo();
+                        verificaMetodo(classeMetodo, metodoCodigo, dadosTeste);
+                        //System.out.println("linha: " + linha + " metodo: " + metodoCodigo+" classe: "+classe);
+                        break;
                     }
+                    //else if ((linha > arrayLinhas.get(i)) && (linha < qtdeLinhas)) {
+                       // metodoCodigo = informacoes.get(arrayLinhas.get(i)).getMetodo();
+                   // }
                 } else if (linha > arrayLinhas.get(arrayLinhas.size() - 1)) {
-                    linhaTemp = Integer.toString(arrayLinhas.get(arrayLinhas.size() - 1));
-                    if(infEcob.get(linhaTemp + classe) != null){
-                        metodo = infEcob.get(linhaTemp + classe).getMetodo();
-                        verificaMetodo(linha, classe, jxr);
-                    }
-                    //System.out.println(classe+"->"+linha + "->" + metodo);
+                    metodoCodigo = informacoes.get(arrayLinhas.get(i)).getMetodo();
+                    verificaMetodo(classeMetodo, metodoCodigo, dadosTeste);
+                    //System.out.println("linha: " + linha + " metodo: " + metodoCodigo+" classe: "+classe);
+                    break;
                 }
+                
             }
+           // System.out.println("Classe: "+classe+arrayLinhas);
 
-        }
-             //System.out.println("linha: " + linha + " metodo: " + metodo);
+        
+             //.out.println("Classe:"+classeMetodo+" linha: " + linha + " metodo: " + metodoTeste);
         /*
          verifica se o teste passou ou falhou
          */
-        //System.out.println(metodoTeste.size());
-        for (int i = 0; i < metodoTeste.size(); i++) {
-            //System.out.println(junit.getTestesFalhos().get(i));
-            if (junit.getTestesFalhos().contains(metodoTeste.get(i))) {
-                falharam++;
-            }
+        if(metodoTeste.isEmpty()){
+            linhaControl = true;
         }
-        passaram = abs(metodoTeste.size() - falharam);
-        /*System.out.println("Classe: ["+classe+"]"+"linha: [" +linha +"]" + " Metodo: [" + metodo + "]" + " metodo de teste[" + metodoTeste + "]" +
-         " Falharam: [" + falharam + "]" + " Passaram: [" + passaram + "]");*/
-        metodoTeste.clear();
+        else{
+            for (int i = 0; i < metodoTeste.size(); i++) {
+               // System.out.println(junit.getTestesFalhos() + "->" + metodoTeste.get(i));
+                if (junit.getTestesFalhos().contains(metodoTeste.get(i))) {
+                    falharam++;
+                }
+            }
+            passaram = abs(metodoTeste.size() - falharam);
+            /*System.out.println("Classe: ["+classe+"]"+"linha: [" +linha +"]" + " Metodo: [" + metodo + "]" + " metodo de teste[" + metodoTeste + "]" +
+             " Falharam: [" + falharam + "]" + " Passaram: [" + passaram + "]");*/
+            metodoTeste.clear();
+        }
+        linhaControl = false;
 
     }
 
-    public void verificaMetodo(int linha, String classe, Hashtable infJxr) {
-        // verifica qual/quais são os casos de teste que chamam este método
-             /*verificar se a classe do objeto é a mesma do código
-         se sim -> verificar quais métodos de teste o metodo do código eh chamado
-         */
-
-        for (Enumeration n = infJxr.keys(); n.hasMoreElements();) {
-            DadosTeste dadosTeste = (DadosTeste) infJxr.get(n.nextElement());
-            if (classe.equals(dadosTeste.getClasse())) { // verifica a classe do objeto
-                //System.out.println(classe+"->"+linha+"->"+dadosTeste.getmChamados()+"->"+metodo);
-                for (int i = 0; i < dadosTeste.getmChamado().size(); i++) {
-                    if (dadosTeste.getmChamado().get(i).contains(metodo)) {
-                        metodoTeste.add(dadosTeste.getMetodoTeste());  // armazena metodo de teste que chama o metodo do codigo
-                        //System.out.println("ENTREI: ["+linha+"]"+"["+metodo+"_"+classe+"]"+dadosTeste.getMetodoTeste());
-                        break;
+    public void verificaMetodo(String classeMetodo, String metodoCodigo, ArrayList<DadosTeste> dadosTeste) {
+        /*
+        Verificar quais métodos de teste chamam o método do código
+        */
+        
+        ArrayList<String> mChamado = new ArrayList<>();
+         
+        //pega todos os metodos de código
+        for(int i=0; i<dadosTeste.size(); i++){
+            if(dadosTeste.get(i).getClasse().equals(classeMetodo)){
+                mChamado = dadosTeste.get(i).getmChamado();
+                for(int j=0; j<mChamado.size(); j++){
+                    if(mChamado.get(j).equals(metodoCodigo)){
+                        metodoTeste.add(dadosTeste.get(i).getMetodoTeste());
                     }
                 }
             }
