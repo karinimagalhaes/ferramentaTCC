@@ -8,15 +8,8 @@ package Interface;
 import java.io.*;
 import static java.lang.Math.abs;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -96,7 +89,7 @@ public class Ecobertura {
                 continue;
             }
             children.getElementsByClass("comment").remove();
-               //  System.out.println(children.text());
+                // System.out.println(children.text());
             //----------------- Dispensa Comentários -----------------
             //auxLinha = children.getElementsByTag("span").eq(0).text();
             /*if (auxLinha.contains("/*")) {
@@ -152,7 +145,7 @@ public class Ecobertura {
                                 //System.out.println(j + ", " + sbClasse);
                                 if (j < aux.length - 1) {
                                     // System.out.println("size: "+aux.length+" j: "+j);
-                                    if ((aux[j + 1] == ' ') || (aux[j + 1] == '{')) {
+                                    if ((aux[j + 1] == ' ') || (aux[j + 1] == '{')|| (aux[j + 1] == '<')) {
                                         // System.out.println("entrei");
                                         if ((j + 1) < aux.length - 1) {
                                             for (int k = j++; k < aux.length; k++) {
@@ -175,26 +168,37 @@ public class Ecobertura {
                 //else if (tagMetodo.equals("privtate") || tagMetodo.equals("public") || tagMetodo.equals("protected")) {
                 else if (element.getElementsByTag("span").text().contains("privtate")
                         || element.getElementsByTag("span").text().contains("public")
-                        || element.getElementsByTag("span").text().contains("protected")) {
+                        || element.getElementsByTag("span").text().contains("protected")
+                        || element.getElementsByTag("span").text().contains("static")
+                        || element.getElementsByTag("span").text().contains("final")
+                        || element.getElementsByTag("span").text().contains("native")
+                        || element.getElementsByTag("span").text().contains("synchronized")
+                        || element.getElementsByTag("span").text().contains("abstract")
+                        || element.getElementsByTag("span").text().contains("threadsafe")
+                        || element.getElementsByTag("span").text().contains("transient")) {
                     element.select("span.keyword").remove();
-                    String[] s = element.text().split(" ");
-                    for (int i = 0; i < s.length; i++) {
-                        if (s[i].contains("(")) {
-                            aux = s[i].toCharArray();
-                            for (int j = 0; j < aux.length; j++) {
-                                if (aux[j] == '(') {
-                                    for (int k = j; k < aux.length; k++) {
-                                        aux[k] = ' ';
+                    if(!element.text().contains("=") && !element.text().contains(".") && !element.text().contains("@")){
+                        String[] s = element.text().split(" ");
+                        for (int i = 0; i < s.length; i++) {
+                            if (s[i].contains("(")) {
+                                aux = s[i].toCharArray();
+                                for (int j = 0; j < aux.length; j++) {
+                                    if (aux[j] == '(') {
+                                        for (int k = j; k < aux.length; k++) {
+                                            aux[k] = ' ';
+                                        }
+                                        break;
                                     }
-                                    break;
+                                    sbMetodo.append(aux[j]);
                                 }
-                                sbMetodo.append(aux[j]);
+                                metodoTemp = sbMetodo.toString();
+                                if(!metodoTemp.isEmpty()){
+                                    metodo = metodoTemp.replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "");
+                                    sbMetodo.delete(0, aux.length);
+                                    informacoes = new Informacoes(classe, metodo, Integer.parseInt(auxLinha));
+                                    inf.add(informacoes);
+                                }
                             }
-                            metodoTemp = sbMetodo.toString();
-                            metodo = metodoTemp.replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "");
-                            sbMetodo.delete(0, aux.length);
-                            informacoes = new Informacoes(classe, metodo, Integer.parseInt(auxLinha));
-                            inf.add(informacoes);
                         }
                     }
                 }
@@ -222,6 +226,7 @@ public class Ecobertura {
     }
 
     public void falharam(String classeMetodo, int linha, ArrayList<Informacoes> linhaMetodo, ArrayList<DadosTeste> dadosTeste, Junit junit) {
+       // System.out.println(classeMetodo);
         passaram = 0;
         falharam = 0;
         String metodoCodigo = null;
@@ -237,23 +242,30 @@ public class Ecobertura {
                     informacoes.put(linhaMetodo.get(i).getLinha(), linhaMetodo.get(i));
                 }
             }
+          // System.out.println("Classe: "+ classeMetodo+arrayLinhas);
             for(int i=0; i<arrayLinhas.size(); i++){
+                
                 int j = i + 1;
                 if (j < arrayLinhas.size()) {
                     if (linha > arrayLinhas.get(i) && linha < arrayLinhas.get(j)) {
                         metodoCodigo = informacoes.get(arrayLinhas.get(i)).getMetodo();
                         verificaMetodo(classeMetodo, metodoCodigo, dadosTeste);
-                        //System.out.println("linha: " + linha + " metodo: " + metodoCodigo+" classe: "+classe);
-                        break;
+                     //   System.out.println("linha: " + linha + " metodo: " + metodoCodigo+" classe: "+classeMetodo);
+                       
                     }
                     //else if ((linha > arrayLinhas.get(i)) && (linha < qtdeLinhas)) {
                        // metodoCodigo = informacoes.get(arrayLinhas.get(i)).getMetodo();
                    // }
                 } else if (linha > arrayLinhas.get(arrayLinhas.size() - 1)) {
-                    metodoCodigo = informacoes.get(arrayLinhas.get(i)).getMetodo();
+                    if(i-1 >= 0){
+                        metodoCodigo = informacoes.get(arrayLinhas.get(i-1)).getMetodo();
+                    }
+                    else{
+                        metodoCodigo = informacoes.get(arrayLinhas.get(i)).getMetodo();
+                    }
                     verificaMetodo(classeMetodo, metodoCodigo, dadosTeste);
-                    //System.out.println("linha: " + linha + " metodo: " + metodoCodigo+" classe: "+classe);
-                    break;
+                   // System.out.println("linha: " + linha + " metodo: " + metodoCodigo+" classe: "+classeMetodo);
+                    
                 }
                 
             }
@@ -275,7 +287,7 @@ public class Ecobertura {
                 }
             }
             passaram = abs(metodoTeste.size() - falharam);
-            /*System.out.println("Classe: ["+classe+"]"+"linha: [" +linha +"]" + " Metodo: [" + metodo + "]" + " metodo de teste[" + metodoTeste + "]" +
+           /* System.out.println("Classe: ["+classe+"]"+"linha: [" +linha +"]" + " Metodo: [" + metodo + "]" + " metodo de teste[" + metodoTeste + "]" +
              " Falharam: [" + falharam + "]" + " Passaram: [" + passaram + "]");*/
             metodoTeste.clear();
         }
@@ -297,10 +309,13 @@ public class Ecobertura {
                 for(int j=0; j<mChamado.size(); j++){
                     if(mChamado.get(j).equals(metodoCodigo)){
                         metodoTeste.add(dadosTeste.get(i).getMetodoTeste());
+                        
                     }
                 }
             }
         }
+       // System.out.println("Classe metodo:"+classeMetodo+" Metodo teste:"+metodoTeste);
+        
     }
 
 //----------------------------- Retorna as linhas cobertas pelos testes ----------------------------------------

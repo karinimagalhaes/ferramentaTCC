@@ -34,6 +34,7 @@ public class Jxr {
        // elements.select("em.jxr_comment").remove();
         for(Element children : elements){
             children.getElementsByClass("jxr_comment").remove();
+            children.getElementsByClass("jxr_javadoccomment").remove();
         }
         return elements.text();     // retorna o código sem lixo
     }
@@ -66,6 +67,18 @@ public class Jxr {
             }
             
             sbaux.append(corrente);
+            // verifica abertura de blocos
+            if(corrente == '{'){
+                bloco++;
+            }
+            
+            if(corrente == '}'){
+                bloco--;
+            }
+            
+            if(corrente != '='){
+                auxiliar = sbaux.toString();                // guarda o nome do objeto
+            }
             
             //ler os caracteres até formar uma palavra reservada do java
             if ((sbaux.toString().equals("public")) || (sbaux.toString().equals("protected")) || (sbaux.toString().equals("private"))
@@ -75,8 +88,18 @@ public class Jxr {
                 met = true;   // encontrei palavra reservada
                 sbaux.delete(0, sbaux.length());
             }
-            
+            if(sbaux.toString().equals("class")){
+                met = false;
+                sbaux.delete(0, sbaux.length());
+            }
             //verificar se a palavra reservada eh de um método
+            if(met == true && corrente=='.'){
+                met = false;
+                sbaux.delete(0, sbaux.length());
+            }
+            if(auxiliar.equals("new")){
+                met=false;
+            }
             if ((met == true) && ((corrente == ' ') || (corrente == '('))) {
                 aux = sbaux.toString().toCharArray();       // verifica se eh um metoo ou declaração de variável
                 for(int i=0; i<aux.length; i++){
@@ -85,24 +108,15 @@ public class Jxr {
                         metodoTeste = sbaux.toString();     //encontrei metodo do teste
                         sbaux.delete(0, sbaux.length());
                         met = false;
-                        obj=false;
-                        System.out.println("metodo ->" + metodoTeste);
+                        //System.out.println("metodo ->" + metodoTeste);
+                        break;
                     }
+                    
                 }
+                
             }
             
-            // verifica abertura de blocos
-            if(corrente == '{'){
-                bloco++;
-            }
             
-            if(corrente == '}'){
-                bloco--;
-            }
-            //verificar objetos
-            if(corrente != '='){
-                auxiliar = sbaux.toString();                // guarda o nome do objeto
-            }
             if(sbaux.toString().equals(classe)){
                 classeObj = classe;
                 obj = true;                                 // encontrou um objeto

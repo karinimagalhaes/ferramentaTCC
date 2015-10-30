@@ -261,7 +261,7 @@ public class Interface extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        System.out.println("li Junit");
         // ---------------------------- Processa arquivos Ecobertura --------------------------------------
         navegar(ecobertura.getPath());     // armazena os arquivos do diretório no arrayList files
         for (int i = 0; i < files.size(); i++) {
@@ -290,6 +290,7 @@ public class Interface extends javax.swing.JFrame {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        System.out.println("li Ecob");
         /*for(int i=0; i<linhaMetodo.size(); i++){
             System.out.println("Classe:"+linhaMetodo.get(i).getClasse()+" Metodo codigo: "+linhaMetodo.get(i).getMetodo()
                 +" Linha inicial: "+linhaMetodo.get(i).getLinha());
@@ -323,6 +324,7 @@ public class Interface extends javax.swing.JFrame {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        System.out.println("li Jxr");
         
         /*for(int i=0; i<dadosFinal.size(); i++){
             System.out.println("Classe:"+dadosFinal.get(i).getClasse()+" Metodo Chamado: "+dadosFinal.get(i).getmChamado()
@@ -362,11 +364,11 @@ public class Interface extends javax.swing.JFrame {
             linhasClasse = linhas.get(classes.get(i));
             for (int count = 1; count < linhasClasse.size(); count++) {
                 lerEcob.falharam(classes.get(i), linhasClasse.get(count), linhaMetodo, dadosTeste, lerJunit);   // pega todos os arraylist contidos em linhas
-               /* System.out.println("Classe: ["+classes.get(i)+"]"+"linha: [" +linhasClasse.get(count) +"]"  +
+                /*System.out.println("Classe: ["+classes.get(i)+"]"+"linha: [" +linhasClasse.get(count) +"]"  +
              " Falharam: [" + lerEcob.getFalharam() + "]" + " Passaram: [" + lerEcob.getPassaram() + "]");*/
                     sucesso = (double) lerEcob.getPassaram();
                     falha = (double) lerEcob.getFalharam();
-                    if(falha!=0 && sucesso !=0){
+                if(sucesso != 0 || falha !=0){
                     if (csTarantula.isSelected()) {
                         heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                         probabilidade = heuristicas.tarantula();
@@ -398,19 +400,20 @@ public class Interface extends javax.swing.JFrame {
                     }
                 }
             }
-            
         }
+            
+        
 
     
-   //  ordena(probTar);
-   //  ordena(probJac);
-    // ordena(probOch);
-    // ordena(probSbi);
+     ordena(probTar);
+     ordena(probJac);
+     ordena(probOch);
+     ordena(probSbi);
      System.out.println("------------------------IMPRESSAO TAR-----------------------------------------------------\n" );
         for(int i=0; i<probTar.size(); i++){
             System.out.println("Classe: "+ probTar.get(i).getClasse()+" Linha: "+probTar.get(i).getLinha()+" Probabilidade: "+probTar.get(i).getProbabilidade());
         }
-        System.out.println("-----------------------------IMPRESSAO Jac------------------------------------------------\n");
+        /*System.out.println("-----------------------------IMPRESSAO Jac------------------------------------------------\n");
         for(int i=0; i<probJac.size(); i++){
             System.out.println("Classe: "+ probJac.get(i).getClasse()+" Linha: "+probJac.get(i).getLinha()+" Probabilidade: "+probJac.get(i).getProbabilidade());
         }
@@ -423,7 +426,7 @@ public class Interface extends javax.swing.JFrame {
             System.out.println("Classe: "+ probSbi.get(i).getClasse()+" Linha: "+probSbi.get(i).getLinha()+" Probabilidade: "+probSbi.get(i).getProbabilidade());
         }
     
-        /*
+        
         ResultadoJanela.inicializaJanela(probTar, probJac, probOch, probSbi);*/
 
         //--------------------------------------------Fim cálculo das heurísticas -----------------------------------------------------
