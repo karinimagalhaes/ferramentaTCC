@@ -163,12 +163,9 @@ public class Jxr {
                 mChamado = new ArrayList<>();
                 metodoTeste = null;
             }
-            
-            
             if ((corrente == '\n') || (corrente == ' ') || (corrente == ',') || auxiliar.equals("ï»¿")){
                 sbaux.delete(0, sbaux.length());
             }
-            
         }
         return dados;
     }

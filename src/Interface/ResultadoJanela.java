@@ -6,15 +6,11 @@
 package Interface;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -26,61 +22,83 @@ import org.jfree.data.category.DefaultCategoryDataset;
  *
  * @author Karini
  */
-public class ResultadoJanela extends JFrame {
+public final class ResultadoJanela extends JFrame {
    
     public ResultadoJanela(List<Resultado> tar, List<Resultado> jac, List<Resultado> och, List<Resultado> sbi) {
-        super("Resultado");
+      //  super("Resultado");
         CategoryDataset dataset;
-        JFreeChart chart;
-        dataset = gerarDataset(tar);
-        chart = gerarGrafico(dataset);
-        /*JFrame frame = new JFrame("Chart");
-        frame.getContentPane().add(new ChartPanel(chart), BorderLayout.WEST);
-        frame.setSize(12, 16);*/
         
-        dataset = gerarDataset(jac);
-        chart = gerarGrafico(dataset);
-       /* frame.getContentPane().add(new ChartPanel(chart), BorderLayout.EAST);
-        frame.setSize(12, 16);*/
+        //---------------------gerando resultados tarantula-------------------------------------
+        dataset = gerarDataset(tar, jac, och, sbi);
+        JFreeChart chart = gerarGrafico(dataset);
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setDomainZoomable(true);
         
-        dataset = gerarDataset(och);
-        chart = gerarGrafico(dataset);
-        /*frame.getContentPane().add(new ChartPanel(chart), BorderLayout.SOUTH);
-        frame.setSize(12, 16);*/
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(chartPanel, BorderLayout.CENTER);
         
-        dataset = gerarDataset(jac);
-        chart = gerarGrafico(dataset);
-       /* frame.getContentPane().add(new ChartPanel(chart), BorderLayout.NORTH);
-        frame.setSize(12, 16);
-        frame.pack();*/
+        
+        JTable table = new JTable(criarValores(tar, jac, och, sbi), criarColunas());
 
-        final ChartPanel chartPanel = new ChartPanel(chart, true, true, true, false, true);
-        chartPanel.setPreferredSize(new java.awt.Dimension(600, 380));
-        setContentPane(chartPanel);
+        // Adiciona o JTable dentro do painel
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        panel.add(scrollPane, BorderLayout.SOUTH);
+        
+        
+        JFrame frame = new JFrame();
+        frame.setVisible(true);
+        frame.add(panel);
+      
+        frame.pack();
+        frame.setVisible(true);
     }
 
     public static void inicializaJanela(List<Resultado> tar, List<Resultado> jac, List<Resultado> och, List<Resultado> sbi) {
-        new ResultadoJanela(tar, jac, och, sbi).setVisible(true);
+        new ResultadoJanela(tar, jac, och, sbi);
     }
     
-    public JFreeChart gerarGrafico(CategoryDataset dataSet){
+      public JFreeChart gerarGrafico(CategoryDataset dataSet){
         JFreeChart chart = ChartFactory.createBarChart(
-            "Resultado da Localização para classe", //Titulo
+            "Resultado da Localização de Defeitos", //Titulo
             "Heurística", // Eixo X
             "Probabilidade", //Eixo Y
             dataSet, // Dados para o grafico
             PlotOrientation.VERTICAL, //Orientacao do grafico
             true, 
             true, 
-            false); // exibir: legendas, tooltips, url
+            true); // exibir: legendas, tooltips, url
         return chart;
     }
     
-    private static CategoryDataset gerarDataset(List<Resultado> resultado) {
+    private CategoryDataset gerarDataset(List<Resultado> tar, List<Resultado> jac, List<Resultado> och, List<Resultado> sbi) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        for(int i=0; i<8; i++){
-            dataset.addValue(resultado.get(i).getProbabilidade(), resultado.get(i).getHeuristica(), Integer.toString(resultado.get(i).getLinha()));
+        for(int i = 0; i<7; i++){
+            dataset.addValue(tar.get(i).getProbabilidade(), tar.get(i).getHeuristica(), Integer.toString(tar.get(i).getLinha()));
+            dataset.addValue(jac.get(i).getProbabilidade(), jac.get(i).getHeuristica(), Integer.toString(jac.get(i).getLinha()));
+            dataset.addValue(och.get(i).getProbabilidade(), och.get(i).getHeuristica(), Integer.toString(och.get(i).getLinha()));
+            dataset.addValue(sbi.get(i).getProbabilidade(), sbi.get(i).getHeuristica(), Integer.toString(sbi.get(i).getLinha()));
         }
         return dataset;
+    }
+ 
+        public Object[] criarColunas(){
+        Object[] colunas = new Object[]{"Classe", "Linha", "Tarantula",  "Jaccard", "Ochiai", "SBI"};
+        return colunas;
+    }
+    
+        public Object[][] criarValores(List<Resultado> tar, List<Resultado> jac, List<Resultado> och, List<Resultado> sbi){
+        Object[][] valores = new Object[tar.size()][12];
+        for (int i = 0; i < tar.size(); i++) {
+            valores[i][0] = tar.get(i).getClasse();      // primeira coluna "Linha"
+            valores[i][1] = tar.get(i).getLinha();
+            valores[i][2] = tar.get(i).getProbabilidade();      // primeira coluna "Linha"
+            valores[i][3] = jac.get(i).getProbabilidade();      // primeira coluna "Linha"
+            valores[i][4] = och.get(i).getProbabilidade();      // primeira coluna "Linha"
+            valores[i][5] = sbi.get(i).getProbabilidade();      // primeira coluna "Linha"
+           
+        }
+        return valores;
     }
 }

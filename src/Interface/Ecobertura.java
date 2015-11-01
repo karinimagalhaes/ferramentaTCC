@@ -250,7 +250,7 @@ public class Ecobertura {
                     if (linha > arrayLinhas.get(i) && linha < arrayLinhas.get(j)) {
                         metodoCodigo = informacoes.get(arrayLinhas.get(i)).getMetodo();
                         verificaMetodo(classeMetodo, metodoCodigo, dadosTeste);
-                     //   System.out.println("linha: " + linha + " metodo: " + metodoCodigo+" classe: "+classeMetodo);
+                        System.out.println("linha: " + linha + " metodo: " + metodoCodigo+" classe: "+classeMetodo);
                        
                     }
                     //else if ((linha > arrayLinhas.get(i)) && (linha < qtdeLinhas)) {
@@ -307,6 +307,7 @@ public class Ecobertura {
             if(dadosTeste.get(i).getClasse().equals(classeMetodo)){
                 mChamado = dadosTeste.get(i).getmChamado();
                 for(int j=0; j<mChamado.size(); j++){
+                    //System.out.println("Metodo chamado: "+mChamado.get(j)+" Metodo Codigo: "+metodoCodigo);
                     if(mChamado.get(j).equals(metodoCodigo)){
                         metodoTeste.add(dadosTeste.get(i).getMetodoTeste());
                         

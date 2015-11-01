@@ -372,8 +372,9 @@ public class Interface extends javax.swing.JFrame {
                     if (csTarantula.isSelected()) {
                         heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                         probabilidade = heuristicas.tarantula();
-                        // System.out.println("Linha: "+linhasClasse.get(count)+" probabilidade: "+probabilidade);
-                        probTar.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Tarantula"));
+                        if(probabilidade != 0.0){
+                            probTar.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Tarantula"));
+                        }
                     }
                     // entriesSortedByValues(probTar);
                     ///System.out.println(entriesSortedByValues(probTar));
@@ -381,20 +382,26 @@ public class Interface extends javax.swing.JFrame {
                     if (csOchiai.isSelected()) {
                         heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                         probabilidade = heuristicas.ochiai();
-                        probOch.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Ochiai"));
+                        if(probabilidade != 0.0){
+                            probOch.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Ochiai"));
+                        }
                     }
                     //System.out.println(entriesSortedByValues(probOch));
 
                     if (csJaccard.isSelected()) {
                         heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                         probabilidade = heuristicas.jaccard();
-                        probJac.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Jaccard"));
+                        if(probabilidade != 0.0){
+                            probJac.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "Jaccard"));
+                        }
                         //System.out.println(entriesSortedByValues(probJac));
                     }
                     if (csSBI.isSelected()) {
                         heuristicas = new FaultLocalization(sucesso, falha, totSucesso, totFalha);
                         probabilidade = heuristicas.sbi();
-                        probSbi.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "SBI"));
+                        if(probabilidade != 0.0){
+                            probSbi.add(new Resultado(classes.get(i), linhasClasse.get(count), probabilidade, "SBI"));
+                        }
                         //System.out.println("linha: " + linhas.get(i)+ " falha: " + falhasLinha.get(i) + " sucesso: " + sucessoLinha.get(i) );
                         //System.out.println(entriesSortedByValues(probSbi));
                     }
@@ -406,14 +413,18 @@ public class Interface extends javax.swing.JFrame {
 
     
      ordena(probTar);
+     Collections.reverse(probTar);
      ordena(probJac);
+     Collections.reverse(probJac);
      ordena(probOch);
+     Collections.reverse(probOch);
      ordena(probSbi);
+     Collections.reverse(probSbi);
      System.out.println("------------------------IMPRESSAO TAR-----------------------------------------------------\n" );
         for(int i=0; i<probTar.size(); i++){
             System.out.println("Classe: "+ probTar.get(i).getClasse()+" Linha: "+probTar.get(i).getLinha()+" Probabilidade: "+probTar.get(i).getProbabilidade());
         }
-        /*System.out.println("-----------------------------IMPRESSAO Jac------------------------------------------------\n");
+        System.out.println("-----------------------------IMPRESSAO Jac------------------------------------------------\n");
         for(int i=0; i<probJac.size(); i++){
             System.out.println("Classe: "+ probJac.get(i).getClasse()+" Linha: "+probJac.get(i).getLinha()+" Probabilidade: "+probJac.get(i).getProbabilidade());
         }
@@ -426,8 +437,7 @@ public class Interface extends javax.swing.JFrame {
             System.out.println("Classe: "+ probSbi.get(i).getClasse()+" Linha: "+probSbi.get(i).getLinha()+" Probabilidade: "+probSbi.get(i).getProbabilidade());
         }
     
-        
-        ResultadoJanela.inicializaJanela(probTar, probJac, probOch, probSbi);*/
+        ResultadoJanela.inicializaJanela(probTar, probJac, probOch, probSbi);
 
         //--------------------------------------------Fim cálculo das heurísticas -----------------------------------------------------
 
