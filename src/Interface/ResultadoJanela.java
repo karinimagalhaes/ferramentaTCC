@@ -43,7 +43,8 @@ public final class ResultadoJanela extends JFrame {
 
         // Adiciona o JTable dentro do painel
         JScrollPane scrollPane = new JScrollPane(table);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        
         panel.add(scrollPane, BorderLayout.SOUTH);
         
         
@@ -62,7 +63,7 @@ public final class ResultadoJanela extends JFrame {
       public JFreeChart gerarGrafico(CategoryDataset dataSet){
         JFreeChart chart = ChartFactory.createBarChart(
             "Resultado da Localização de Defeitos", //Titulo
-            "Heurística", // Eixo X
+            "Linha", // Eixo X
             "Probabilidade", //Eixo Y
             dataSet, // Dados para o grafico
             PlotOrientation.VERTICAL, //Orientacao do grafico
@@ -74,11 +75,21 @@ public final class ResultadoJanela extends JFrame {
     
     private CategoryDataset gerarDataset(List<Resultado> tar, List<Resultado> jac, List<Resultado> och, List<Resultado> sbi) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        for(int i = 0; i<7; i++){
-            dataset.addValue(tar.get(i).getProbabilidade(), tar.get(i).getHeuristica(), Integer.toString(tar.get(i).getLinha()));
-            dataset.addValue(jac.get(i).getProbabilidade(), jac.get(i).getHeuristica(), Integer.toString(jac.get(i).getLinha()));
-            dataset.addValue(och.get(i).getProbabilidade(), och.get(i).getHeuristica(), Integer.toString(och.get(i).getLinha()));
-            dataset.addValue(sbi.get(i).getProbabilidade(), sbi.get(i).getHeuristica(), Integer.toString(sbi.get(i).getLinha()));
+        if(tar.size() > 8){
+            for(int i = 0; i<7; i++){
+                dataset.addValue(tar.get(i).getProbabilidade(), tar.get(i).getHeuristica(), Integer.toString(tar.get(i).getLinha()));
+                dataset.addValue(jac.get(i).getProbabilidade(), jac.get(i).getHeuristica(), Integer.toString(jac.get(i).getLinha()));
+                dataset.addValue(och.get(i).getProbabilidade(), och.get(i).getHeuristica(), Integer.toString(och.get(i).getLinha()));
+                dataset.addValue(sbi.get(i).getProbabilidade(), sbi.get(i).getHeuristica(), Integer.toString(sbi.get(i).getLinha()));
+            }
+        }
+        else{
+            for(int i = 0; i<tar.size(); i++){
+                dataset.addValue(tar.get(i).getProbabilidade(), tar.get(i).getHeuristica(), Integer.toString(tar.get(i).getLinha()));
+                dataset.addValue(jac.get(i).getProbabilidade(), jac.get(i).getHeuristica(), Integer.toString(jac.get(i).getLinha()));
+                dataset.addValue(och.get(i).getProbabilidade(), och.get(i).getHeuristica(), Integer.toString(och.get(i).getLinha()));
+                dataset.addValue(sbi.get(i).getProbabilidade(), sbi.get(i).getHeuristica(), Integer.toString(sbi.get(i).getLinha()));
+            }
         }
         return dataset;
     }
@@ -89,7 +100,7 @@ public final class ResultadoJanela extends JFrame {
     }
     
         public Object[][] criarValores(List<Resultado> tar, List<Resultado> jac, List<Resultado> och, List<Resultado> sbi){
-        Object[][] valores = new Object[tar.size()][12];
+        Object[][] valores = new Object[tar.size()][6];
         for (int i = 0; i < tar.size(); i++) {
             valores[i][0] = tar.get(i).getClasse();      // primeira coluna "Linha"
             valores[i][1] = tar.get(i).getLinha();

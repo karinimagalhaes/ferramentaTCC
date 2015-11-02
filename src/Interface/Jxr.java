@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -50,6 +51,7 @@ public class Jxr {
         boolean obj = false;
         boolean cod = false;
         boolean ponto = false;
+        boolean bClasse = false;
         ArrayList <String> object = new ArrayList<String>();
         ArrayList<String> mChamado = new ArrayList<String>();
         ArrayList<DadosTeste> dados = new ArrayList<>();
@@ -111,18 +113,22 @@ public class Jxr {
                         //System.out.println("metodo ->" + metodoTeste);
                         break;
                     }
-                    
                 }
-                
             }
             
             
             if(sbaux.toString().equals(classe)){
+                bClasse = true;
+            }
+           
+            if((bClasse == true) && (corrente == ' ')){
                 classeObj = classe;
+                //System.out.println(classeObj);
+                bClasse = false;
                 obj = true;                                 // encontrou um objeto
                 sbaux.delete(0, sbaux.length());
             }
-            if((corrente == '(')){
+            if((corrente == '(') || (corrente == '.') || (corrente == ')')){
                 obj = false;                                // torna obj falso para não pegar a instanciação do objeto ex: Calculadora calc = new Calculadora()
             }
             if((obj == true) && ((corrente == '=') || (corrente == ';'))){
@@ -154,7 +160,8 @@ public class Jxr {
                 }
             }
            
-            if(metodoTeste != null && classeObj != null && object != null && !mChamado.isEmpty() && bloco == 1){
+            if(StringUtils.isNotBlank(metodoTeste) && StringUtils.isNotBlank(classeObj) && !object.isEmpty() && !mChamado.isEmpty() && bloco == 1){
+                System.out.println("ClasseOBj: "+classeObj+" Objeto: "+object+" MChamado: "+mChamado+" Metodo Teste:"+metodoTeste);
                 dadosTeste = new DadosTeste(classeObj, object, mChamado, metodoTeste);
                 //infJxr.put(metodoTeste + "_" + classeObj, dadosTeste);
                 dados.add(dadosTeste);

@@ -475,7 +475,7 @@ public class Interface extends javax.swing.JFrame {
                 if (!file.getName().startsWith("frame") && !file.getName().startsWith("index")
                         && !file.getName().startsWith("help") && !file.getName().startsWith("package")
                         && !file.getName().startsWith("allclasses") && !file.getName().startsWith("overview")
-                        && !file.getName().startsWith("stylesheet") ) {
+                        && !file.getName().startsWith("stylesheet") && !file.getName().startsWith("AllTest") ) {
                     files.add(caminho + "\\" + file.getName());
                 }
             } else if ((!file.getName().equals("css") && !file.getName().equals("images") && !file.getName().equals("js"))) {
