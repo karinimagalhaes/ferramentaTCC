@@ -64,16 +64,14 @@ public class Interface extends javax.swing.JFrame {
         csOchiai = new javax.swing.JCheckBox();
         csJaccard = new javax.swing.JCheckBox();
         csSBI = new javax.swing.JCheckBox();
-        jLabel2 = new javax.swing.JLabel();
+        lAjuda = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Localizador de Defeitos");
         setName("principal"); // NOI18N
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lEcobertura.setText("Cobertura *:");
-        getContentPane().add(lEcobertura, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 19, 70, -1));
 
         abrEcobertura.setBackground(new java.awt.Color(204, 204, 255));
         abrEcobertura.setText("Abrir");
@@ -82,11 +80,8 @@ public class Interface extends javax.swing.JFrame {
                 abrEcoberturaActionPerformed(evt);
             }
         });
-        getContentPane().add(abrEcobertura, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 40, 75, -1));
 
         lJunit.setText("Junit*:");
-        getContentPane().add(lJunit, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 40, -1));
-        getContentPane().add(arqJunit, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 540, -1));
 
         abrJunit.setBackground(new java.awt.Color(204, 204, 255));
         abrJunit.setText("Abrir");
@@ -95,11 +90,9 @@ public class Interface extends javax.swing.JFrame {
                 abrJunitActionPerformed(evt);
             }
         });
-        getContentPane().add(abrJunit, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 140, 75, -1));
 
         lheuristica.setBackground(new java.awt.Color(255, 255, 255));
         lheuristica.setText("Heurística*:");
-        getContentPane().add(lheuristica, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 70, -1));
 
         btnExecutar.setBackground(new java.awt.Color(153, 204, 255));
         btnExecutar.setText("Executar");
@@ -108,11 +101,8 @@ public class Interface extends javax.swing.JFrame {
                 btnExecutarActionPerformed(evt);
             }
         });
-        getContentPane().add(btnExecutar, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 250, -1, -1));
 
         lJxr.setText("Jxr*:");
-        getContentPane().add(lJxr, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 30, -1));
-        getContentPane().add(arqJxr, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 540, -1));
 
         abrJxr.setBackground(new java.awt.Color(204, 204, 255));
         abrJxr.setText("Abrir");
@@ -121,8 +111,6 @@ public class Interface extends javax.swing.JFrame {
                 abrJxrActionPerformed(evt);
             }
         });
-        getContentPane().add(abrJxr, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 90, 75, -1));
-        getContentPane().add(arqEcobertura, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 39, 540, -1));
 
         csTarantula.setText("Tarantula");
         csTarantula.addActionListener(new java.awt.event.ActionListener() {
@@ -130,27 +118,99 @@ public class Interface extends javax.swing.JFrame {
                 csTarantulaActionPerformed(evt);
             }
         });
-        getContentPane().add(csTarantula, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, -1, -1));
 
         csOchiai.setText("Ochiai");
-        getContentPane().add(csOchiai, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, -1, -1));
 
         csJaccard.setText("Jaccard");
-        getContentPane().add(csJaccard, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, -1, -1));
 
         csSBI.setText("SBI");
-        getContentPane().add(csSBI, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 250, -1, -1));
 
-        jLabel2.setText("Ajuda");
-        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+        lAjuda.setText("Ajuda");
+        lAjuda.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel2MouseClicked(evt);
+                lAjudaMouseClicked(evt);
             }
         });
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 10, 40, -1));
 
         jLabel1.setText("* campos obrigatórios.");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 280, 130, -1));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lheuristica, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(csJaccard)
+                    .addComponent(csOchiai)
+                    .addComponent(csTarantula)
+                    .addComponent(csSBI)
+                    .addComponent(btnExecutar)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lEcobertura, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(arqEcobertura, javax.swing.GroupLayout.PREFERRED_SIZE, 540, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lJxr, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(arqJxr, javax.swing.GroupLayout.PREFERRED_SIZE, 540, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lJunit, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(arqJunit, javax.swing.GroupLayout.PREFERRED_SIZE, 540, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(40, 40, 40)
+                                .addComponent(lAjuda, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(abrEcobertura, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(abrJxr, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(abrJunit, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(22, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(6, 6, 6)
+                        .addComponent(lEcobertura)
+                        .addGap(6, 6, 6)
+                        .addComponent(arqEcobertura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)
+                        .addComponent(lJxr)
+                        .addGap(6, 6, 6)
+                        .addComponent(arqJxr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)
+                        .addComponent(lJunit)
+                        .addGap(6, 6, 6)
+                        .addComponent(arqJunit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lAjuda)
+                        .addGap(26, 26, 26)
+                        .addComponent(abrEcobertura)
+                        .addGap(27, 27, 27)
+                        .addComponent(abrJxr)
+                        .addGap(27, 27, 27)
+                        .addComponent(abrJunit)))
+                .addGap(10, 10, 10)
+                .addComponent(lheuristica)
+                .addGap(6, 6, 6)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addComponent(csJaccard))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(40, 40, 40)
+                        .addComponent(csOchiai))
+                    .addComponent(csTarantula)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(60, 60, 60)
+                        .addComponent(csSBI)))
+                .addGap(7, 7, 7)
+                .addComponent(btnExecutar)
+                .addContainerGap(19, Short.MAX_VALUE))
+        );
 
         pack();
         setLocationRelativeTo(null);
@@ -269,7 +329,7 @@ public class Interface extends javax.swing.JFrame {
             Document documentoEcob;
 
             try {
-                //System.out.println(files.get(i));
+               
                 documentoEcob = Jsoup.parse(fileEcob, null);
                 Interface parserHtmlEcob = new Interface(documentoEcob);
                 lerEcob = new Ecobertura(parserHtmlEcob.document);
@@ -302,9 +362,13 @@ public class Interface extends javax.swing.JFrame {
         navegar(jxr.getPath());
         for (int i = 0; i < files.size(); i++) {
             File fileJxr = new File(files.get(i));
+            if(files.get(i).equals("C:\\Users\\Karini\\workspace\\oval-master\\target\\site\\xref-test\\net\\sf\\oval\\test\\validator\\CustomAssertValidTest.html")){
+                System.out.println("cheguei");
+            }
             Document documentoJxr;
 
             try {
+                 System.out.println(files.get(i));
                 documentoJxr = Jsoup.parse(fileJxr, null);
                 Interface parserHtmlJxr = new Interface(documentoJxr);
                 lerJxr = new Jxr(parserHtmlJxr.document);
@@ -314,6 +378,9 @@ public class Interface extends javax.swing.JFrame {
 
                 for (int j = 0; j < classes.size(); j++) {
                     reader = new FileInputStream(path);
+                    if(classes.get(j).equals("AssertValidCheck")){
+                        System.out.println("cheguei classe");
+                    }
                     dadosTeste.addAll(lerJxr.leTxt(classes.get(j), path, reader));                       // busca métodos, objetos da classe passada por parâmetro em todos os códigos de teste
                     reader.close();
                 }
@@ -506,7 +573,7 @@ public class Interface extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_csTarantulaActionPerformed
 
-    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+    private void lAjudaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lAjudaMouseClicked
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(null, "Este programa tem como objetivo auxiliar os desenvolvedores na procura por defeitos no código fonte.\n"
                 + "Abaixo são descritas as funcionalidades de cada campo:\n"
@@ -514,7 +581,7 @@ public class Interface extends javax.swing.JFrame {
                 + "*Jxr: Destinado para inserção do DIRETÓRIO dos relatórios com os códigos dos testes unitários gerados pelo plugin Maven Jxr.\n"
                 + "*Junit: Destinado para inserção do RALATÓRIO de teste gerado pelo plugin Surefire Report.\n"
                 + "*Heurística: Destinado para a escolha de pelo menos uma heurística de localização.");
-    }//GEN-LAST:event_jLabel2MouseClicked
+    }//GEN-LAST:event_lAjudaMouseClicked
 
     /**
      * @param args the command line arguments
@@ -564,7 +631,7 @@ public class Interface extends javax.swing.JFrame {
     private javax.swing.JCheckBox csSBI;
     private javax.swing.JCheckBox csTarantula;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel lAjuda;
     private javax.swing.JLabel lEcobertura;
     private javax.swing.JLabel lJunit;
     private javax.swing.JLabel lJxr;

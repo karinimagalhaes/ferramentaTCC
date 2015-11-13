@@ -52,6 +52,8 @@ public class Jxr {
         boolean cod = false;
         boolean ponto = false;
         boolean bClasse = false;
+        boolean achei = false;
+        boolean retorno = false;
         ArrayList <String> object = new ArrayList<String>();
         ArrayList<String> mChamado = new ArrayList<String>();
         ArrayList<DadosTeste> dados = new ArrayList<>();
@@ -90,6 +92,7 @@ public class Jxr {
                 met = true;   // encontrei palavra reservada
                 sbaux.delete(0, sbaux.length());
             }
+            
             if(sbaux.toString().equals("class")){
                 met = false;
                 sbaux.delete(0, sbaux.length());
@@ -102,7 +105,12 @@ public class Jxr {
             if(auxiliar.equals("new")){
                 met=false;
             }
+            if(met == true && ((corrente == ')') || (corrente == '='))){
+                met = false;
+            }
             if ((met == true) && ((corrente == ' ') || (corrente == '('))) {
+              
+                
                 aux = sbaux.toString().toCharArray();       // verifica se eh um metoo ou declaração de variável
                 for(int i=0; i<aux.length; i++){
                     if(aux[i] == '('){
@@ -115,10 +123,12 @@ public class Jxr {
                     }
                 }
             }
-            
-            
-            if(sbaux.toString().equals(classe)){
+         if(sbaux.toString().equals(classe)){
                 bClasse = true;
+            }
+            if(corrente == '{'){
+                bClasse = false;
+                obj = false;
             }
            
             if((bClasse == true) && (corrente == ' ')){
@@ -131,9 +141,11 @@ public class Jxr {
             if((corrente == '(') || (corrente == '.') || (corrente == ')')){
                 obj = false;                                // torna obj falso para não pegar a instanciação do objeto ex: Calculadora calc = new Calculadora()
             }
+           
             if((obj == true) && ((corrente == '=') || (corrente == ';'))){
-                objeto = auxiliar.trim();
+                objeto = auxiliar.replace(';', ' ').trim();
                 object.add(objeto);
+                obj = false;
                 //System.out.println(object);
             }
             
@@ -150,17 +162,24 @@ public class Jxr {
             }
             if((cod == true) && (ponto == true)){
                 if((corrente == '(') || (corrente == ' ')){
-                    
-                    sbaux.deleteCharAt(sbaux.length()-1);
-                    
-                    mChamado.add(sbaux.toString());    // metodo do codigo encontrado
+                    if(sbaux.length() != 0){
+                        sbaux.deleteCharAt(sbaux.length()-1);
+                        for(int i=0; i<mChamado.size(); i++){
+                            if(mChamado.get(i).equals(sbaux.toString()))
+                                achei = true;
+                        }
+                        if(achei != true){
+                            mChamado.add(sbaux.toString());    // metodo do codigo encontrado
+                            achei = false;
+                        }
+                    }
                     cod = false;
                     ponto = false;
                    
                 }
             }
-           
-            if(StringUtils.isNotBlank(metodoTeste) && StringUtils.isNotBlank(classeObj) && !object.isEmpty() && !mChamado.isEmpty() && bloco == 1){
+            
+            if(StringUtils.isNotBlank(metodoTeste) && StringUtils.isNotBlank(classeObj) && !object.isEmpty() && !mChamado.isEmpty() && (bloco%2==0)){
                 System.out.println("ClasseOBj: "+classeObj+" Objeto: "+object+" MChamado: "+mChamado+" Metodo Teste:"+metodoTeste);
                 dadosTeste = new DadosTeste(classeObj, object, mChamado, metodoTeste);
                 //infJxr.put(metodoTeste + "_" + classeObj, dadosTeste);
@@ -169,8 +188,15 @@ public class Jxr {
                 object = new ArrayList<>();
                 mChamado = new ArrayList<>();
                 metodoTeste = null;
+                objeto = null;
+                met = false;
+                obj = false;
+                cod = false;
+                ponto = false;
+                bClasse = false;
+                achei = false;
             }
-            if ((corrente == '\n') || (corrente == ' ') || (corrente == ',') || auxiliar.equals("ï»¿")){
+            if ((corrente == '\n') || (corrente == ' ') || (corrente == ',') || auxiliar.equals("ï»¿") || (corrente == '(')){
                 sbaux.delete(0, sbaux.length());
             }
         }
