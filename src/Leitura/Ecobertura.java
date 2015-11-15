@@ -249,6 +249,7 @@ public class Ecobertura {
                 if (j < arrayLinhas.size()) {
                     if (linha > arrayLinhas.get(i) && linha < arrayLinhas.get(j)) {
                         metodoCodigo = informacoes.get(arrayLinhas.get(i)).getMetodo();
+                        //System.out.println(linha + " "+informacoes.get(arrayLinhas.get(i)).getMetodo());
                         verificaMetodo(classeMetodo, metodoCodigo, dadosTeste);
                         //System.out.println("linha: " + linha + " metodo: " + metodoCodigo+" classe: "+classeMetodo);
                        
@@ -257,12 +258,10 @@ public class Ecobertura {
                        // metodoCodigo = informacoes.get(arrayLinhas.get(i)).getMetodo();
                    // }
                 } else if (linha > arrayLinhas.get(arrayLinhas.size() - 1)) {
-                    if(i-1 >= 0){
-                        metodoCodigo = informacoes.get(arrayLinhas.get(i-1)).getMetodo();
-                    }
-                    else{
+                  
                         metodoCodigo = informacoes.get(arrayLinhas.get(i)).getMetodo();
-                    }
+                        //System.out.println(linha + " "+informacoes.get(arrayLinhas.get(i)).getMetodo());
+                    
                     verificaMetodo(classeMetodo, metodoCodigo, dadosTeste);
                    // System.out.println("linha: " + linha + " metodo: " + metodoCodigo+" classe: "+classeMetodo);
                     
@@ -281,7 +280,7 @@ public class Ecobertura {
         }
         else{
             for (int i = 0; i < metodoTeste.size(); i++) {
-               // System.out.println(junit.getTestesFalhos() + "->" + metodoTeste.get(i));
+               //System.out.println(junit.getTestesFalhos() + "->" + metodoTeste.get(i));
                 if (junit.getTestesFalhos().contains(metodoTeste.get(i))) {
                     falharam++;
                 }
@@ -304,18 +303,20 @@ public class Ecobertura {
          
         //pega todos os metodos de código
         for(int i=0; i<dadosTeste.size(); i++){
+           // System.out.println(dadosTeste.get(i).getClasse() +"->"+classeMetodo);
             if(dadosTeste.get(i).getClasse().equals(classeMetodo)){
                 mChamado = dadosTeste.get(i).getmChamado();
                 for(int j=0; j<mChamado.size(); j++){
-                    //System.out.println("Metodo chamado: "+mChamado.get(j)+" Metodo Codigo: "+metodoCodigo);
+                   // System.out.println("Metodo chamado: "+mChamado.get(j)+" Metodo Codigo: "+metodoCodigo);
                     if(mChamado.get(j).equals(metodoCodigo)){
                         metodoTeste.add(dadosTeste.get(i).getMetodoTeste());
-                        
+                        break;
                     }
                 }
+             
             }
         }
-       // System.out.println("Classe metodo:"+classeMetodo+" Metodo teste:"+metodoTeste);
+      //  System.out.println("FINAL -----> Classe metodo:"+classeMetodo+" Metodo teste:"+metodoTeste);
         
     }
 

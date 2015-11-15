@@ -54,7 +54,7 @@ public class Jxr {
         boolean ponto = false;
         boolean bClasse = false;
         boolean achei = false;
-        boolean retorno = false;
+        boolean statment = false;
         ArrayList <String> object = new ArrayList<String>();
         ArrayList<String> mChamado = new ArrayList<String>();
         ArrayList<DadosTeste> dados = new ArrayList<>();
@@ -73,16 +73,26 @@ public class Jxr {
             
             sbaux.append(corrente);
             // verifica abertura de blocos
-            if(corrente == '{'){
-                bloco++;
-            }
             
-            if(corrente == '}'){
-                bloco--;
-            }
             
             if(corrente != '='){
                 auxiliar = sbaux.toString();                // guarda o nome do objeto
+            }
+            
+            if((corrente == ' ') && (auxiliar.equals("do") || auxiliar.equals("if") || auxiliar.equals("for") 
+                    ||auxiliar.equals("while") || auxiliar.equals("switch") || auxiliar.equals("try")|| auxiliar.equals("catch"))){
+                statment = true;
+                
+            }
+            
+            if((corrente == '{') && (statment == false)){
+                bloco++;
+            }
+            
+            if((corrente == '}') && (statment == false)){
+                bloco--;
+            } else if((corrente == '}') && (statment == true)){
+                statment = false;
             }
             
             //ler os caracteres até formar uma palavra reservada do java
@@ -180,7 +190,7 @@ public class Jxr {
                 }
             }
             
-            if(StringUtils.isNotBlank(metodoTeste) && StringUtils.isNotBlank(classeObj) && !object.isEmpty() && !mChamado.isEmpty() && (bloco%2==0)){
+            if(StringUtils.isNotBlank(metodoTeste) && StringUtils.isNotBlank(classeObj) && !object.isEmpty() && !mChamado.isEmpty() && (bloco%2!=0)){
                 System.out.println("ClasseOBj: "+classeObj+" Objeto: "+object+" MChamado: "+mChamado+" Metodo Teste:"+metodoTeste);
                 dadosTeste = new DadosTeste(classeObj, object, mChamado, metodoTeste);
                 //infJxr.put(metodoTeste + "_" + classeObj, dadosTeste);

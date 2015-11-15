@@ -75,7 +75,7 @@ public class Interface extends javax.swing.JFrame {
         btnCancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Localizador de Defeitos");
+        setTitle("JLoc");
         setBackground(new java.awt.Color(255, 255, 255));
         setName("principal"); // NOI18N
 
@@ -405,9 +405,7 @@ public class Interface extends javax.swing.JFrame {
         navegar(jxr.getPath());
         for (int i = 0; i < files.size(); i++) {
             File fileJxr = new File(files.get(i));
-            if(files.get(i).equals("C:\\Users\\Karini\\workspace\\oval-master\\target\\site\\xref-test\\net\\sf\\oval\\test\\validator\\CustomAssertValidTest.html")){
-                System.out.println("cheguei");
-            }
+
             Document documentoJxr;
 
             try {
@@ -421,9 +419,7 @@ public class Interface extends javax.swing.JFrame {
 
                 for (int j = 0; j < classes.size(); j++) {
                     reader = new FileInputStream(path);
-                    if(classes.get(j).equals("AssertValidCheck")){
-                        System.out.println("cheguei classe");
-                    }
+               
                     dadosTeste.addAll(lerJxr.leTxt(classes.get(j), path, reader));                       // busca métodos, objetos da classe passada por parâmetro em todos os códigos de teste
                     reader.close();
                 }
@@ -436,9 +432,9 @@ public class Interface extends javax.swing.JFrame {
         }
         System.out.println("li Jxr");
         
-        /*for(int i=0; i<dadosFinal.size(); i++){
-            System.out.println("Classe:"+dadosFinal.get(i).getClasse()+" Metodo Chamado: "+dadosFinal.get(i).getmChamado()
-                +" MetodoTeste: "+dadosFinal.get(i).getMetodoTeste()+" Objeto:" + dadosFinal.get(i).getObjetos());
+       /* for(int i=0; i<dadosTeste.size(); i++){
+            System.out.println("Classe:"+dadosTeste.get(i).getClasse()+" Metodo Chamado: "+dadosTeste.get(i).getmChamado()
+                +" MetodoTeste: "+dadosTeste.get(i).getMetodoTeste()+" Objeto:" + dadosTeste.get(i).getObjetos());
         }
 
         //------------------------------------------ imprime valores do hashtable -----------------------------
@@ -474,8 +470,8 @@ public class Interface extends javax.swing.JFrame {
             linhasClasse = linhas.get(classes.get(i));
             for (int count = 1; count < linhasClasse.size(); count++) {
                 lerEcob.falharam(classes.get(i), linhasClasse.get(count), linhaMetodo, dadosTeste, lerJunit);   // pega todos os arraylist contidos em linhas
-                /*System.out.println("Classe: ["+classes.get(i)+"]"+"linha: [" +linhasClasse.get(count) +"]"  +
-             " Falharam: [" + lerEcob.getFalharam() + "]" + " Passaram: [" + lerEcob.getPassaram() + "]");*/
+                System.out.println("Classe: ["+classes.get(i)+"]"+"linha: [" +linhasClasse.get(count) +"]"  +
+             " Falharam: [" + lerEcob.getFalharam() + "]" + " Passaram: [" + lerEcob.getPassaram() + "]");
                     sucesso = (double) lerEcob.getPassaram();
                     falha = (double) lerEcob.getFalharam();
                 if(sucesso != 0 || falha !=0){

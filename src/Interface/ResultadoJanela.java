@@ -27,6 +27,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.CategoryItemLabelGenerator;
 import org.jfree.chart.labels.ItemLabelAnchor;
@@ -36,8 +37,10 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
 /**
@@ -79,7 +82,7 @@ public final class ResultadoJanela extends JFrame {
         panel.add(scrollPane, BorderLayout.PAGE_END);
 
         JFrame frame = new JFrame();
-        
+        frame.setTitle("JLoc - Resultado");
         frame.setVisible(true);
         frame.add(panel);
 
@@ -94,7 +97,7 @@ public final class ResultadoJanela extends JFrame {
     public JFreeChart gerarGrafico(CategoryDataset dataSet) {
         JFreeChart chart = ChartFactory.createBarChart3D(
                 "Resultado da Localização de Defeitos", //Titulo
-                "Linha", // Eixo X
+                "Linha / Classe", // Eixo X
                 "Probabilidade (%)", //Eixo Y
                 dataSet, // Dados para o grafico
                 PlotOrientation.VERTICAL, //Orientacao do grafico
@@ -103,24 +106,17 @@ public final class ResultadoJanela extends JFrame {
                 true); // exibir: legendas, tooltips, url
         chart.setBackgroundPaint(Color.getHSBColor(0, 0, (float) 0.835)); // Set the background colour of the chart
         
+        
         CategoryPlot p = chart.getCategoryPlot(); // Get the Plot object for a bar graph
         p.setBackgroundPaint(Color.white); // Modify the plot background 
         p.setRangeGridlinePaint(Color.BLACK);
-
-        CategoryItemRenderer renderer = p.getRenderer();
-        CategoryItemLabelGenerator generator
-                = new StandardCategoryItemLabelGenerator();
-        renderer.setBaseItemLabelGenerator(generator);
-        renderer.setBaseItemLabelFont(new Font("SansSerif", Font.BOLD, 12));
-        renderer.setBaseItemLabelsVisible(true);
-        renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(
-                ItemLabelAnchor.OUTSIDE12, TextAnchor.BASELINE_CENTER));
-
-   
-
-        //Write numbers on range axis just as integrals, not decimals
-        NumberAxis rangeAxis = (NumberAxis) p.getRangeAxis();
-        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        
+        CategoryAxis axis = p.getDomainAxis(); 
+axis.setTickLabelFont(new Font("Helvetica", Font.PLAIN, 10)); 
+axis.setMaximumCategoryLabelWidthRatio(1.0f); 
+axis.setMaximumCategoryLabelLines(2); 
+p.setDomainAxis(axis );
+        
 
         return chart;
     }
