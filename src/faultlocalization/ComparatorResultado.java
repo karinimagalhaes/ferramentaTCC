@@ -5,7 +5,7 @@
  */
 package faultlocalization;
 
-import Interface.Resultado;
+import Leitura.Resultado;
 import java.util.Comparator;
 
 /**
