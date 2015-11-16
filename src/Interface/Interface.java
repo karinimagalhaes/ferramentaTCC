@@ -409,7 +409,7 @@ public class Interface extends javax.swing.JFrame {
             Document documentoJxr;
 
             try {
-                 System.out.println(files.get(i));
+                 //System.out.println(files.get(i));
                 documentoJxr = Jsoup.parse(fileJxr, null);
                 Interface parserHtmlJxr = new Interface(documentoJxr);
                 lerJxr = new Jxr(parserHtmlJxr.document);
@@ -470,8 +470,8 @@ public class Interface extends javax.swing.JFrame {
             linhasClasse = linhas.get(classes.get(i));
             for (int count = 1; count < linhasClasse.size(); count++) {
                 lerEcob.falharam(classes.get(i), linhasClasse.get(count), linhaMetodo, dadosTeste, lerJunit);   // pega todos os arraylist contidos em linhas
-                System.out.println("Classe: ["+classes.get(i)+"]"+"linha: [" +linhasClasse.get(count) +"]"  +
-             " Falharam: [" + lerEcob.getFalharam() + "]" + " Passaram: [" + lerEcob.getPassaram() + "]");
+              //  System.out.println("Classe: ["+classes.get(i)+"]"+"linha: [" +linhasClasse.get(count) +"]"  +
+             //" Falharam: [" + lerEcob.getFalharam() + "] TotalFalhas:[" + totFalha+"] Passaram: [" + lerEcob.getPassaram() + "] TotSucesso:["+totSucesso+"]");
                     sucesso = (double) lerEcob.getPassaram();
                     falha = (double) lerEcob.getFalharam();
                 if(sucesso != 0 || falha !=0){

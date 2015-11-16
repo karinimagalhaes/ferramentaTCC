@@ -191,7 +191,7 @@ public class Jxr {
             }
             
             if(StringUtils.isNotBlank(metodoTeste) && StringUtils.isNotBlank(classeObj) && !object.isEmpty() && !mChamado.isEmpty() && (bloco%2!=0)){
-                System.out.println("ClasseOBj: "+classeObj+" Objeto: "+object+" MChamado: "+mChamado+" Metodo Teste:"+metodoTeste);
+               // System.out.println("ClasseOBj: "+classeObj+" Objeto: "+object+" MChamado: "+mChamado+" Metodo Teste:"+metodoTeste);
                 dadosTeste = new DadosTeste(classeObj, object, mChamado, metodoTeste);
                 //infJxr.put(metodoTeste + "_" + classeObj, dadosTeste);
                 dados.add(dadosTeste);

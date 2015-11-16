@@ -70,8 +70,10 @@ public final class ResultadoJanela extends JFrame {
         
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
-       panel.add(lAjuda, BorderLayout.BEFORE_FIRST_LINE);
+        panel.add(lAjuda, BorderLayout.BEFORE_FIRST_LINE);
         panel.add(chartPanel, BorderLayout.LINE_START);
+        JLabel lTabela = new JLabel("Tabela de Resultados", JLabel.CENTER);
+        panel.add(lTabela, BorderLayout.SOUTH);
  
         JTable table = new JTable(criarValores(tar, jac, och, sbi), criarColunas());
 
@@ -79,7 +81,7 @@ public final class ResultadoJanela extends JFrame {
         JScrollPane scrollPane = new JScrollPane(table);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         
-        panel.add(scrollPane, BorderLayout.PAGE_END);
+        panel.add(scrollPane, BorderLayout.SOUTH);
 
         JFrame frame = new JFrame();
         frame.setTitle("JLoc - Resultado");
@@ -97,7 +99,7 @@ public final class ResultadoJanela extends JFrame {
     public JFreeChart gerarGrafico(CategoryDataset dataSet) {
         JFreeChart chart = ChartFactory.createBarChart3D(
                 "Resultado da Localização de Defeitos", //Titulo
-                "Linha / Classe", // Eixo X
+                " ", // Eixo X
                 "Probabilidade (%)", //Eixo Y
                 dataSet, // Dados para o grafico
                 PlotOrientation.VERTICAL, //Orientacao do grafico
@@ -112,10 +114,10 @@ public final class ResultadoJanela extends JFrame {
         p.setRangeGridlinePaint(Color.BLACK);
         
         CategoryAxis axis = p.getDomainAxis(); 
-axis.setTickLabelFont(new Font("Helvetica", Font.PLAIN, 10)); 
-axis.setMaximumCategoryLabelWidthRatio(1.0f); 
-axis.setMaximumCategoryLabelLines(2); 
-p.setDomainAxis(axis );
+        axis.setTickLabelFont(new Font("Helvetica", Font.PLAIN, 10)); 
+        axis.setMaximumCategoryLabelWidthRatio(1.0f); 
+        axis.setMaximumCategoryLabelLines(2); 
+        p.setDomainAxis(axis );
         
 
         return chart;
@@ -145,7 +147,7 @@ p.setDomainAxis(axis );
     }
 
     public Object[] criarColunas() {
-        Object[] colunas = new Object[]{"Classe", "Linha", "Tarantula (%)", "Jaccard (%)", "Ochiai (%)", "SBI (%)"};
+        Object[] colunas = new Object[]{ "Linha", "Classe", "Tarantula (%)", "Jaccard (%)", "Ochiai (%)", "SBI (%)"};
         return colunas;
     }
 
@@ -153,12 +155,12 @@ p.setDomainAxis(axis );
         Object[][] valores = new Object[tar.size()][6];
          DecimalFormat df = new DecimalFormat("#.00");
         for (int i = 0; i < tar.size(); i++) {
-            valores[i][0] = tar.get(i).getClasse();      // primeira coluna "Linha"
-            valores[i][1] = tar.get(i).getLinha();
-            valores[i][2] = df.format((tar.get(i).getProbabilidade()*100));      // primeira coluna "Linha"
-            valores[i][3] = df.format(jac.get(i).getProbabilidade()*100);      // primeira coluna "Linha"
-            valores[i][4] = df.format(och.get(i).getProbabilidade()*100);      // primeira coluna "Linha"
-            valores[i][5] = df.format(sbi.get(i).getProbabilidade()*100);      // primeira coluna "Linha"
+            valores[i][0] = tar.get(i).getLinha();      // primeira coluna "Linha"
+            valores[i][1] = tar.get(i).getClasse();
+            valores[i][2] = df.format((tar.get(i).getProbabilidade()*100));      
+            valores[i][3] = df.format(jac.get(i).getProbabilidade()*100);     
+            valores[i][4] = df.format(och.get(i).getProbabilidade()*100);      
+            valores[i][5] = df.format(sbi.get(i).getProbabilidade()*100);      
 
         }
         return valores;

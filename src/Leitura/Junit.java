@@ -49,10 +49,11 @@ public class Junit {
     public void totais(){   //método para pegas as informações referentes a quantidade de testes
         Elements children = null;
         Elements elements = document.getElementsByClass("b");
-        //System.out.println(elements.size());
+       //System.out.println(elements);
         for(Element element : elements.eq(0)){
             //String table = element.getElementsByClass("b").text();
             children = element.getElementsByTag("td");
+            //System.out.println(children);
         }
         qtdeTestes = Integer.parseInt(children.get(0).text());   //Primeira Coluna do Relatório Surefire (Tests)
        // Soma da 2ª e 3ª coluna do Surefire (Error e failures)
