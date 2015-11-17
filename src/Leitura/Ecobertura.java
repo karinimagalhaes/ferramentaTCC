@@ -10,6 +10,8 @@ import static java.lang.Math.abs;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -31,6 +33,8 @@ public class Ecobertura {
     private int qtdeLinhas = 0;
     private int falharam = 0;
     private int passaram = 0;
+    private int totFalharam = 0;
+    private int totPassaram = 0;
     private Document document;
     Informacoes informacoes;
     private boolean linhaControl = false;
@@ -62,6 +66,16 @@ public class Ecobertura {
     public String getClasse() {
         return classe;
     }
+
+    public int getTotFalharam() {
+        return totFalharam;
+    }
+
+    public int getTotPassaram() {
+        return totPassaram;
+    }
+    
+    
 
     public boolean cobertura() {
         Elements elements = document.getElementsByAttribute("align");
@@ -225,10 +239,12 @@ public class Ecobertura {
          }*/
     }
 
-    public void falharam(String classeMetodo, int linha, ArrayList<Informacoes> linhaMetodo, ArrayList<DadosTeste> dadosTeste, Junit junit) {
+    public void falharam(String classeMetodo, int linha, ArrayList<Informacoes> linhaMetodo, ArrayList<DadosTeste> dadosTeste, Junit junit, Map<String, Testes> totais) {
        // System.out.println(classeMetodo);
         passaram = 0;
         falharam = 0;
+        totPassaram = 0;
+        totFalharam = 0;
         String metodoCodigo = null;
         List<Integer> arrayLinhas = new ArrayList<>();
         HashMap<Integer, Informacoes> informacoes = new HashMap<>();
@@ -250,7 +266,7 @@ public class Ecobertura {
                     if (linha > arrayLinhas.get(i) && linha < arrayLinhas.get(j)) {
                         metodoCodigo = informacoes.get(arrayLinhas.get(i)).getMetodo();
                         //System.out.println(linha + " "+informacoes.get(arrayLinhas.get(i)).getMetodo());
-                        verificaMetodo(classeMetodo, metodoCodigo, dadosTeste);
+                        verificaMetodo(classeMetodo, metodoCodigo, dadosTeste, totais);
                         //System.out.println("linha: " + linha + " metodo: " + metodoCodigo+" classe: "+classeMetodo);
                        
                     }
@@ -262,7 +278,7 @@ public class Ecobertura {
                         metodoCodigo = informacoes.get(arrayLinhas.get(i)).getMetodo();
                         //System.out.println(linha + " "+informacoes.get(arrayLinhas.get(i)).getMetodo());
                     
-                    verificaMetodo(classeMetodo, metodoCodigo, dadosTeste);
+                    verificaMetodo(classeMetodo, metodoCodigo, dadosTeste, totais);
                    // System.out.println("linha: " + linha + " metodo: " + metodoCodigo+" classe: "+classeMetodo);
                     
                 }
@@ -294,7 +310,8 @@ public class Ecobertura {
 
     }
 
-    public void verificaMetodo(String classeMetodo, String metodoCodigo, ArrayList<DadosTeste> dadosTeste) {
+    public void verificaMetodo(String classeMetodo, String metodoCodigo, ArrayList<DadosTeste> dadosTeste, Map<String, Testes> totais) {
+       
         /*
         Verificar quais métodos de teste chamam o método do código
         */
@@ -310,6 +327,10 @@ public class Ecobertura {
                    // System.out.println("Metodo chamado: "+mChamado.get(j)+" Metodo Codigo: "+metodoCodigo);
                     if(mChamado.get(j).equals(metodoCodigo)){
                         metodoTeste.add(dadosTeste.get(i).getMetodoTeste());
+                        if(totais.containsKey(dadosTeste.get(i).getClasseTeste())){
+                            totFalharam = totFalharam + totais.get(dadosTeste.get(i).getClasseTeste()).getTotalFalha();
+                            totPassaram = totPassaram + totais.get(dadosTeste.get(i).getClasseTeste()).getTotalSucesso();
+                        }
                         break;
                     }
                 }
@@ -319,7 +340,7 @@ public class Ecobertura {
       //  System.out.println("FINAL -----> Classe metodo:"+classeMetodo+" Metodo teste:"+metodoTeste);
         
     }
-
+ 
 //----------------------------- Retorna as linhas cobertas pelos testes ----------------------------------------
     public ArrayList<Integer> qtdeLinhasCod() {
         char[] aux;

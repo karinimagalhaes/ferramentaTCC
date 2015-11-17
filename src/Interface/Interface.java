@@ -6,11 +6,12 @@
 package Interface;
 
 import Leitura.Jxr;
-import Leitura.Resultado;
+import faultlocalization.Resultado;
 import Leitura.Informacoes;
 import Leitura.Junit;
 import Leitura.DadosTeste;
 import Leitura.Ecobertura;
+import Leitura.Testes;
 import faultlocalization.ComparatorResultado;
 import faultlocalization.FaultLocalization;
 import java.io.*;
@@ -278,7 +279,7 @@ public class Interface extends javax.swing.JFrame {
     private FileInputStream reader;
     private String path = "C:\\Users\\Karini\\workspace\\myProject\\target\\site\\teste.txt";
 
-    //private Hashtable prob = new Hashtable();
+    private Map<String, Testes> totaisTestes = new TreeMap<>();
     private List<Resultado> probTar = new ArrayList<>();
     private List<Resultado> probOch = new ArrayList<>();
     private List<Resultado> probJac = new ArrayList<>();
@@ -304,6 +305,8 @@ public class Interface extends javax.swing.JFrame {
         return document;
     }
 
+    
+    
 
     private void abrJunitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrJunitActionPerformed
         // TODO add your handling code here:
@@ -351,20 +354,7 @@ public class Interface extends javax.swing.JFrame {
         if (!csTarantula.isSelected() && !csJaccard.isSelected() && !csOchiai.isSelected() && !csSBI.isSelected()) {
             JOptionPane.showMessageDialog(null, "Selecione uma heurística");
         }
-        // Lê Junit
-        File fileJunit = new File(junit.getPath());
-        //File diretorioJunit = new File(junit.getPath());
-        Document documentoJunit;
-        try {
-            documentoJunit = Jsoup.parse(fileJunit, null);
-            Interface parserHtmlJunit = new Interface(documentoJunit);
-            lerJunit = new Junit(parserHtmlJunit.document);
-            lerJunit.totais();                              // possui qtde de testes, falhas e sucesso do projeto
-            lerJunit.testesFalhos();                        // possui os testes que falharam ou contiveram erros
-        } catch (IOException ex) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        System.out.println("li Junit");
+        
         // ---------------------------- Processa arquivos Ecobertura --------------------------------------
         navegar(ecobertura.getPath());     // armazena os arquivos do diretório no arrayList files
         for (int i = 0; i < files.size(); i++) {
@@ -425,7 +415,7 @@ public class Interface extends javax.swing.JFrame {
                 }
                 //  reader.close();
                 file.delete();
-
+                
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -434,22 +424,36 @@ public class Interface extends javax.swing.JFrame {
         
        /* for(int i=0; i<dadosTeste.size(); i++){
             System.out.println("Classe:"+dadosTeste.get(i).getClasse()+" Metodo Chamado: "+dadosTeste.get(i).getmChamado()
-                +" MetodoTeste: "+dadosTeste.get(i).getMetodoTeste()+" Objeto:" + dadosTeste.get(i).getObjetos());
-        }
+                +" MetodoTeste: "+dadosTeste.get(i).getMetodoTeste()+" Objeto:" + dadosTeste.get(i).getObjetos()+" classeTeste:" + dadosTeste.get(i).getClasseTeste());
+        }*/
 
+        
+        files.clear();
+        //----------------------------------- Fim processamento Jxr -----------------------------------------------
+// -----------------------------------------------Lê Junit----------------------------------------------------------
+        File fileJunit = new File(junit.getPath());
+        //File diretorioJunit = new File(junit.getPath());
+        Document documentoJunit;
+        try {
+            documentoJunit = Jsoup.parse(fileJunit, null);
+            Interface parserHtmlJunit = new Interface(documentoJunit);
+            lerJunit = new Junit(parserHtmlJunit.document);
+            totaisTestes.putAll(lerJunit.totais(dadosTeste));                              // possui qtde de testes, falhas e sucesso do projeto
+            lerJunit.testesFalhos();                        // possui os testes que falharam ou contiveram erros
+        } catch (IOException ex) {
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
+        }
         //------------------------------------------ imprime valores do hashtable -----------------------------
-       /* Set values = lerJxr.getInfJxr().entrySet();
+        /*Set values = totaisTestes.entrySet();
          Iterator myIterator = values.iterator();
          System.out.println("Listando arquivos contidos no HashMap myHashMap:");
          while (myIterator.hasNext()) {
-         DadosTeste dados = (DadosTeste) ((Entry) myIterator.next()).getValue();
-         System.out.println(" Classe: " + dados.getClasse() + " MetodoTeste: " + dados.getMetodoTeste()
-         + " Objetos: " + dados.getObjetos() + " MChamados: " + dados.getmChamado() );
+         Testes dados = (Testes) ((Entry) myIterator.next()).getValue();
+         System.out.println(" ClasseTeste: " + dados.getClasseTeste() + "TotalTeste:["+dados.getTotalTeste()+"] TotFalha:["+dados.getTotalFalha()+
+                 "] TotalSucesso:["+dados.getTotalSucesso()+"]");
          }*/
         //---------------------------------- fim impressão hashtable---------------------------------------------
-        files.clear();
-        //----------------------------------- Fim processamento Jxr -----------------------------------------------
-
+        System.out.println("li Junit");
         //--------------------------------------- Início cálculo das heurísticas -------------------------------------
         Double sucesso = 0.0;
         Double falha = 0.0;
@@ -462,16 +466,19 @@ public class Interface extends javax.swing.JFrame {
          */
 
         
-        totSucesso = (double) lerJunit.getQtdeSucesso();
-        totFalha = (double) lerJunit.getQtdeFalhas();
+       // totSucesso = (double) lerJunit.getQtdeSucesso();
+       // totFalha = (double) lerJunit.getQtdeFalhas();
         
         for (int i = 0; i < classes.size(); i++) {
             
             linhasClasse = linhas.get(classes.get(i));
             for (int count = 1; count < linhasClasse.size(); count++) {
-                lerEcob.falharam(classes.get(i), linhasClasse.get(count), linhaMetodo, dadosTeste, lerJunit);   // pega todos os arraylist contidos em linhas
-              //  System.out.println("Classe: ["+classes.get(i)+"]"+"linha: [" +linhasClasse.get(count) +"]"  +
-             //" Falharam: [" + lerEcob.getFalharam() + "] TotalFalhas:[" + totFalha+"] Passaram: [" + lerEcob.getPassaram() + "] TotSucesso:["+totSucesso+"]");
+                lerEcob.falharam(classes.get(i), linhasClasse.get(count), linhaMetodo, dadosTeste, lerJunit, totaisTestes);   // pega todos os arraylist contidos em linhas
+              /*  System.out.println("Classe: ["+classes.get(i)+"]"+"linha: [" +linhasClasse.get(count) +"]"  +
+             " Falharam: [" + lerEcob.getFalharam() + "] TotalFalhas:[" + lerEcob.getTotFalharam()+"] Passaram: [" + 
+                lerEcob.getPassaram() + "] TotSucesso:["+lerEcob.getTotPassaram()+"]");*/
+                    totSucesso = (double) lerEcob.getTotPassaram();
+                    totFalha = (double) lerEcob.getTotFalharam();
                     sucesso = (double) lerEcob.getPassaram();
                     falha = (double) lerEcob.getFalharam();
                 if(sucesso != 0 || falha !=0){
@@ -543,7 +550,7 @@ public class Interface extends javax.swing.JFrame {
             System.out.println("Classe: "+ probSbi.get(i).getClasse()+" Linha: "+probSbi.get(i).getLinha()+" Probabilidade: "+probSbi.get(i).getProbabilidade());
         }
     
-        ResultadoJanela.inicializaJanela(probTar, probJac, probOch, probSbi);
+        //ResultadoJanela.inicializaJanela(probTar, probJac, probOch, probSbi);
 
         //--------------------------------------------Fim cálculo das heurísticas -----------------------------------------------------
 

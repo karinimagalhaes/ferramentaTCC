@@ -16,13 +16,15 @@ public class DadosTeste {
     private ArrayList<String> objetos = new ArrayList< String>();
     private ArrayList<String> mChamado = new ArrayList< String>();
     private String metodoTeste;
+    private String classeTeste;
 
     
-    public DadosTeste(String classe, ArrayList<String> objeto, ArrayList<String> mChamado, String metodoTeste) {
+    public DadosTeste(String classe, ArrayList<String> objeto, ArrayList<String> mChamado, String metodoTeste, String classeTeste) {
         this.classe = classe;
         this.objetos = objeto;
         this.mChamado = mChamado;
         this.metodoTeste = metodoTeste;
+        this.classeTeste = classeTeste;
     }
 
     public String getMetodoTeste() {
@@ -53,4 +55,9 @@ public class DadosTeste {
     public ArrayList<String> getmChamado() {
         return mChamado;
     }
+
+    public String getClasseTeste() {
+        return classeTeste;
+    }
+    
 }

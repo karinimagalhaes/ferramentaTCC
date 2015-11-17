@@ -5,7 +5,7 @@
  */
 package Interface;
 
-import Leitura.Resultado;
+import faultlocalization.Resultado;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;

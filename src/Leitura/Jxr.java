@@ -26,7 +26,10 @@ public class Jxr {
     public Jxr(Document document) {
         this.document = document;
     }
-    
+
+  
+
+  
 
     public String leituraJxr() throws IOException {   //método para pegar os nomes dos métodos declarados
         Elements elements = document.getElementsByTag("pre");
@@ -55,10 +58,12 @@ public class Jxr {
         boolean bClasse = false;
         boolean achei = false;
         boolean statment = false;
+        boolean clas = false;
         ArrayList <String> object = new ArrayList<String>();
         ArrayList<String> mChamado = new ArrayList<String>();
         ArrayList<DadosTeste> dados = new ArrayList<>();
         String metodoTeste = null;
+        String classeTeste = null;
         String classeObj = null;
         String objeto = null;
         String auxiliar = null;
@@ -79,7 +84,7 @@ public class Jxr {
                 auxiliar = sbaux.toString();                // guarda o nome do objeto
             }
             
-            if((corrente == ' ') && (auxiliar.equals("do") || auxiliar.equals("if") || auxiliar.equals("for") 
+            if((corrente == ' ') && (auxiliar.equals("do") || auxiliar.equals("if") || auxiliar.equals("else") || auxiliar.equals("for") 
                     ||auxiliar.equals("while") || auxiliar.equals("switch") || auxiliar.equals("try")|| auxiliar.equals("catch"))){
                 statment = true;
                 
@@ -104,13 +109,22 @@ public class Jxr {
                 sbaux.delete(0, sbaux.length());
             }
             
-            if(sbaux.toString().equals("class")){
+            if(sbaux.toString().equals("class ") && classeTeste == null){
                 met = false;
+                clas = true;
                 sbaux.delete(0, sbaux.length());
             }
+            if(clas == true &&  !auxiliar.toString().equals("class ") && corrente == ' '){
+                classeTeste = sbaux.toString();
+                clas = false;
+                sbaux.delete(0, sbaux.length());
+            }
+            
+            
             //verificar se a palavra reservada eh de um método
             if(met == true && corrente=='.'){
                 met = false;
+                
                 sbaux.delete(0, sbaux.length());
             }
             if(auxiliar.equals("new")){
@@ -134,13 +148,14 @@ public class Jxr {
                     }
                 }
             }
-         if(sbaux.toString().equals(classe)){
+         if(sbaux.toString().equals(classe+" ")){
                 bClasse = true;
-            }
-            if(corrente == '{'){
-                bClasse = false;
-                obj = false;
-            }
+         }
+         
+        if((corrente == '{') && (bClasse == true)){
+            bClasse = false;
+            obj = false;
+        }
            
             if((bClasse == true) && (corrente == ' ')){
                 classeObj = classe;
@@ -191,8 +206,8 @@ public class Jxr {
             }
             
             if(StringUtils.isNotBlank(metodoTeste) && StringUtils.isNotBlank(classeObj) && !object.isEmpty() && !mChamado.isEmpty() && (bloco%2!=0)){
-               // System.out.println("ClasseOBj: "+classeObj+" Objeto: "+object+" MChamado: "+mChamado+" Metodo Teste:"+metodoTeste);
-                dadosTeste = new DadosTeste(classeObj, object, mChamado, metodoTeste);
+               // System.out.println("ClasseOBj: "+classeObj+" Objeto: "+object+" MChamado: "+mChamado+" Metodo Teste:"+metodoTeste+" ClasseTeste: "+classeTeste);
+                dadosTeste = new DadosTeste(classeObj, object, mChamado, metodoTeste, classeTeste.trim());
                 //infJxr.put(metodoTeste + "_" + classeObj, dadosTeste);
                 dados.add(dadosTeste);
                 classeObj = null;
@@ -200,6 +215,7 @@ public class Jxr {
                 mChamado = new ArrayList<>();
                 metodoTeste = null;
                 objeto = null;
+                
                 met = false;
                 obj = false;
                 cod = false;
@@ -211,6 +227,9 @@ public class Jxr {
                 sbaux.delete(0, sbaux.length());
             }
         }
+
+        clas = false;
+        classeTeste = null;
         return dados;
     }
     
